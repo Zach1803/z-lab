@@ -1,0 +1,576 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Kubu Cyber Defence</title>
+<meta name="description" content="Kubu Cyber Defence: 24/7 managed detection and response, incident response and readiness checks for Malaysian businesses.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{--ink:#070b12;--ink2:#0d131d;--ink3:#141c29;--line:rgba(205,222,240,.1);--line2:rgba(205,222,240,.18);--fg:#e9eef4;--dim:rgba(233,238,244,.66);--faint:rgba(233,238,244,.42);--mint:#5cf2c4;--mint2:#2bd4a2;--red:#ff5d5d;--amber:#ffb84d;--blue:#6aa8ff;--paper:#f3f5f7;--pink:#0b1220;color-scheme:dark}
+*{box-sizing:border-box}
+html{background:var(--ink);scroll-behavior:smooth}
+body{margin:0;background:var(--ink);color:var(--fg);font:16px/1.6 "Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-text-size-adjust:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--ink);z-index:50}
+a{color:inherit}
+.wrap{max-width:1200px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
+.eyebrow{font:500 12px "IBM Plex Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--mint)}
+h1,h2,h3{font-weight:700;letter-spacing:-.025em;line-height:1.05;text-wrap:balance;margin:0}
+h1{font-size:clamp(42px,6vw,78px);font-weight:800}
+h2{font-size:clamp(32px,4vw,52px)}
+h3{font-size:20px;letter-spacing:-.01em;line-height:1.2}
+p{margin:0;color:var(--dim)}
+section{padding-block:clamp(72px,10vw,130px)}
+.lede{font-size:18px;max-width:520px}
+.btn{display:inline-flex;align-items:center;gap:10px;font:700 15px "Manrope",sans-serif;padding:14px 22px;border-radius:10px;text-decoration:none;border:1px solid transparent;cursor:pointer;transition:transform .15s,background .2s,border-color .2s}
+.btn:active{transform:translateY(1px)}
+.btn.pri{background:var(--mint);color:#04140e}
+.btn.pri:hover{background:#7ff7d4}
+.btn.sec{border-color:var(--line2);color:var(--fg);background:rgba(255,255,255,.02)}
+.btn.sec:hover{border-color:rgba(205,222,240,.35)}
+/* nav */
+nav.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:rgba(7,11,18,.72);backdrop-filter:blur(14px) saturate(1.3);-webkit-backdrop-filter:blur(14px) saturate(1.3);border-bottom:1px solid var(--line)}
+nav.top .wrap{display:flex;align-items:center;gap:22px;height:64px}
+.logo{display:flex;align-items:center;gap:10px;font:800 18px "Manrope",sans-serif;letter-spacing:.06em;text-decoration:none}
+.logo svg{width:26px;height:26px}
+.logo small{font:500 11px "IBM Plex Mono",monospace;letter-spacing:.1em;color:var(--faint);font-weight:500}
+.links{display:flex;gap:22px;margin-left:auto;font-size:14.5px;font-weight:600}
+.links a{text-decoration:none;color:var(--dim)}
+.links a:hover{color:var(--fg)}
+.hot{display:flex;align-items:center;gap:8px;font:600 13px "IBM Plex Mono",monospace;padding:9px 14px;border-radius:9px;background:rgba(255,93,93,.1);border:1px solid rgba(255,93,93,.35);color:#ffb3b3;text-decoration:none;white-space:nowrap}
+.hot i{width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 0 0 rgba(255,93,93,.6);animation:pulse 1.6s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 8px rgba(255,93,93,0)}100%{box-shadow:0 0 0 0 rgba(255,93,93,0)}}
+.zl{font:500 12px "IBM Plex Mono",monospace;color:var(--faint);text-decoration:none;white-space:nowrap}
+.zl:hover{color:var(--fg)}
+/* hero */
+.hero{position:relative;overflow:hidden;padding-block:0;min-height:min(880px,100svh)}
+#globe{position:absolute;top:0;right:-14%;width:66%;height:100%;display:block;cursor:grab;touch-action:pan-y}
+#globe:active{cursor:grabbing}
+.hero .wrap{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:center;min-height:min(880px,100svh);padding-block:90px 60px;pointer-events:none}
+.hero .wrap>*{pointer-events:auto;max-width:600px}
+.hero h1 em{font-style:normal;color:var(--mint)}
+.hero .lede{margin-top:22px}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+.stats{display:grid;grid-template-columns:repeat(3,auto);gap:26px;margin-top:46px;justify-content:start}
+.stats b{display:block;font:700 30px "Manrope",sans-serif;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stats span{font:500 11.5px "IBM Plex Mono",monospace;color:var(--faint);letter-spacing:.06em;text-transform:uppercase}
+.feed{position:absolute;right:max(20px,env(safe-area-inset-right,0px));bottom:34px;z-index:3;width:340px;background:rgba(13,19,29,.78);border:1px solid var(--line2);border-radius:14px;padding:14px 16px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.feed header{display:flex;justify-content:space-between;align-items:center;font:600 11.5px "IBM Plex Mono",monospace;letter-spacing:.08em;color:var(--faint);text-transform:uppercase;margin-bottom:8px}
+.feed header b{color:var(--mint);font-weight:600;display:flex;align-items:center;gap:6px}
+.feed header b::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--mint)}
+.feed ul{list-style:none;margin:0;padding:0;font:500 12.5px "IBM Plex Mono",monospace;display:flex;flex-direction:column;gap:6px;min-height:118px}
+.feed li{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;animation:fin .5s}
+.feed li .t{color:var(--faint)}
+.feed li .w{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--dim)}
+.tag{font:600 10.5px "IBM Plex Mono",monospace;padding:2px 7px;border-radius:5px;letter-spacing:.04em}
+.tag.b{background:rgba(92,242,196,.12);color:var(--mint)}
+.tag.c{background:rgba(255,184,77,.13);color:var(--amber)}
+.tag.r{background:rgba(255,93,93,.14);color:var(--red)}
+@keyframes fin{from{opacity:0;transform:translateY(-6px)}}
+/* trust */
+.trust{border-block:1px solid var(--line);padding-block:22px;background:var(--ink2)}
+.trust .wrap{display:flex;gap:14px 34px;flex-wrap:wrap;align-items:center;font:500 13px "IBM Plex Mono",monospace;color:var(--faint)}
+.trust b{color:var(--dim);font-weight:500}
+/* section heads */
+.head{display:grid;grid-template-columns:1fr 1fr;gap:30px 60px;align-items:end;margin-bottom:46px}
+.head p{font-size:17px}
+/* services */
+.svc{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.svc article{background:var(--ink2);border:1px solid var(--line);border-radius:16px;padding:26px;display:flex;flex-direction:column;gap:12px;min-width:0;transition:border-color .2s,transform .2s}
+.svc article:hover{border-color:rgba(92,242,196,.35);transform:translateY(-3px)}
+.svc article.big{grid-column:span 2;background:linear-gradient(135deg,rgba(92,242,196,.08),rgba(106,168,255,.05)),var(--ink2)}
+.ico{width:42px;height:42px;border-radius:10px;display:grid;place-items:center;background:rgba(92,242,196,.1);color:var(--mint)}
+.ico svg{width:22px;height:22px}
+.svc ul{margin:4px 0 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:6px}
+.svc li{font:500 12px "IBM Plex Mono",monospace;color:var(--faint);border:1px solid var(--line);border-radius:6px;padding:3px 8px}
+/* soc */
+.soc{background:radial-gradient(1200px 500px at 70% 0%,rgba(92,242,196,.06),transparent 60%),var(--ink)}
+.dash{border:1px solid var(--line2);border-radius:18px;background:var(--ink2);overflow:hidden}
+.dash .bar{display:flex;align-items:center;gap:14px;padding:12px 18px;border-bottom:1px solid var(--line);font:500 12.5px "IBM Plex Mono",monospace;color:var(--faint);flex-wrap:wrap}
+.dash .bar .dots{display:flex;gap:6px}.dash .bar .dots i{width:9px;height:9px;border-radius:50%;background:var(--line2)}
+.dash .bar .live{margin-left:auto;color:var(--mint)}
+.dgrid{display:grid;grid-template-columns:1.6fr 1fr;gap:0}
+.dgrid>div{padding:20px;min-width:0}
+.dgrid>div+div{border-left:1px solid var(--line)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.kpi{background:var(--ink3);border-radius:12px;padding:12px 14px;min-width:0}
+.kpi span{display:block;font:500 11px "IBM Plex Mono",monospace;color:var(--faint);letter-spacing:.05em;text-transform:uppercase}
+.kpi b{font:700 24px "Manrope",sans-serif;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.kpi b small{font-size:13px;color:var(--faint);font-weight:600}
+#chart{width:100%;height:190px;display:block}
+.tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.tabs button{font:600 12.5px "IBM Plex Mono",monospace;border:1px solid var(--line2);background:transparent;color:var(--dim);padding:6px 11px;border-radius:7px;cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--fg);color:var(--ink);border-color:var(--fg)}
+.alerts{display:flex;flex-direction:column;gap:8px;max-height:330px;overflow:auto}
+.alert{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--ink3);cursor:pointer;text-align:left;color:inherit;font:inherit;width:100%}
+.alert .r1{display:flex;gap:8px;align-items:center;font:500 12px "IBM Plex Mono",monospace;color:var(--faint)}
+.alert .r1 .tag{margin-right:2px}
+.alert .r1 time{margin-left:auto}
+.alert .r2{font-size:14px;font-weight:600;margin-top:4px;color:var(--fg)}
+.alert .r3{display:none;font-size:13px;color:var(--dim);margin-top:8px;border-top:1px dashed var(--line2);padding-top:8px}
+.alert .r3 ol{margin:6px 0 0;padding-left:18px}
+.alert[aria-expanded="true"] .r3{display:block}
+.alert[aria-expanded="true"]{border-color:rgba(92,242,196,.4)}
+/* check */
+.check{background:var(--paper);color:#0b1220}
+.check p{color:rgba(11,18,32,.68)}
+.check .eyebrow{color:#0b7a5c}
+.qbox{display:grid;grid-template-columns:1.25fr 1fr;gap:0;border-radius:20px;overflow:hidden;background:#fff;box-shadow:0 30px 80px rgba(11,18,32,.12);border:1px solid rgba(11,18,32,.08)}
+.qbox>div{padding:clamp(22px,3.5vw,40px);min-width:0}
+.qbox>div+div{background:#0b1220;color:var(--fg)}
+.qbox>div+div p{color:var(--dim)}
+.prog{height:4px;background:rgba(11,18,32,.08);border-radius:3px;overflow:hidden;margin-bottom:26px}
+.prog i{display:block;height:100%;background:#0b7a5c;width:0;transition:width .35s}
+.qn{font:600 12px "IBM Plex Mono",monospace;color:rgba(11,18,32,.5);letter-spacing:.06em}
+.qt{font:700 clamp(22px,2.4vw,28px)/1.2 "Manrope",sans-serif;letter-spacing:-.015em;margin:10px 0 8px;text-wrap:balance}
+.qh{font-size:14.5px;min-height:3em}
+.opts{display:flex;flex-direction:column;gap:10px;margin-top:22px}
+.opts button{font:600 15px "Manrope",sans-serif;text-align:left;padding:14px 16px;border-radius:12px;border:1.5px solid rgba(11,18,32,.14);background:#fff;color:#0b1220;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .15s,background .15s}
+.opts button:hover{border-color:#0b7a5c;background:rgba(11,122,92,.04)}
+.opts button span{font:500 12px "IBM Plex Mono",monospace;color:rgba(11,18,32,.45)}
+.qnav{display:flex;justify-content:space-between;margin-top:20px}
+.qnav button{font:600 13.5px "Manrope",sans-serif;background:none;border:0;color:rgba(11,18,32,.6);cursor:pointer;padding:6px 0}
+.qnav button:disabled{opacity:.3;cursor:default}
+.gauge{display:flex;justify-content:center;margin:6px 0 14px}
+.gauge svg{width:min(260px,100%);height:auto}
+.grade{text-align:center;font:700 22px "Manrope",sans-serif}
+.grade small{display:block;font:500 12px "IBM Plex Mono",monospace;color:var(--faint);letter-spacing:.06em;margin-top:2px}
+.fixes{margin-top:20px;display:flex;flex-direction:column;gap:10px}
+.fix{display:grid;grid-template-columns:28px 1fr;gap:10px;font-size:14px;color:var(--dim)}
+.fix b{display:block;color:var(--fg);font-size:14.5px}
+.fix i{font:600 12px "IBM Plex Mono",monospace;font-style:normal;width:26px;height:26px;border-radius:7px;display:grid;place-items:center;background:rgba(255,93,93,.14);color:var(--red)}
+.fix i.m{background:rgba(255,184,77,.14);color:var(--amber)}
+.fix i.ok{background:rgba(92,242,196,.12);color:var(--mint)}
+.empty{color:var(--faint);font-size:14px;text-align:center;padding:30px 0}
+/* response timeline */
+.tl{position:relative;display:grid;grid-template-columns:1fr;gap:0;margin-top:20px}
+.tl::before{content:"";position:absolute;left:94px;top:8px;bottom:8px;width:2px;background:var(--line2)}
+.tl .fill{position:absolute;left:94px;top:8px;width:2px;background:var(--mint);height:0;transition:height .2s linear;box-shadow:0 0 12px var(--mint)}
+.step{display:grid;grid-template-columns:80px 30px 1fr;gap:0 14px;padding:18px 0;opacity:.38;transition:opacity .4s}
+.step.on{opacity:1}
+.step time{font:600 14px "IBM Plex Mono",monospace;color:var(--mint);text-align:right;padding-top:2px}
+.step .dot{width:14px;height:14px;border-radius:50%;background:var(--ink);border:2px solid var(--line2);margin:5px 0 0 7px;position:relative;z-index:1;transition:border-color .3s,background .3s}
+.step.on .dot{border-color:var(--mint);background:var(--mint)}
+.step h3{margin-bottom:6px}
+/* cases */
+.cases{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.case{border:1px solid var(--line);border-radius:16px;padding:26px;background:var(--ink2);display:flex;flex-direction:column;gap:14px;min-width:0}
+.case .k{font:500 12px "IBM Plex Mono",monospace;color:var(--faint);letter-spacing:.06em;text-transform:uppercase}
+.case .num{font:800 44px "Manrope",sans-serif;letter-spacing:-.03em;color:var(--mint)}
+.case blockquote{margin:auto 0 0;font-size:14.5px;color:var(--dim);border-left:2px solid var(--line2);padding-left:12px}
+/* pricing */
+.price{display:grid;grid-template-columns:1fr 1.3fr;gap:40px;align-items:start}
+.calc{border:1px solid var(--line2);border-radius:18px;background:var(--ink2);padding:28px}
+.calc label{display:flex;justify-content:space-between;font:600 14px "Manrope",sans-serif;margin-bottom:10px}
+.calc label b{font:600 14px "IBM Plex Mono",monospace;color:var(--mint)}
+input[type=range]{width:100%;accent-color:var(--mint)}
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:22px}
+.plan{border:1.5px solid var(--line2);border-radius:12px;padding:14px;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer;min-width:0}
+.plan[aria-pressed="true"]{border-color:var(--mint);background:rgba(92,242,196,.06)}
+.plan b{display:block;font-size:15px}
+.plan span{font:500 12px "IBM Plex Mono",monospace;color:var(--faint)}
+.total{margin-top:24px;padding-top:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.total b{font:800 40px "Manrope",sans-serif;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.total span{font:500 12.5px "IBM Plex Mono",monospace;color:var(--faint)}
+.incl{margin-top:16px;display:flex;flex-direction:column;gap:8px;font-size:14px;color:var(--dim)}
+.incl div::before{content:"✓  ";color:var(--mint);font-weight:700}
+.incl div.off{opacity:.35}
+.incl div.off::before{content:"–  ";color:var(--faint)}
+/* contact */
+.contact{background:linear-gradient(180deg,var(--ink),#04070c)}
+.cbox{display:grid;grid-template-columns:1fr 1fr;gap:50px}
+form{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+form label{display:flex;flex-direction:column;gap:6px;font:600 12.5px "IBM Plex Mono",monospace;color:var(--faint);letter-spacing:.03em;min-width:0}
+form input,form select,form textarea{font:500 15px "Manrope",sans-serif;color:var(--fg);background:var(--ink2);border:1px solid var(--line2);border-radius:10px;padding:12px 13px;width:100%;min-width:0}
+form textarea{min-height:110px;resize:vertical}
+form .full{grid-column:1/-1}
+.sent{display:none;grid-column:1/-1;padding:14px 16px;border-radius:10px;background:rgba(92,242,196,.08);border:1px solid rgba(92,242,196,.3);color:var(--mint);font-size:14.5px}
+.hl{border:1px solid rgba(255,93,93,.35);background:rgba(255,93,93,.06);border-radius:16px;padding:22px;margin-top:26px}
+.hl b{font:700 26px "IBM Plex Mono",monospace;color:#ffd0d0;display:block;margin:6px 0;user-select:all}
+footer{border-top:1px solid var(--line);padding-block:30px calc(30px + env(safe-area-inset-bottom,0px));font-size:13px;color:var(--faint)}
+footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+@media (max-width:980px){
+  .links{display:none}
+  .hot{margin-left:auto}
+  .head,.price,.cbox,.qbox,.dgrid{grid-template-columns:1fr}
+  .dgrid>div+div{border-left:0;border-top:1px solid var(--line)}
+  .svc,.cases{grid-template-columns:1fr 1fr}
+  .svc article.big{grid-column:span 2}
+  #globe{right:-30%;width:120%;opacity:.55}
+  .feed{position:relative;right:auto;bottom:auto;width:auto;margin:0 max(20px,env(safe-area-inset-right,0px)) 30px max(20px,env(safe-area-inset-left,0px))}
+  .hero .wrap{min-height:auto;padding-block:110px 40px}
+  .hero{min-height:0}
+}
+@media (max-width:620px){
+  .svc,.cases,.plans,form{grid-template-columns:1fr}
+  .svc article.big{grid-column:auto}
+  .kpis{grid-template-columns:1fr 1fr}
+  .stats{grid-template-columns:1fr 1fr;gap:18px}
+  .hot span{display:none}
+  .logo small{display:none}
+  nav.top .wrap{gap:12px}
+  #globe{right:-50%;width:160%;top:-60px}
+  .tl::before,.tl .fill{left:66px}
+  .step{grid-template-columns:52px 30px 1fr}
+}
+</style>
+<script type="importmap">{"imports":{"three":"./lib/three/build/three.module.js","three/addons/":"./lib/three/examples/jsm/"}}</script>
+</head>
+<body>
+<nav class="top"><div class="wrap">
+  <a class="logo" href="#"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 2 4 7v8c0 7.5 5.1 13.4 12 15 6.9-1.6 12-7.5 12-15V7L16 2Z" fill="rgba(92,242,196,.12)" stroke="#5cf2c4" stroke-width="2"/><path d="M10 12h3v3h2v-3h2v3h2v-3h3v9H10z" fill="#5cf2c4"/></svg>KUBU<small>CYBER DEFENCE</small></a>
+  <div class="links"><a href="#services">Services</a><a href="#soc">SOC</a><a href="#check">Readiness check</a><a href="#response">Response</a><a href="#pricing">Pricing</a></div>
+  <a class="hot" href="#contact"><i></i><span>Under attack?</span> 24/7</a>
+  <a class="zl" href="../">← Z Lab</a>
+</div></nav>
+
+<header class="hero">
+  <canvas id="globe" aria-label="Globe showing attacks being blocked around the world"></canvas>
+  <div class="wrap">
+    <div class="eyebrow">Managed detection &amp; response · Kuala Lumpur</div>
+    <h1>We watch your network, so you can <em>sleep.</em></h1>
+    <p class="lede">Kubu runs a 24/7 security operations centre for Malaysian businesses. Analysts in KL watch every endpoint, log and login, and stop attacks before they become headlines.</p>
+    <div class="cta"><a class="btn pri" href="#check">Check your readiness <span aria-hidden="true">→</span></a><a class="btn sec" href="#contact">Talk to an analyst</a></div>
+    <div class="stats">
+      <div><b id="blocked">0</b><span>Threats blocked today</span></div>
+      <div><b>14 min</b><span>Median time to contain</span></div>
+      <div><b>186</b><span>Organisations protected</span></div>
+    </div>
+  </div>
+  <aside class="feed" aria-live="off"><header><span>SOC feed</span><b>Live</b></header><ul id="feed"></ul></aside>
+</header>
+
+<div class="trust"><div class="wrap"><span>Built for</span><b>PDPA 2010</b><b>Cyber Security Act 2024</b><b>BNM RMiT</b><b>ISO/IEC 27001</b><b>SC Guidelines on Technology Risk</b></div></div>
+
+<section id="services"><div class="wrap">
+  <div class="head"><div><div class="eyebrow">What we do</div><h2 style="margin-top:14px">One team for the whole attack surface.</h2></div><p>Most breaches we're called into started small: a reused password, an unpatched VPN, a convincing email. We cover all of them, end to end, with people who answer the phone at 3 AM.</p></div>
+  <div class="svc">
+    <article class="big"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg></div><h3>Managed Detection &amp; Response</h3><p>Our SOC monitors endpoints, cloud, email and network around the clock. When something fires, an analyst investigates within minutes, isolates the host and calls you with what happened and what we did.</p><ul><li>24/7 SOC</li><li>EDR / XDR</li><li>Threat hunting</li><li>M365 &amp; Google Workspace</li></ul></article>
+    <article><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 4 6v6c0 5 3.4 8.9 8 10 4.6-1.1 8-5 8-10V6l-8-4Z"/><path d="m9 12 2 2 4-4"/></svg></div><h3>Incident Response</h3><p>Ransomware, business email compromise, data leaks. We contain, investigate, recover and handle the reporting with you.</p><ul><li>Retainer</li><li>Forensics</li></ul></article>
+    <article><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20 20 4M14 4h6v6"/><circle cx="7" cy="7" r="3"/></svg></div><h3>Penetration Testing</h3><p>Web apps, APIs, internal networks and the people behind them. Plain-language reports with fixes your team can actually ship.</p><ul><li>Web &amp; API</li><li>Red team</li><li>Phishing sims</li></ul></article>
+    <article><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></div><h3>Compliance &amp; Risk</h3><p>Gap assessments and evidence packs for PDPA, the Cyber Security Act and RMiT. We map controls once and reuse them for every audit.</p><ul><li>Gap analysis</li><li>Policies</li></ul></article>
+    <article><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h10"/><circle cx="19" cy="18" r="2"/></svg></div><h3>Security Awareness</h3><p>Short monthly training and realistic phishing tests in Bahasa Malaysia and English. Staff learn to report, not to hide.</p><ul><li>BM / EN</li><li>Monthly</li></ul></article>
+  </div>
+</div></section>
+
+<section id="soc" class="soc"><div class="wrap">
+  <div class="head"><div><div class="eyebrow">Inside the SOC</div><h2 style="margin-top:14px">This is what your portal looks like.</h2></div><p>A live demo with simulated data. Filter by severity and open any alert to see exactly what our analysts did, step by step and in plain language. Clients see this for their own estate, in real time.</p></div>
+  <div class="dash">
+    <div class="bar"><span class="dots"><i></i><i></i><i></i></span><span>portal.kubu.my / overview</span><span class="live">● Simulated live data</span></div>
+    <div class="dgrid">
+      <div>
+        <div class="kpis">
+          <div class="kpi"><span>Events / hr</span><b id="k1">0</b></div>
+          <div class="kpi"><span>Alerts today</span><b id="k2">0</b></div>
+          <div class="kpi"><span>Contained</span><b id="k3">0</b></div>
+          <div class="kpi"><span>MTTR</span><b>14<small> min</small></b></div>
+        </div>
+        <canvas id="chart" aria-label="Alert volume over the last 24 hours"></canvas>
+      </div>
+      <div>
+        <div class="tabs" role="group" aria-label="Filter alerts"><button data-f="all" aria-pressed="true">All</button><button data-f="r">Critical</button><button data-f="c">Medium</button><button data-f="b">Blocked</button></div>
+        <div class="alerts" id="alerts"></div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<section id="check" class="check"><div class="wrap">
+  <div class="head"><div><div class="eyebrow">Readiness check · 2 minutes</div><h2 style="margin-top:14px;color:#0b1220">How exposed is your office?</h2></div><p>Eight questions we ask every new client. Answer honestly. Nothing leaves your browser, and you'll get a score and your three most urgent fixes.</p></div>
+  <div class="qbox">
+    <div>
+      <div class="prog"><i id="qprog"></i></div>
+      <div class="qn" id="qn">QUESTION 1 OF 8</div>
+      <div class="qt" id="qt"></div>
+      <p class="qh" id="qh"></p>
+      <div class="opts" id="opts"></div>
+      <div class="qnav"><button id="qback">← Back</button><button id="qreset">Start over</button></div>
+    </div>
+    <div>
+      <div class="eyebrow">Your score</div>
+      <div class="gauge"><svg viewBox="0 0 260 150" aria-hidden="true"><path d="M20 135 A110 110 0 0 1 240 135" fill="none" stroke="rgba(233,238,244,.1)" stroke-width="18" stroke-linecap="round"/><path id="garc" d="M20 135 A110 110 0 0 1 240 135" fill="none" stroke="#5cf2c4" stroke-width="18" stroke-linecap="round" stroke-dasharray="345.6" stroke-dashoffset="345.6" style="transition:stroke-dashoffset .6s,stroke .4s"/><text id="gnum" x="130" y="118" text-anchor="middle" fill="#e9eef4" font-family="Manrope" font-weight="800" font-size="46">–</text><text x="130" y="142" text-anchor="middle" fill="rgba(233,238,244,.45)" font-family="IBM Plex Mono" font-size="11" letter-spacing="1.5">OUT OF 100</text></svg></div>
+      <div class="grade" id="grade">Answer to see your score<small id="gsub">&nbsp;</small></div>
+      <div class="fixes" id="fixes"><div class="empty">Your top fixes appear here as you answer.</div></div>
+    </div>
+  </div>
+</div></section>
+
+<section id="response"><div class="wrap">
+  <div class="head"><div><div class="eyebrow">Incident response</div><h2 style="margin-top:14px">The first hour, minute by minute.</h2></div><p>When ransomware hits, the first hour decides how bad the next month is. This is what happens after you call our hotline.</p></div>
+  <div class="tl" id="tl"><div class="fill" id="tlfill"></div>
+    <div class="step"><time>T+0</time><span class="dot"></span><div><h3>You call. A human answers.</h3><p>No ticket queue. An on-call incident lead takes the call, confirms scope and opens a bridge with your IT team.</p></div></div>
+    <div class="step"><time>T+5</time><span class="dot"></span><div><h3>Affected machines are isolated.</h3><p>Through our EDR we cut infected hosts off the network while keeping them powered on, so the evidence survives.</p></div></div>
+    <div class="step"><time>T+15</time><span class="dot"></span><div><h3>Accounts are locked down.</h3><p>Compromised credentials are reset, sessions revoked and MFA enforced. Attacker footholds in M365 or Google Workspace are removed.</p></div></div>
+    <div class="step"><time>T+30</time><span class="dot"></span><div><h3>We find patient zero.</h3><p>Forensics traces how they got in, what they touched and whether data left. You get a first written situation report.</p></div></div>
+    <div class="step"><time>T+45</time><span class="dot"></span><div><h3>Backups are verified clean.</h3><p>Before anything is restored we check the backups for persistence, then plan recovery in business-priority order.</p></div></div>
+    <div class="step"><time>T+60</time><span class="dot"></span><div><h3>Reporting obligations are lined up.</h3><p>If personal data or critical systems are involved, we prepare the notifications with your legal team so nothing is late.</p></div></div>
+  </div>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap">
+  <div class="head"><div><div class="eyebrow">Results</div><h2 style="margin-top:14px">Quiet nights, measured.</h2></div><p>Three clients, three very different bad days.</p></div>
+  <div class="cases">
+    <div class="case"><div class="k">Logistics · Port Klang</div><div class="num">11 min</div><h3>Ransomware stopped at two laptops.</h3><p>A phished login turned into an encryption attempt at 2:40 AM. Hosts isolated, no servers touched, trucks rolled at 6.</p><blockquote>"We found out in the morning, from Kubu's report, not from our customers."</blockquote></div>
+    <div class="case"><div class="k">Healthcare · Klang Valley</div><div class="num">RM 0</div><h3>Invoice fraud caught mid-flight.</h3><p>A spoofed supplier asked to change bank details. Our mail rules flagged it, and the RM 380k transfer was never made.</p><blockquote>"The finance team now forwards anything odd straight to the SOC."</blockquote></div>
+    <div class="case"><div class="k">Manufacturing · Penang</div><div class="num">63%</div><h3>Fewer critical findings in a year.</h3><p>Quarterly pen tests and monthly patch reviews took a factory network from 41 critical issues to 15.</p><blockquote>"The reports are written for us, not for other hackers."</blockquote></div>
+  </div>
+</div></section>
+
+<section id="pricing" class="soc"><div class="wrap price">
+  <div><div class="eyebrow">Pricing</div><h2 style="margin-top:14px">Priced per device. No surprises.</h2><p style="margin-top:16px;font-size:17px">Every plan includes onboarding, the client portal and a named account lead. Incident response hours on retainer roll over for a quarter.</p></div>
+  <div class="calc">
+    <label for="ep">Devices to protect <b id="epv">50</b></label>
+    <input type="range" id="ep" min="10" max="1000" step="5" value="50">
+    <div class="plans" role="group" aria-label="Plan">
+      <button class="plan" data-p="0"><b>Essentials</b><span>RM 18 / device</span></button>
+      <button class="plan" data-p="1" aria-pressed="true"><b>Managed</b><span>RM 39 / device</span></button>
+      <button class="plan" data-p="2"><b>Enterprise</b><span>RM 62 / device</span></button>
+    </div>
+    <div class="total"><div><span>Estimated monthly</span><br><b id="tot">RM 0</b></div><span id="totsub"></span></div>
+    <div class="incl" id="incl"></div>
+  </div>
+</div></section>
+
+<section id="contact" class="contact"><div class="wrap cbox">
+  <div><div class="eyebrow">Contact</div><h2 style="margin-top:14px">Talk to an analyst, not a salesperson.</h2><p style="margin-top:16px;font-size:17px">Tell us what you run and what keeps you up at night. We'll reply within one working day with honest advice, even if that advice is "you don't need us yet".</p>
+    <div class="hl"><div class="eyebrow" style="color:#ff9b9b">Under attack right now?</div><b>1-300-00-5828</b><p>24/7 incident hotline. Don't email. Call.</p></div>
+  </div>
+  <form id="cf">
+    <label>Name<input required autocomplete="name"></label>
+    <label>Work email<input type="email" required autocomplete="email"></label>
+    <label>Company<input autocomplete="organization"></label>
+    <label>Devices<select><option>Under 50</option><option>50–250</option><option>250–1,000</option><option>1,000+</option></select></label>
+    <label class="full">What do you need?<textarea placeholder="e.g. We had a phishing incident last month and want 24/7 monitoring."></textarea></label>
+    <div class="full"><button class="btn pri" type="submit">Send message</button></div>
+    <div class="sent" id="sent">Thanks. Kubu Cyber Defence is a fictional company, so no one will reply. For real security help, talk to a licensed provider.</div>
+  </form>
+</div></section>
+
+<footer><div class="wrap"><span>© 2026 Kubu Cyber Defence Sdn Bhd. A fictional company, made for Z Lab.</span><span>All alerts, clients and numbers on this page are simulated.</span></div></footer>
+
+<script type="module">
+import * as THREE from 'three';
+import { LAND, CITIES } from './globe_data.js';
+const $ = (s) => document.querySelector(s);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ======================= GLOBE ======================= */
+const canvas = $('#globe');
+let renderer = null;
+try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true }); } catch (e) { canvas.style.display = 'none'; }
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(36, 1, .1, 100); camera.position.set(0, 0, 6.2);
+const globe = new THREE.Group(); scene.add(globe);
+const R = 1.6;
+function ll(lat, lon, r = R) { const p = (90 - lat) * Math.PI / 180, t = (lon + 180) * Math.PI / 180; return new THREE.Vector3(-r * Math.sin(p) * Math.cos(t), r * Math.cos(p), r * Math.sin(p) * Math.sin(t)); }
+// ocean sphere with fresnel
+const ocean = new THREE.Mesh(new THREE.SphereGeometry(R * .995, 96, 64), new THREE.ShaderMaterial({
+  uniforms: {}, transparent: true,
+  vertexShader: 'varying vec3 vN; varying vec3 vV; void main(){ vec4 mv = modelViewMatrix*vec4(position,1.); vN = normalize(normalMatrix*normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix*mv; }',
+  fragmentShader: 'varying vec3 vN; varying vec3 vV; void main(){ float f = pow(1. - max(dot(vN, vV), 0.), 2.5); vec3 c = mix(vec3(.025,.045,.07), vec3(.12,.45,.4), f); float l = max(dot(vN, normalize(vec3(-.4,.5,.8))), 0.); c += vec3(.02,.04,.05)*l; gl_FragColor = vec4(c, .96); }'
+}));
+globe.add(ocean);
+// atmosphere
+const atm = new THREE.Mesh(new THREE.SphereGeometry(R * 1.12, 64, 48), new THREE.ShaderMaterial({
+  side: THREE.BackSide, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false,
+  vertexShader: 'varying vec3 vN; varying vec3 vP; void main(){ vN = normalize(normalMatrix*normal); vec4 mv = modelViewMatrix*vec4(position,1.); vP = mv.xyz; gl_Position = projectionMatrix*mv; }',
+  fragmentShader: 'varying vec3 vN; varying vec3 vP; void main(){ float d = -dot(vN, normalize(-vP)); float i = pow(clamp(d/.45, 0., 1.), 2.2)*.55; gl_FragColor = vec4(vec3(.36,.95,.77)*i, 1.); }'
+}));
+scene.add(atm);
+// land dots
+const raw = Uint8Array.from(atob(LAND), (c) => c.charCodeAt(0)); const ll16 = new Int16Array(raw.buffer);
+const nDots = ll16.length / 2; const dp = new Float32Array(nDots * 3), dr = new Float32Array(nDots);
+for (let i = 0; i < nDots; i++) { const v = ll(ll16[i * 2] / 100, ll16[i * 2 + 1] / 100, R * 1.001); dp.set([v.x, v.y, v.z], i * 3); dr[i] = Math.random(); }
+const dg = new THREE.BufferGeometry(); dg.setAttribute('position', new THREE.BufferAttribute(dp, 3)); dg.setAttribute('rnd', new THREE.BufferAttribute(dr, 1));
+const DOTU = { uS: { value: 1 }, uT: { value: 0 } };
+const dots = new THREE.Points(dg, new THREE.ShaderMaterial({ uniforms: DOTU, transparent: true, depthWrite: false,
+  vertexShader: 'attribute float rnd; uniform float uS; uniform float uT; varying float vA; varying float vR; void main(){ vec4 mv = modelViewMatrix*vec4(position,1.); vec3 n = normalize(normalMatrix*position); vA = smoothstep(-.1, .45, dot(n, normalize(-mv.xyz))); vR = rnd; gl_PointSize = uS*3.2*(6.2/-mv.z); gl_Position = projectionMatrix*mv; }',
+  fragmentShader: 'uniform float uT; varying float vA; varying float vR; void main(){ float d = length(gl_PointCoord-.5); if (d > .5) discard; float tw = vR > .97 ? .6 + .4*sin(uT*3. + vR*90.) : 0.; vec3 c = mix(vec3(.55,.68,.76), vec3(.36,.95,.77), tw); gl_FragColor = vec4(c, vA*(.55 + tw*.6)*smoothstep(.5,.2,d)); }' }));
+globe.add(dots);
+// city markers
+const cityKeys = Object.keys(CITIES);
+const KL = 'Kuala Lumpur';
+const markers = new THREE.Group(); globe.add(markers);
+const mGeo = new THREE.CircleGeometry(.012, 12);
+cityKeys.forEach((k) => { const [la, lo] = CITIES[k]; const m = new THREE.Mesh(mGeo, new THREE.MeshBasicMaterial({ color: k === KL ? 0x5cf2c4 : 0x9fb3c4, transparent: true, opacity: k === KL ? 1 : .7 })); m.position.copy(ll(la, lo, R * 1.003)); m.lookAt(m.position.clone().multiplyScalar(2)); if (k === KL) m.scale.setScalar(2.2); markers.add(m); });
+// KL beacon
+const beacon = new THREE.Mesh(new THREE.RingGeometry(.03, .04, 32), new THREE.MeshBasicMaterial({ color: 0x5cf2c4, transparent: true, side: THREE.DoubleSide, depthWrite: false }));
+const klPos = ll(...CITIES[KL], R * 1.004); beacon.position.copy(klPos); beacon.lookAt(klPos.clone().multiplyScalar(2)); globe.add(beacon);
+// arcs
+const arcs = [], rings = [];
+const ARC_SEG = 64;
+function makeArc(a, b, kind) {
+  const va = ll(...CITIES[a]), vb = ll(...CITIES[b]);
+  const mid = va.clone().add(vb).multiplyScalar(.5); const dist = va.distanceTo(vb); mid.normalize().multiplyScalar(R + dist * .38);
+  const curve = new THREE.QuadraticBezierCurve3(va, mid, vb);
+  const pts = curve.getPoints(ARC_SEG); const pos = new Float32Array(pts.length * 3), tt = new Float32Array(pts.length);
+  pts.forEach((p, i) => { pos.set([p.x, p.y, p.z], i * 3); tt[i] = i / ARC_SEG; });
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('t', new THREE.BufferAttribute(tt, 1));
+  const col = kind === 'r' ? new THREE.Color(1, .36, .36) : kind === 'c' ? new THREE.Color(1, .72, .3) : new THREE.Color(.36, .95, .77);
+  const m = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, uniforms: { uH: { value: 0 }, uC: { value: col }, uF: { value: 1 } },
+    vertexShader: 'attribute float t; varying float vT; void main(){ vT = t; gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.); }',
+    fragmentShader: 'uniform float uH; uniform vec3 uC; uniform float uF; varying float vT; void main(){ float tail = .35; float a = smoothstep(uH - tail, uH, vT)*step(vT, uH); a = a*a; float base = .08*step(vT, uH); gl_FragColor = vec4(uC, (a + base)*uF); }' });
+  const line = new THREE.Line(g, m); globe.add(line);
+  arcs.push({ line, m, h: 0, sp: .35 + Math.random() * .25, end: vb, kind, done: false, fade: 1 });
+}
+function ring(pos, kind) {
+  const col = kind === 'r' ? 0xff5d5d : kind === 'c' ? 0xffb84d : 0x5cf2c4;
+  const r = new THREE.Mesh(new THREE.RingGeometry(.02, .028, 32), new THREE.MeshBasicMaterial({ color: col, transparent: true, side: THREE.DoubleSide, depthWrite: false }));
+  r.position.copy(pos.clone().multiplyScalar(1.004)); r.lookAt(pos.clone().multiplyScalar(2)); globe.add(r); rings.push({ r, t: 0 });
+}
+// initial orientation: KL faces viewer
+globe.rotation.y = -1.9; globe.rotation.x = .2;
+let dragging = false, lx = 0, ly = 0, vy = .0009, vx = 0, tx = .2;
+canvas.addEventListener('pointerdown', (e) => { dragging = true; lx = e.clientX; ly = e.clientY; canvas.setPointerCapture(e.pointerId); });
+canvas.addEventListener('pointermove', (e) => { if (!dragging) return; const dx = e.clientX - lx, dy = e.clientY - ly; lx = e.clientX; ly = e.clientY; globe.rotation.y += dx * .005; tx = clamp(tx + dy * .004, -.6, .8); vy = dx * .0004; });
+addEventListener('pointerup', () => { dragging = false; });
+function sizeGlobe() { if (!renderer) return; const w = canvas.clientWidth, h = canvas.clientHeight; renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); renderer.setSize(w, h, false); camera.aspect = w / h; camera.position.z = w / h < .9 ? 7.4 : 6.2; camera.updateProjectionMatrix(); DOTU.uS.value = Math.min(devicePixelRatio, 2) * clamp(h / 800, .6, 1.3); }
+addEventListener('resize', sizeGlobe); sizeGlobe();
+let heroVisible = true; new IntersectionObserver((es) => { heroVisible = es[0].isIntersecting; }).observe(canvas);
+const clock = new THREE.Clock();
+function loop() {
+  requestAnimationFrame(loop);
+  if (!renderer || !heroVisible || document.hidden) return;
+  const dt = Math.min(.05, clock.getDelta()), T = clock.elapsedTime;
+  if (!dragging) { vy += (.0011 - vy) * .02; globe.rotation.y += reduce ? 0 : vy * 60 * dt; }
+  globe.rotation.x += (tx - globe.rotation.x) * .08;
+  DOTU.uT.value = T;
+  const bs = 1 + (T * .8 % 1) * 2.5; beacon.scale.setScalar(bs); beacon.material.opacity = 1 - (T * .8 % 1);
+  for (let i = arcs.length - 1; i >= 0; i--) { const a = arcs[i]; a.h += dt * a.sp; a.m.uniforms.uH.value = a.h; if (a.h >= 1 && !a.done) { a.done = true; ring(a.end, a.kind); } if (a.h > 1.35) { a.fade -= dt * 2; a.m.uniforms.uF.value = Math.max(0, a.fade); if (a.fade <= 0) { globe.remove(a.line); a.line.geometry.dispose(); a.m.dispose(); arcs.splice(i, 1); } } }
+  for (let i = rings.length - 1; i >= 0; i--) { const r = rings[i]; r.t += dt; r.r.scale.setScalar(1 + r.t * 5); r.r.material.opacity = Math.max(0, 1 - r.t * 1.1); if (r.t > 1) { globe.remove(r.r); rings.splice(i, 1); } }
+  renderer.render(scene, camera);
+}
+loop();
+
+/* ======================= LIVE FEED ======================= */
+const ATTACKS = [['Credential stuffing', 'b'], ['Phishing link clicked', 'c'], ['RDP brute force', 'b'], ['Malicious macro', 'b'], ['Impossible-travel login', 'c'], ['Ransomware precursor', 'r'], ['C2 beacon', 'r'], ['Port scan', 'b'], ['MFA fatigue push', 'c'], ['SQL injection', 'b'], ['Infostealer download', 'r'], ['Suspicious PowerShell', 'c']];
+const CLIENT = ['Kuala Lumpur', 'Singapore', 'Jakarta', 'Bangkok', 'Kuala Lumpur', 'Kuala Lumpur'];
+const LBL = { b: 'BLOCKED', c: 'CONTAINED', r: 'ISOLATED' };
+let blocked = 2400 + Math.floor((Date.now() / 1000) % 86400 / 30);
+const feed = $('#feed');
+function tick() {
+  const [what, kind] = ATTACKS[Math.floor(Math.random() * ATTACKS.length)];
+  let src; do { src = cityKeys[Math.floor(Math.random() * cityKeys.length)]; } while (src === KL);
+  const dst = Math.random() < .55 ? KL : CLIENT[Math.floor(Math.random() * CLIENT.length)];
+  if (renderer && src !== dst) makeArc(src, dst, kind);
+  blocked += 1 + Math.floor(Math.random() * 3); $('#blocked').textContent = blocked.toLocaleString('en-MY');
+  const now = new Date(); const t = now.toTimeString().slice(0, 8);
+  const li = document.createElement('li'); li.innerHTML = `<span class="t">${t}</span><span class="w">${what} · ${src}</span><span class="tag ${kind}">${LBL[kind]}</span>`;
+  feed.prepend(li); while (feed.children.length > 5) feed.lastChild.remove();
+}
+for (let i = 0; i < 5; i++) tick();
+setInterval(tick, 1300);
+
+/* ======================= SOC DASHBOARD ======================= */
+const ALERTS = [
+  { k: 'r', host: 'FIN-LT-014', what: 'Ransomware behaviour: mass file renames', did: ['EDR flagged 1,200 renames in 40 seconds by an unsigned binary.', 'Host isolated from the network automatically.', 'Analyst confirmed LockBit-style note; killed process tree.', 'User password reset, sessions revoked; client called at 02:47.'] },
+  { k: 'c', host: 'm365 · s.lim@', what: 'Impossible travel: KL then Lagos in 9 minutes', did: ['Second login came from a known proxy network.', 'Session revoked and MFA re-registration forced.', 'Inbox rules checked: one forwarding rule removed.'] },
+  { k: 'b', host: 'VPN-GW-01', what: '4,812 failed logins from 37 IPs', did: ['Rate limit and geo-block triggered on the gateway.', 'Targeted usernames cross-checked: none compromised.', 'Recommendation sent: move VPN behind SSO.'] },
+  { k: 'c', host: 'HR-PC-03', what: 'Excel macro launched PowerShell', did: ['Payload attempted to download a known infostealer.', 'Download blocked by web filter; macro quarantined.', 'Phishing email pulled from 23 other mailboxes.'] },
+  { k: 'r', host: 'SRV-DB-02', what: 'Outbound beacon to unknown C2 domain', did: ['Beacon every 60s to a domain registered 2 days ago.', 'Server isolated; memory captured for forensics.', 'Root cause: unpatched web plugin. Patched, server rebuilt.'] },
+  { k: 'b', host: 'WEB-PROD', what: 'SQL injection attempts on /login', did: ['WAF blocked 312 payloads from 4 sources.', 'App logs confirmed no successful queries.', 'Sources added to shared blocklist across clients.'] },
+  { k: 'c', host: 'm365 · finance@', what: 'Lookalike domain: supplier bank change request', did: ['Sender domain registered last week, one letter different.', 'Email quarantined and warning banner added for finance.', 'Supplier confirmed by phone: no bank change.'] },
+  { k: 'b', host: 'Branch-AP-2', what: 'Rogue Wi-Fi access point detected', did: ['Unknown SSID mimicking the office network.', 'Located in the car park; reported to building security.'] }
+];
+let filter = 'all';
+function mins(i) { const d = new Date(Date.now() - (i * 37 + 4) * 60000); return d.toTimeString().slice(0, 5); }
+function renderAlerts() {
+  const box = $('#alerts'); box.innerHTML = '';
+  ALERTS.forEach((a, i) => { if (filter !== 'all' && a.k !== filter) return;
+    const b = document.createElement('button'); b.className = 'alert'; b.setAttribute('aria-expanded', 'false');
+    b.innerHTML = `<div class="r1"><span class="tag ${a.k}">${a.k === 'r' ? 'CRITICAL' : a.k === 'c' ? 'MEDIUM' : 'BLOCKED'}</span><span>${a.host}</span><time>${mins(i)}</time></div><div class="r2">${a.what}</div><div class="r3">What our analyst did:<ol>${a.did.map((d) => `<li>${d}</li>`).join('')}</ol></div>`;
+    b.addEventListener('click', () => b.setAttribute('aria-expanded', b.getAttribute('aria-expanded') === 'true' ? 'false' : 'true'));
+    box.appendChild(b); });
+}
+document.querySelectorAll('.tabs button').forEach((b) => b.addEventListener('click', () => { document.querySelectorAll('.tabs button').forEach((x) => x.setAttribute('aria-pressed', x === b ? 'true' : 'false')); filter = b.dataset.f; renderAlerts(); }));
+renderAlerts();
+// chart
+const ch = $('#chart'), cx = ch.getContext('2d');
+const series = Array.from({ length: 48 }, (_, i) => 40 + 30 * Math.sin(i / 7) + Math.random() * 25 + (i > 38 && i < 42 ? 70 : 0));
+const crit = series.map((v, i) => (i > 38 && i < 42 ? 18 : Math.random() < .12 ? 4 + Math.random() * 6 : Math.random() * 2));
+function drawChart() {
+  const w = ch.clientWidth, h = ch.clientHeight, d = Math.min(devicePixelRatio, 2); ch.width = w * d; ch.height = h * d; cx.setTransform(d, 0, 0, d, 0, 0); cx.clearRect(0, 0, w, h);
+  const max = 160, pad = 22, bw = (w - pad) / series.length;
+  cx.strokeStyle = 'rgba(205,222,240,.08)'; cx.lineWidth = 1; cx.font = '10px "IBM Plex Mono"'; cx.fillStyle = 'rgba(233,238,244,.35)';
+  [0, 50, 100, 150].forEach((v) => { const y = h - 16 - (v / max) * (h - 26); cx.beginPath(); cx.moveTo(pad, y); cx.lineTo(w, y); cx.stroke(); cx.fillText(v, 0, y + 3); });
+  series.forEach((v, i) => { const x = pad + i * bw, y = h - 16 - (v / max) * (h - 26), yc = h - 16 - (crit[i] / max) * (h - 26);
+    cx.fillStyle = 'rgba(92,242,196,.55)'; cx.fillRect(x + 1, y, bw - 2, h - 16 - y);
+    cx.fillStyle = '#ff5d5d'; cx.fillRect(x + 1, yc, bw - 2, h - 16 - yc); });
+  cx.fillStyle = 'rgba(233,238,244,.35)'; ['-24h', '-18h', '-12h', '-6h', 'now'].forEach((t, i) => cx.fillText(t, pad + i * (w - pad - 24) / 4, h - 2));
+}
+let ev = 18400, al = 37, co = 35;
+function kpis() { ev += Math.floor(Math.random() * 90 - 30); if (Math.random() < .2) { al++; co++; } $('#k1').textContent = ev.toLocaleString('en-MY'); $('#k2').textContent = al; $('#k3').textContent = co; }
+setInterval(() => { series.shift(); series.push(40 + Math.random() * 50); crit.shift(); crit.push(Math.random() < .12 ? 3 + Math.random() * 6 : Math.random() * 2); drawChart(); kpis(); }, 2500);
+addEventListener('resize', drawChart); drawChart(); kpis();
+
+/* ======================= READINESS CHECK ======================= */
+const Q = [
+  { q: 'Do all staff use multi-factor authentication for email?', h: 'Most account takeovers we see would have been stopped by MFA on email alone.', w: 18, fix: ['Turn on MFA for every mailbox', 'Start with finance, HR and admins. It takes a day, and it blocks most credential attacks.'] },
+  { q: 'Are your backups offline or immutable, and tested in the last 3 months?', h: 'Ransomware crews look for your backups first. If they can reach them, they will encrypt them too.', w: 16, fix: ['Make one backup copy unreachable', 'Use immutable cloud storage or an offline copy, and run a restore test every quarter.'] },
+  { q: 'Do you know every device that connects to your network?', h: 'You cannot protect laptops, phones and printers you do not know exist.', w: 10, fix: ['Build a device inventory', 'Start from your DHCP and EDR consoles. Unknown devices get investigated, not ignored.'] },
+  { q: 'Are laptops and servers patched within 14 days of a critical update?', h: 'Attackers weaponise new vulnerabilities in days. VPNs and firewalls matter most.', w: 14, fix: ['Set a 14-day patch rule for criticals', 'Prioritise internet-facing systems: VPN, firewall, email gateway and web apps.'] },
+  { q: 'Does anything watch your endpoints and logs outside office hours?', h: 'Most ransomware is launched between midnight and 5 AM, or over long weekends.', w: 14, fix: ['Get 24/7 eyes on alerts', 'An EDR nobody watches at 3 AM only tells you what happened afterwards.'] },
+  { q: 'Have staff had phishing training in the last 6 months?', h: 'People are your best sensor, if they know what to look for and feel safe reporting it.', w: 8, fix: ['Run short, regular phishing training', 'Monthly 5-minute modules beat a yearly lecture. Reward reporting, never punish it.'] },
+  { q: 'Do you have a written incident response plan with phone numbers?', h: 'At 3 AM, nobody should be searching for who to call or who can approve shutting systems down.', w: 10, fix: ['Write a one-page response plan', 'Who decides, who to call, how to isolate and when to notify. Print it, because the network may be down.'] },
+  { q: 'Is admin access limited to the few people who really need it?', h: 'Shared admin accounts and local admin rights let one infected laptop take down the whole office.', w: 10, fix: ['Remove everyday admin rights', 'Give admins separate accounts for admin work, and remove local admin from standard users.'] }
+];
+const OPTS = [['Yes', 1, 'fully'], ['Partly / not sure', .4, 'partly'], ['No', 0, 'no']];
+const ans = new Array(Q.length).fill(null); let qi = 0;
+function renderQ() {
+  if (qi >= Q.length) { $('#qn').textContent = 'COMPLETE'; $('#qt').textContent = 'That\'s all eight.'; $('#qh').textContent = 'Your score and the fixes to tackle first are on the right. Change any answer with Back.'; $('#opts').innerHTML = ''; $('#qprog').style.width = '100%'; $('#qback').disabled = false; return; }
+  const q = Q[qi]; $('#qn').textContent = `QUESTION ${qi + 1} OF ${Q.length}`; $('#qt').textContent = q.q; $('#qh').textContent = q.h;
+  $('#qprog').style.width = (qi / Q.length * 100) + '%'; $('#qback').disabled = qi === 0;
+  const box = $('#opts'); box.innerHTML = '';
+  OPTS.forEach(([label, v], j) => { const b = document.createElement('button'); b.innerHTML = `${label}<span>${['Y', '?', 'N'][j]}</span>`; if (ans[qi] === v) b.style.borderColor = '#0b7a5c';
+    b.addEventListener('click', () => { ans[qi] = v; qi++; renderQ(); score(); }); box.appendChild(b); });
+}
+function score() {
+  const answered = ans.filter((a) => a !== null).length;
+  if (!answered) { $('#gnum').textContent = '–'; $('#garc').style.strokeDashoffset = 345.6; $('#grade').firstChild.textContent = 'Answer to see your score'; $('#gsub').innerHTML = '&nbsp;'; $('#fixes').innerHTML = '<div class="empty">Your top fixes appear here as you answer.</div>'; return; }
+  let got = 0, tot = 0; ans.forEach((a, i) => { if (a !== null) { got += a * Q[i].w; tot += Q[i].w; } });
+  const s = Math.round(got / tot * 100);
+  $('#gnum').textContent = s; $('#garc').style.strokeDashoffset = 345.6 * (1 - s / 100);
+  const col = s >= 75 ? '#5cf2c4' : s >= 45 ? '#ffb84d' : '#ff5d5d'; $('#garc').style.stroke = col;
+  const g = s >= 75 ? 'Well defended' : s >= 45 ? 'Some open doors' : 'High risk';
+  $('#grade').firstChild.textContent = g; $('#gsub').textContent = `${answered} of ${Q.length} answered`;
+  const gaps = Q.map((q, i) => ({ q, i, gap: ans[i] === null ? -1 : (1 - ans[i]) * q.w })).filter((x) => x.gap > 0).sort((a, b) => b.gap - a.gap).slice(0, 3);
+  const box = $('#fixes'); box.innerHTML = '';
+  if (!gaps.length) { box.innerHTML = '<div class="fix"><i class="ok">✓</i><div><b>No gaps so far</b>Keep testing your backups and reviewing admin access every quarter.</div></div>'; return; }
+  gaps.forEach((x, n) => { const d = document.createElement('div'); d.className = 'fix'; d.innerHTML = `<i class="${ans[x.i] > 0 ? 'm' : ''}">${n + 1}</i><div><b>${x.q.fix[0]}</b>${x.q.fix[1]}</div>`; box.appendChild(d); });
+}
+$('#qback').addEventListener('click', () => { if (qi > 0) { qi--; renderQ(); } });
+$('#qreset').addEventListener('click', () => { ans.fill(null); qi = 0; renderQ(); score(); });
+renderQ();
+
+/* ======================= TIMELINE ======================= */
+const tl = $('#tl'), steps = [...tl.querySelectorAll('.step')];
+function tlUpdate() {
+  const r = tl.getBoundingClientRect(), mid = innerHeight * .6;
+  const f = clamp((mid - r.top) / r.height, 0, 1); $('#tlfill').style.height = (f * (r.height - 16)) + 'px';
+  steps.forEach((s) => { const sr = s.getBoundingClientRect(); s.classList.toggle('on', sr.top + 20 < mid); });
+}
+addEventListener('scroll', tlUpdate, { passive: true }); addEventListener('resize', tlUpdate); tlUpdate();
+
+/* ======================= PRICING ======================= */
+const PLANS = [{ n: 'Essentials', p: 18 }, { n: 'Managed', p: 39 }, { n: 'Enterprise', p: 62 }];
+const FEAT = [['EDR on every device', 0], ['Monthly vulnerability report', 0], ['24/7 SOC monitoring & response', 1], ['M365 / Google Workspace protection', 1], ['Phishing training & simulations', 1], ['10 hrs incident response retainer', 2], ['Annual penetration test', 2], ['Named compliance advisor (PDPA, RMiT)', 2]];
+let plan = 1;
+function price() {
+  const n = +$('#ep').value; $('#epv').textContent = n;
+  const disc = n >= 500 ? .15 : n >= 200 ? .08 : 0; const t = Math.round(n * PLANS[plan].p * (1 - disc));
+  $('#tot').textContent = 'RM ' + t.toLocaleString('en-MY'); $('#totsub').textContent = disc ? `${disc * 100}% volume discount applied` : 'Volume discount from 200 devices';
+  $('#incl').innerHTML = FEAT.map(([f, lv]) => `<div class="${lv > plan ? 'off' : ''}">${f}</div>`).join('');
+}
+$('#ep').addEventListener('input', price);
+document.querySelectorAll('.plan').forEach((b) => b.addEventListener('click', () => { plan = +b.dataset.p; document.querySelectorAll('.plan').forEach((x) => x.setAttribute('aria-pressed', x === b ? 'true' : 'false')); price(); }));
+price();
+
+/* ======================= CONTACT ======================= */
+$('#cf').addEventListener('submit', (e) => { e.preventDefault(); $('#sent').style.display = 'block'; });
+</script>
+</body>
+</html>
