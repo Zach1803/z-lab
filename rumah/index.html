@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Rumah Panjai Nanga Sepit</title>
+<meta name="description" content="A longhouse homestay on the Batang Rajang, Sarawak. Scroll from dusk on the river to night on the ruai.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{--ink:#f3ece0;--dim:rgba(243,236,224,.74);--faint:rgba(243,236,224,.48);--panel:rgba(14,12,10,.58);--line:rgba(243,236,224,.16);--ember:#e8a25a;--rust:#b4502e;color-scheme:dark}
+*{box-sizing:border-box}
+html{background:#0b0a09}
+body{margin:0;background:#0b0a09;color:var(--ink);font:16px/1.65 "Inter",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-text-size-adjust:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:#0b0a09;z-index:20}
+#view{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0}
+.shade{position:fixed;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,rgba(8,7,6,.55) 0%,rgba(8,7,6,0) 46%),linear-gradient(0deg,rgba(8,7,6,.45),rgba(8,7,6,0) 30%)}
+.top{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:10;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px max(16px,env(safe-area-inset-right,0px)) 14px max(16px,env(safe-area-inset-left,0px))}
+.back{font:500 12px "JetBrains Mono",monospace;letter-spacing:.08em;color:var(--dim);text-decoration:none;background:rgba(10,9,8,.5);border:1px solid var(--line);padding:7px 12px;border-radius:999px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.back:hover{color:var(--ink)}
+.brand{font:600 15px "Fraunces",Georgia,serif;letter-spacing:.04em;color:var(--ink);text-shadow:0 1px 8px rgba(0,0,0,.6)}
+.prog{position:fixed;right:max(14px,env(safe-area-inset-right,0px));top:50%;transform:translateY(-50%);z-index:10;display:flex;flex-direction:column;gap:10px}
+.prog i{width:7px;height:7px;border-radius:50%;background:rgba(243,236,224,.25);transition:background .3s,transform .3s}
+.prog i.on{background:var(--ember);transform:scale(1.35)}
+main{position:relative;z-index:2}
+section{min-height:100svh;display:flex;align-items:center;padding-block:14vh;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
+section.r{justify-content:flex-end}
+.card{max-width:470px;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:26px 28px;backdrop-filter:blur(10px) saturate(1.1);-webkit-backdrop-filter:blur(10px) saturate(1.1);opacity:0;transform:translateY(24px);transition:opacity .9s,transform .9s;min-width:0}
+.card.in{opacity:1;transform:none}
+.k{font:500 11.5px "JetBrains Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--ember)}
+.k span{color:var(--faint);text-transform:none;letter-spacing:.02em}
+h1,h2{font-family:"Fraunces",Georgia,serif;font-weight:600;line-height:1.05;letter-spacing:-.01em;margin:12px 0 12px;text-wrap:balance}
+h1{font-size:clamp(40px,6.2vw,74px)}
+h2{font-size:clamp(30px,4vw,46px)}
+p{margin:0 0 12px;color:var(--dim)}
+p:last-child{margin-bottom:0}
+.hero{align-items:flex-end;padding-bottom:12vh}
+.hero .card{background:none;border:0;backdrop-filter:none;-webkit-backdrop-filter:none;padding:0;max-width:640px}
+.hero p{font-size:18px;max-width:520px;text-shadow:0 1px 10px rgba(0,0,0,.7)}
+.hero h1{text-shadow:0 2px 24px rgba(0,0,0,.55)}
+.cue{margin-top:22px;font:500 12px "JetBrains Mono",monospace;letter-spacing:.16em;color:var(--faint);text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.cue::before{content:"";width:1px;height:28px;background:linear-gradient(var(--ember),transparent);animation:cue 2s infinite}
+@keyframes cue{0%{transform:scaleY(.2);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}100%{transform:scaleY(.2);transform-origin:bottom}}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.facts div{border-top:1px solid var(--line);padding-top:8px;font-size:13px;color:var(--faint)}
+.facts b{display:block;color:var(--ink);font:600 18px "Fraunces",serif}
+.gloss{font-size:13px;color:var(--faint);border-left:2px solid var(--rust);padding-left:12px;margin-top:14px}
+.book{flex-direction:column;justify-content:center;align-items:stretch;gap:0}
+.book .card{max-width:560px;margin:0 auto;width:100%}
+form{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+label{font-size:12px;color:var(--faint);display:flex;flex-direction:column;gap:6px;min-width:0}
+input,select{font:inherit;color:var(--ink);background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:10px;padding:11px 12px;min-width:0;width:100%}
+.full{grid-column:1/-1}
+button{font:600 15px "Inter",sans-serif;border:0;border-radius:999px;padding:14px 22px;background:var(--ember);color:#24160a;cursor:pointer}
+.ok{display:none;margin-top:14px;color:var(--ember)}
+footer{position:relative;z-index:2;padding:30px max(18px,env(safe-area-inset-right,0px)) calc(30px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));font-size:12.5px;color:var(--faint);text-align:center;background:linear-gradient(0deg,rgba(8,7,6,.9),rgba(8,7,6,0))}
+.loader{position:fixed;inset:0;z-index:30;display:grid;place-items:center;background:#0b0a09;transition:opacity 1s}
+.loader.done{opacity:0;pointer-events:none}
+.loader div{text-align:center;width:min(300px,78vw)}
+.loader b{font:600 22px "Fraunces",serif}
+.loader .bar{height:2px;background:var(--line);margin-top:16px;overflow:hidden}
+.loader .bar i{display:block;height:100%;width:0;background:var(--ember);transition:width .3s}
+.loader small{display:block;margin-top:10px;font:500 11px "JetBrains Mono",monospace;letter-spacing:.14em;color:var(--faint);text-transform:uppercase}
+@media (max-width:760px){
+  .shade{background:linear-gradient(0deg,rgba(8,7,6,.7) 0%,rgba(8,7,6,0) 55%)}
+  section,section.r{align-items:flex-end;justify-content:flex-start;padding-bottom:8vh}
+  .card{padding:20px 20px;max-width:100%}
+  .prog{display:none}
+  form{grid-template-columns:1fr}
+}
+</style>
+<script type="importmap">{"imports":{"three":"./lib/three/build/three.module.js","three/addons/":"./lib/three/examples/jsm/"}}</script>
+</head>
+<body>
+<canvas id="view" aria-label="3D view of a Sarawak longhouse by the river"></canvas>
+<div class="shade"></div>
+<div class="loader" id="loader"><div><b>Rumah Panjai</b><div class="bar"><i id="lbar"></i></div><small id="lmsg">Paddling upriver…</small></div></div>
+<div class="top"><a class="back" href="../">← Z Lab</a><span class="brand">Rumah Panjai Nanga Sepit</span></div>
+<nav class="prog" id="prog" aria-hidden="true"></nav>
+
+<main>
+  <section class="hero" data-cam="0"><div class="card">
+    <div class="k">Longhouse homestay · Batang Rajang, Sarawak</div>
+    <h1>Nine families. One roof. Stay the night.</h1>
+    <p>Rumah Panjai Nanga Sepit sits on the bank of the Rajang, an hour upriver from the nearest road. Come for one night. Most people ask to stay a second.</p>
+    <div class="cue">Scroll to arrive</div>
+  </div></section>
+
+  <section class="r" data-cam="1"><div class="card">
+    <div class="k">Sungai · <span>the river</span></div>
+    <h2>The river is the road.</h2>
+    <p>There is no road to Nanga Sepit. The express boat from Kapit takes you as far as the jetty at Song. From there our longboat brings you the last hour upriver, past sawmills, gardens and kids swimming off the rocks.</p>
+    <div class="facts"><div><b>3 h</b>express boat from Kapit</div><div><b>1 h</b>longboat to the house</div></div>
+  </div></section>
+
+  <section data-cam="2"><div class="card">
+    <div class="k">Belian · <span>Borneo ironwood</span></div>
+    <h2>Built to outlast the people who built it.</h2>
+    <p>The house stands three metres up on posts of belian, a wood so dense it sinks in water. Floods pass underneath. So do the chickens, the firewood and the cool air of the afternoon.</p>
+    <p>Fifty-four metres long, and every metre of it shared.</p>
+  </div></section>
+
+  <section class="r" data-cam="3"><div class="card">
+    <div class="k">Tangga · <span>the ladder</span></div>
+    <h2>Mind the tangga.</h2>
+    <p>You climb in the old way, up a single log with steps cut into it. Take it slowly, hold the rail, and leave your shoes at the top. Everyone does.</p>
+  </div></section>
+
+  <section data-cam="4"><div class="card">
+    <div class="k">Ruai · <span>the long gallery</span></div>
+    <h2>The ruai belongs to everyone.</h2>
+    <p>The covered gallery runs the full length of the house. It is where guests are welcomed, mats are rolled out, rice is shared and stories go late into the night.</p>
+    <p>Each door along the wall opens to a bilik, one family's own home. You will sleep on the ruai with everyone else, or in the guest bilik if you prefer a door.</p>
+    <div class="gloss">Ruai: shared gallery. Bilik: family apartment. Tanju: the open platform outside, for drying padi and watching the river.</div>
+  </div></section>
+
+  <section class="r" data-cam="5"><div class="card">
+    <div class="k">Pua kumbu · <span>woven cloth</span></div>
+    <h2>Months on a loom, a lifetime in the pattern.</h2>
+    <p>The women of the house weave pua kumbu, cotton tie-dyed before it is ever woven, in rust, black and cream. A single cloth can take a season. Each weaver's design is her own.</p>
+    <p>Please ask before you photograph one, and ask about it too. Every pattern has a story, and it is better heard than read.</p>
+  </div></section>
+
+  <section data-cam="6"><div class="card">
+    <div class="k">Gawai · <span>1 June</span></div>
+    <h2>When the harvest is in, the ruai fills.</h2>
+    <p>Gawai is the harvest festival. Families come home from the towns, the gongs start at dusk and do not really stop, and visitors are welcome to join in.</p>
+    <p>Pace yourself with the tuak, the rice wine. Your hosts will not.</p>
+  </div></section>
+
+  <section class="r" data-cam="7"><div class="card">
+    <div class="k">Malam · <span>night</span></div>
+    <h2>Then the generator goes off.</h2>
+    <p>Lamps on the ruai. The river talking to itself. A sky with more stars in it than you have seen since you were a child, and nine families breathing in the dark around you.</p>
+  </div></section>
+
+  <section class="book" id="book" data-cam="8"><div class="card">
+    <div class="k">Stay with us</div>
+    <h2>Book a night on the ruai.</h2>
+    <p>RM 180 per person per night, with three meals, the longboat from Song and a guide from the house. Bring a torch and a sarong.</p>
+    <form id="bf">
+      <label>Arriving<input type="date" required></label>
+      <label>Nights<select><option>1</option><option selected>2</option><option>3</option><option>4</option></select></label>
+      <label>Guests<select><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5+</option></select></label>
+      <label>Your name<input type="text" required placeholder="Name" autocomplete="name"></label>
+      <div class="full"><button type="submit">Request a stay</button></div>
+    </form>
+    <p class="ok" id="ok">Terima kasih. Rumah Panjai Nanga Sepit is fictional, so nobody will call you. But if you ever do get the chance to stay in a real longhouse, take it.</p>
+  </div></section>
+</main>
+<footer>Rumah Panjai Nanga Sepit is a fictional homestay, made with respect for the longhouse communities of Sarawak. Materials from Poly Haven (CC0). Built with Blender and Three.js.</footer>
+
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { Water } from 'three/addons/objects/Water.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+const $ = (s) => document.querySelector(s);
+const COARSE = matchMedia('(pointer:coarse)').matches;
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v)), sstep = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); }, mix = (a, b, t) => a + (b - a) * t;
+
+/* ---------- UI: section reveal + progress dots + booking ---------- */
+const sections = [...document.querySelectorAll('[data-cam]')];
+const prog = $('#prog'); sections.forEach(() => prog.appendChild(document.createElement('i')));
+const io = new IntersectionObserver((es) => es.forEach((e) => e.target.querySelector('.card').classList.toggle('in', e.isIntersecting)), { threshold: .35 });
+sections.forEach((s) => io.observe(s));
+$('#bf').addEventListener('submit', (e) => { e.preventDefault(); $('#ok').style.display = 'block'; });
+
+/* ---------- renderer ---------- */
+const canvas = $('#view');
+let renderer;
+try { renderer = new THREE.WebGLRenderer({ canvas, antialias: !COARSE, powerPreference: 'high-performance' }); } catch (e) { $('#loader').classList.add('done'); throw e; }
+renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = .9;
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+let pr = COARSE ? Math.min(devicePixelRatio, 1.5) * .8 : Math.min(devicePixelRatio, 1.5);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, .1, 3000);
+const FOGD = new THREE.Color(.36, .27, .24), FOGN = new THREE.Color(.012, .016, .03);
+scene.fog = new THREE.FogExp2(FOGD.clone(), .0022);
+
+const manager = new THREE.LoadingManager();
+manager.onProgress = (u, a, b) => { $('#lbar').style.width = Math.round(a / b * 100) + '%'; };
+const tl = new THREE.TextureLoader(manager), fl = new THREE.FileLoader(manager); fl.setResponseType('json');
+const gltf = new GLTFLoader();
+const b64 = (s) => { const bin = atob(s), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u.buffer; };
+const loadModel = async (n) => gltf.parseAsync(b64((await fl.loadAsync('models/' + n + '.json')).b64), './');
+const maxA = renderer.capabilities.getMaxAnisotropy();
+function tex(n, srgb) { const t = tl.load('tex/' + n + '.jpg'); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = Math.min(8, maxA); if (srgb) t.colorSpace = THREE.SRGBColorSpace; return t; }
+
+/* ---------- sky: real dusk photo cross-fading to a rendered starfield ---------- */
+const duskTex = tl.load('tex/dusk.jpg', (t) => { t.mapping = THREE.EquirectangularReflectionMapping; t.colorSpace = THREE.SRGBColorSpace; });
+const SKY = { uNight: { value: 0 }, uTime: { value: 0 }, tDusk: { value: duskTex } };
+const sky = new THREE.Mesh(new THREE.SphereGeometry(1500, 64, 32), new THREE.ShaderMaterial({
+  side: THREE.BackSide, depthWrite: false, fog: false, uniforms: SKY,
+  vertexShader: 'varying vec3 vD; void main(){ vD = normalize(position); vec4 p = projectionMatrix*modelViewMatrix*vec4(position,1.); gl_Position = p.xyww; }',
+  fragmentShader: `uniform float uNight; uniform float uTime; uniform sampler2D tDusk; varying vec3 vD;
+    float h(vec3 p){ return fract(sin(dot(p, vec3(12.9898,78.233,37.719)))*43758.5453); }
+    float n3(vec3 p){ vec3 i=floor(p), f=fract(p); f=f*f*(3.-2.*f); return mix(mix(mix(h(i),h(i+vec3(1,0,0)),f.x),mix(h(i+vec3(0,1,0)),h(i+vec3(1,1,0)),f.x),f.y),mix(mix(h(i+vec3(0,0,1)),h(i+vec3(1,0,1)),f.x),mix(h(i+vec3(0,1,1)),h(i+vec3(1,1,1)),f.x),f.y),f.z); }
+    void main(){
+      vec3 d = normalize(vD);
+      vec2 uv = vec2(atan(d.z, d.x)*0.15915494 + .5, asin(clamp(d.y,-1.,1.))*0.31830989 + .5);
+      vec3 dusk = texture2D(tDusk, uv).rgb*3.0;
+      float up = clamp(d.y, 0., 1.);
+      vec3 night = mix(vec3(.010, .016, .034), vec3(.002, .004, .012), pow(up, .5));
+      // stars: several layers of hashed points, brighter near the zenith
+      vec3 s = vec3(0.);
+      for (int k = 0; k < 3; k++) {
+        float sc = 260. + float(k)*170.;
+        vec3 c = floor(d*sc); vec3 f = fract(d*sc) - .5;
+        float r = h(c + float(k)*7.1);
+        if (r > .985) { float tw = .6 + .4*sin(uTime*(2. + r*6.) + r*80.); float m = smoothstep(.22, .0, length(f)); s += vec3(.9, .93, 1.)*m*tw*pow(r - .985, 1.)*90.; }
+      }
+      // faint milky way band
+      vec3 ax = normalize(vec3(.3, .9, -.4)); float band = exp(-pow(dot(d, ax)*3.2, 2.));
+      float dust = n3(d*9.) *.6 + n3(d*23.)*.4;
+      night += vec3(.11, .1, .13)*band*dust*up + s*smoothstep(.0, .18, d.y);
+      vec3 col = mix(dusk, night, uNight);
+      gl_FragColor = vec4(col, 1.);
+      #include <tonemapping_fragment>
+      #include <colorspace_fragment>
+    }`
+}));
+sky.frustumCulled = false; scene.add(sky);
+
+/* ---------- lights ---------- */
+const SUN = new THREE.Vector3(0.763, 0.182, 0.62).normalize();
+const sun = new THREE.DirectionalLight(0xffb36b, 2.6); sun.castShadow = true;
+sun.shadow.mapSize.set(COARSE ? 1024 : 2048, COARSE ? 1024 : 2048);
+Object.assign(sun.shadow.camera, { left: -45, right: 45, top: 30, bottom: -30, near: 1, far: 260 });
+sun.shadow.bias = -.0005; sun.shadow.normalBias = .4;
+sun.position.copy(SUN).multiplyScalar(120); scene.add(sun); scene.add(sun.target);
+const moon = new THREE.DirectionalLight(0x8fa8d8, 0); moon.position.set(-40, 90, 30); scene.add(moon);
+const hemi = new THREE.HemisphereLight(0x3a4a6a, 0x0a0806, 0); scene.add(hemi);
+let pmremEnv = null;
+
+/* ---------- materials ---------- */
+function wuv(geo, sc) {
+  const p = geo.attributes.position.array, n = geo.attributes.normal.array, uv = new Float32Array(p.length / 3 * 2);
+  for (let i = 0; i < p.length / 3; i++) { const ax = Math.abs(n[i * 3]), ay = Math.abs(n[i * 3 + 1]), az = Math.abs(n[i * 3 + 2]), x = p[i * 3], y = p[i * 3 + 1], z = p[i * 3 + 2];
+    if (ay > ax && ay > az) { uv[i * 2] = x * sc; uv[i * 2 + 1] = z * sc; } else if (ax > az) { uv[i * 2] = z * sc; uv[i * 2 + 1] = y * sc; } else { uv[i * 2] = x * sc; uv[i * 2 + 1] = y * sc; } }
+  geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+}
+const M = {
+  belian: new THREE.MeshStandardMaterial({ map: tex('belian_diff', 1), normalMap: tex('belian_nor'), color: new THREE.Color(.7, .58, .5), roughness: .82, vertexColors: true }),
+  plank: new THREE.MeshStandardMaterial({ map: tex('plank_diff', 1), normalMap: tex('plank_nor'), roughnessMap: tex('plank_rough'), color: new THREE.Color(1.05, .95, .85), roughness: 1, vertexColors: true }),
+  bamboo: new THREE.MeshStandardMaterial({ map: tex('bamboo_diff', 1), normalMap: tex('bamboo_nor'), color: new THREE.Color(1.05, 1, .9), roughness: .8, vertexColors: true, side: THREE.DoubleSide }),
+  thatch: new THREE.MeshStandardMaterial({ map: tex('thatch_diff', 1), normalMap: tex('thatch_nor'), color: new THREE.Color(1.0, .92, .8), roughness: .95, vertexColors: true, side: THREE.DoubleSide }),
+  door: new THREE.MeshStandardMaterial({ map: tex('belian_diff', 1), color: new THREE.Color(.5, .36, .28), roughness: .7, vertexColors: true }),
+  boat: new THREE.MeshStandardMaterial({ map: tex('plank_diff', 1), color: new THREE.Color(.45, .62, .78), roughness: .6, vertexColors: true, side: THREE.DoubleSide }),
+  boat_in: new THREE.MeshStandardMaterial({ map: tex('plank_diff', 1), color: new THREE.Color(.8, .65, .5), roughness: .8, vertexColors: true }),
+  engine: new THREE.MeshStandardMaterial({ color: 0x151617, roughness: .4, metalness: .6 })
+};
+const TS = { belian: 1 / 1.6, plank: 1 / 2.2, bamboo: 1 / 1.4, thatch: 1 / .9, door: 1 / 1.2, boat: 1 / 1.5, boat_in: 1 / 1.5 };
+const grassT = tex('grass_diff', 1), mudT = tex('mud_diff', 1), mudN = tex('mud_nor');
+const ground = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: .95, vertexColors: true, normalMap: mudN });
+ground.onBeforeCompile = (s) => {
+  s.uniforms.tG = { value: grassT }; s.uniforms.tM = { value: mudT };
+  s.vertexShader = s.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vW;').replace('#include <project_vertex>', '#include <project_vertex>\nvW = (modelMatrix*vec4(transformed,1.)).xyz;');
+  s.fragmentShader = s.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec3 vW; uniform sampler2D tG; uniform sampler2D tM;')
+    .replace('#include <map_fragment>', `vec3 g = texture2D(tG, vW.xz/2.6).rgb*vec3(.85,1.,.78); vec3 m = texture2D(tM, vW.xz/1.6).rgb*vec3(1.05,.95,.85);
+      float wet = smoothstep(-.4, -1.4, vW.y + (texture2D(tM, vW.xz/9.).r - .5)*.6); diffuseColor.rgb *= mix(g, m*mix(1., .55, smoothstep(-1.2, -1.7, vW.y)), wet);`);
+};
+
+/* ---------- textile (pua kumbu–inspired, drawn procedurally) ---------- */
+function puaTexture() {
+  const c = document.createElement('canvas'); c.width = 512; c.height = 768; const x = c.getContext('2d');
+  x.fillStyle = '#5a1d12'; x.fillRect(0, 0, 512, 768);
+  const cols = ['#e9dcc1', '#1a100c', '#8a3418', '#c9a36a'];
+  for (let band = 0; band < 6; band++) {
+    const y0 = 40 + band * 115;
+    for (let i = 0; i < 6; i++) {
+      const cx = 42 + i * 85 + (band % 2) * 42, cy = y0 + 50;
+      x.save(); x.translate(cx, cy);
+      x.strokeStyle = cols[(i + band) % 2 ? 0 : 3]; x.lineWidth = 6;
+      for (let r = 38; r > 6; r -= 11) { x.beginPath(); x.moveTo(0, -r); x.lineTo(r * .8, 0); x.lineTo(0, r); x.lineTo(-r * .8, 0); x.closePath(); x.stroke(); }
+      x.strokeStyle = cols[1]; x.lineWidth = 5;
+      for (const s of [-1, 1]) { x.beginPath(); x.moveTo(s * 30, -40); x.lineTo(s * 44, -26); x.lineTo(s * 34, -14); x.stroke(); x.beginPath(); x.moveTo(s * 30, 40); x.lineTo(s * 44, 26); x.lineTo(s * 34, 14); x.stroke(); }
+      x.restore();
+    }
+    x.fillStyle = '#1a100c'; for (let k = 0; k < 64; k++) { x.fillRect(k * 8, y0 + 104, 5, 4); }
+  }
+  // ikat bleed: soften edges like resist-dyed thread
+  const id = x.getImageData(0, 0, 512, 768), d = id.data;
+  for (let y = 0; y < 768; y++) { const sh = Math.round(Math.sin(y * .7) * 1.5 + (Math.random() - .5) * 2); for (let xx = 511; xx >= 0; xx--) { const sx = clamp(xx - sh, 0, 511), o = (y * 512 + xx) * 4, so = (y * 512 + sx) * 4; for (let k = 0; k < 3; k++) d[o + k] = d[so + k] * (.9 + Math.random() * .12); } }
+  x.putImageData(id, 0, 0);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t;
+}
+
+/* ---------- build ---------- */
+const lamps = [];
+let water, fireflies, boatObj, bilikGlow;
+async function build() {
+  const [house, lamp, basket, pot, fern] = await Promise.all(['longhouse', 'lamp', 'basket', 'pot', 'fern'].map(loadModel));
+  house.scene.traverse((o) => {
+    if (!o.isMesh) return;
+    const name = (o.material.name || '').replace(/\.\d+$/, '');
+    if (o.geometry.attributes.color) { const c = o.geometry.attributes.color; for (let i = 0; i < c.count; i++) { const v = Math.pow(c.getX(i), .75); c.setXYZ(i, v, v, v); } }
+    if (name === 'ground') { o.material = ground; o.receiveShadow = true; wuv(o.geometry, 1); return; }
+    const m = M[name]; if (!m) return;
+    if (TS[name]) wuv(o.geometry, TS[name]);
+    o.material = m; o.castShadow = true; o.receiveShadow = true;
+  });
+  scene.add(house.scene);
+  boatObj = house.scene.getObjectByName('Longboat');
+  // lamps by each family door, with a real point light
+  const DOORS = Array.from({ length: 9 }, (_, k) => -24 + k * 6);
+  DOORS.forEach((dx, k) => {
+    const l = lamp.scene.clone(true); l.position.set(dx + 1.05, 3.0, -1.05); l.scale.setScalar(1.15); scene.add(l);
+    l.traverse((o) => { if (o.isMesh) { o.castShadow = false; if (/flame/i.test(o.material.name)) { o.material = o.material.clone(); o.material.emissive = new THREE.Color(1, .55, .18); o.material.emissiveIntensity = 0; o.userData.flame = true; lamps.push({ mesh: o }); } } });
+    const pl = new THREE.PointLight(0xffa04a, 0, 9, 2); pl.position.set(dx + 1.05, 3.45, -.9); scene.add(pl); lamps[lamps.length - 1].light = pl; lamps[lamps.length - 1].ph = k * 1.7;
+  });
+  // baskets, jars and mats along the ruai
+  const rnd = (() => { let s = 11; return () => (s = (s * 16807) % 2147483647) / 2147483647; })();
+  DOORS.forEach((dx, k) => {
+    if (k % 2 === 0) { const b = basket.scene.clone(true); b.position.set(dx - 1.2, 3.0, -1.0); b.rotation.y = rnd() * 6; b.scale.setScalar(1.5); scene.add(b); }
+    if (k % 3 === 1) { const p = pot.scene.clone(true); p.position.set(dx + 2.1, 3.0, -1.0); p.rotation.y = rnd() * 6; p.scale.setScalar(1.3); scene.add(p); }
+    const mat = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 1.2), new THREE.MeshStandardMaterial({ color: k % 2 ? 0x8a6a3a : 0x7a5530, roughness: .95 }));
+    mat.rotation.x = -Math.PI / 2; mat.position.set(dx - .2, 3.012, .9 + rnd() * .5); mat.rotation.z = (rnd() - .5) * .2; mat.receiveShadow = true; scene.add(mat);
+  });
+  [house, basket, pot].forEach((g) => g.scene.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } }));
+  // ferns around the stilts and the bank
+  for (let i = 0; i < 70; i++) { const f = fern.scene.clone(true); const x = -40 + rnd() * 80, z = -14 + rnd() * 24; if (Math.abs(x) < 1.5 && z > 6) continue; f.position.set(x, -.35 + (z > 12 ? -(z - 12) * .28 : 0), z); f.rotation.y = rnd() * 6; f.scale.setScalar(1.4 + rnd() * 1.6); scene.add(f); }
+  // warm light spilling from the open family doors
+  bilikGlow = new THREE.MeshBasicMaterial({ color: new THREE.Color(.55, .26, .08), transparent: true, opacity: 0, depthWrite: false, toneMapped: true });
+  DOORS.forEach((dx) => { const g = new THREE.Mesh(new THREE.PlaneGeometry(.86, 2.0), bilikGlow); g.position.set(dx, 4.02, -1.62); scene.add(g); });
+  // pua kumbu on the wall of the ruai
+  const pua = new THREE.Mesh(new THREE.PlaneGeometry(1.7, 2.5), new THREE.MeshStandardMaterial({ map: puaTexture(), roughness: .95 }));
+  pua.position.set(-9, 4.35, -1.43); pua.receiveShadow = true; scene.add(pua);
+  const rod = new THREE.Mesh(new THREE.CylinderGeometry(.025, .025, 1.95, 8), M.belian); rod.rotation.z = Math.PI / 2; rod.position.set(-9, 5.62, -1.42); scene.add(rod);
+  // rainforest: impostor trees rendered in Blender from Poly Haven island-tree scans
+  const treeT = await new Promise((res) => tl.load('tex/trees.webp', res)); treeT.colorSpace = THREE.SRGBColorSpace;
+  const IMP = [1.0587, 1.7875, 1.701];
+  const spots = [];
+  for (let i = 0; i < 520; i++) { let x = -260 + rnd() * 520, z; const band = rnd();
+    if (band < .55) z = -16 - rnd() * 120; else if (band < .8) z = 58 + rnd() * 130; else { z = -14 - rnd() * 8; if (Math.abs(x) < 34) continue; }
+    spots.push([x, z, 9 + rnd() * 14, Math.floor(rnd() * 3), rnd() * 6.28]); }
+  const qg = new THREE.BufferGeometry(); const P = [], N = [], UV = [], IDX = [];
+  [0, 1].forEach((v) => { const ax = v ? [0, 0, 1] : [1, 0, 0], b = P.length / 3; [[-.5, 0], [.5, 0], [.5, 1], [-.5, 1]].forEach((c) => { P.push(ax[0] * c[0], c[1], ax[2] * c[0]); const nx = ax[0] * c[0] * 1.6, nz = ax[2] * c[0] * 1.6, ny = .35 + c[1] * .9, l = Math.hypot(nx, ny, nz); N.push(nx / l, ny / l, nz / l); UV.push(c[0] + .5, c[1], v); }); IDX.push(b, b + 1, b + 2, b, b + 2, b + 3); });
+  qg.setAttribute('position', new THREE.Float32BufferAttribute(P, 3)); qg.setAttribute('normal', new THREE.Float32BufferAttribute(N, 3)); qg.setAttribute('uvv', new THREE.Float32BufferAttribute(UV, 3)); qg.setIndex(IDX);
+  const tile = new Float32Array(spots.length); const im = new THREE.InstancedMesh(qg, null, spots.length); const mtx = new THREE.Matrix4(), q = new THREE.Quaternion();
+  spots.forEach((t, i) => { const ground = t[1] > 12 ? -3.2 : t[1] > -12 ? -.35 : -.35; const sz = t[2] * IMP[t[3]]; q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), t[4]); mtx.compose(new THREE.Vector3(t[0], ground - .2, t[1]), q, new THREE.Vector3(sz, sz, sz)); im.setMatrixAt(i, mtx); tile[i] = t[3]; });
+  qg.setAttribute('tile', new THREE.InstancedBufferAttribute(tile, 1));
+  const vs = (s) => { s.vertexShader = s.vertexShader.replace('#include <common>', '#include <common>\nattribute vec3 uvv; attribute float tile; varying vec2 vT;').replace('#include <begin_vertex>', '#include <begin_vertex>\nvT = vec2((tile + uvv.x)/3., (1. - uvv.z)*.5 + uvv.y*.5);'); s.fragmentShader = s.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec2 vT; uniform sampler2D tI;'); };
+  const imMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(.7, .95, .62), roughness: .9, side: THREE.DoubleSide });
+  imMat.onBeforeCompile = (s) => { s.uniforms.tI = { value: treeT }; vs(s); s.fragmentShader = s.fragmentShader.replace('#include <map_fragment>', 'vec4 ti = texture2D(tI, vT); if (ti.a < .5) discard; diffuseColor.rgb *= ti.rgb;'); };
+  const imDepth = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking });
+  imDepth.onBeforeCompile = (s) => { s.uniforms.tI = { value: treeT }; vs(s); s.fragmentShader = s.fragmentShader.replace('#include <clipping_planes_fragment>', '#include <clipping_planes_fragment>\nif (texture2D(tI, vT).a < .5) discard;'); };
+  im.material = imMat; im.customDepthMaterial = imDepth; im.castShadow = true; im.receiveShadow = true; im.frustumCulled = false; scene.add(im);
+  // far bank of the river
+  const fb = new THREE.Mesh(new THREE.PlaneGeometry(900, 200, 60, 20), ground); fb.rotation.x = -Math.PI / 2; fb.position.set(0, -1.9, 150);
+  const fp = fb.geometry.attributes.position; for (let i = 0; i < fp.count; i++) { const y = fp.getY(i); fp.setZ(i, .55 + Math.max(0, (-y + 60) * .03) + Math.sin(fp.getX(i) * .05) * .35); }
+  fb.geometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(fp.count * 3).fill(.8), 3)); fb.geometry.computeVertexNormals(); wuv(fb.geometry, 1); scene.add(fb);
+  // the Rajang: muddy, slow, reflective
+  const wn = await new Promise((res) => tl.load('tex/waternormals.jpg', res)); wn.wrapS = wn.wrapT = THREE.RepeatWrapping;
+  water = new Water(new THREE.PlaneGeometry(3000, 3000), { textureWidth: COARSE ? 256 : 512, textureHeight: COARSE ? 256 : 512, waterNormals: wn, sunDirection: SUN.clone(), sunColor: 0xffb070, waterColor: 0x22190e, distortionScale: 1.2, fog: true });
+  water.rotation.x = -Math.PI / 2; water.position.y = -1.6; water.material.uniforms.size.value = 2.2; scene.add(water);
+  // fireflies over the bank at night
+  const fc = 260, fpos = new Float32Array(fc * 3), fph = new Float32Array(fc);
+  for (let i = 0; i < fc; i++) { fpos[i * 3] = -50 + rnd() * 100; fpos[i * 3 + 1] = -.5 + rnd() * 3.5; fpos[i * 3 + 2] = 8 + rnd() * 10; fph[i] = rnd() * 50; }
+  const fg = new THREE.BufferGeometry(); fg.setAttribute('position', new THREE.BufferAttribute(fpos, 3)); fg.setAttribute('ph', new THREE.BufferAttribute(fph, 1));
+  fireflies = new THREE.Points(fg, new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, uniforms: { uT: { value: 0 }, uA: { value: 0 }, uS: { value: 1 } },
+    vertexShader: 'attribute float ph; uniform float uT; uniform float uS; varying float vA; void main(){ vec3 p = position + vec3(sin(uT*.3 + ph)*.8, sin(uT*.5 + ph*1.3)*.4, cos(uT*.27 + ph)*.8); vA = pow(max(0., sin(uT*1.4 + ph*3.)), 6.); vec4 mv = modelViewMatrix*vec4(p,1.); gl_PointSize = uS*90./-mv.z; gl_Position = projectionMatrix*mv; }',
+    fragmentShader: 'uniform float uA; varying float vA; void main(){ float d = length(gl_PointCoord - .5); float a = smoothstep(.5, .0, d)*vA*uA; gl_FragColor = vec4(vec3(.85, 1., .45)*a*3., a); }' }));
+  fireflies.frustumCulled = false; scene.add(fireflies);
+  // environment light from the real dusk sky
+  const pm = new THREE.PMREMGenerator(renderer); pmremEnv = pm.fromEquirectangular(duskTex).texture; scene.environment = pmremEnv;
+}
+
+/* ---------- camera path ---------- */
+const KEYS = [
+  { p: [-52, 6, 40], t: [0, 4, 0] },
+  { p: [24, .4, 25], t: [0, 3, 0] },
+  { p: [-37, 2.4, 14], t: [0, 3.2, 0] },
+  { p: [1.7, 1.2, 12.8], t: [0, 3.5, 6.2] },
+  { p: [-21, 4.65, 2.7], t: [6, 4.25, .9] },
+  { p: [-9.2, 4.45, 1.9], t: [-9, 4.35, -1.4] },
+  { p: [16, 5.2, 6.4], t: [-6, 4.1, -.6] },
+  { p: [3, 7.5, 24], t: [-8, 30, -30] },
+  { p: [3, 9, 27], t: [-6, 42, -40] }
+];
+const V = (a) => new THREE.Vector3(a[0], a[1], a[2]);
+const curveP = new THREE.CatmullRomCurve3(KEYS.map((k) => V(k.p)), false, 'centripetal', .5);
+const curveT = new THREE.CatmullRomCurve3(KEYS.map((k) => V(k.t)), false, 'centripetal', .5);
+let target = 0, cur = 0;
+function scrollProgress() {
+  // map scroll to the path so each section's centre lands on its key
+  const mid = innerHeight / 2, cs = sections.map((s) => { const r = s.getBoundingClientRect(); return r.top + r.height / 2; });
+  for (let i = 0; i < cs.length - 1; i++) { if (mid >= cs[i] && mid <= cs[i + 1]) return (i + (mid - cs[i]) / (cs[i + 1] - cs[i])) / (KEYS.length - 1); }
+  return mid < cs[0] ? 0 : 1;
+}
+addEventListener('scroll', () => { target = scrollProgress(); }, { passive: true });
+
+/* ---------- post ---------- */
+const composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType }));
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(new THREE.Vector2(256, 256), .45, .55, .9); composer.addPass(bloom);
+composer.addPass(new OutputPass());
+function resize() { renderer.setPixelRatio(pr); renderer.setSize(innerWidth, innerHeight, false); composer.setPixelRatio(pr); composer.setSize(innerWidth, innerHeight); camera.aspect = innerWidth / innerHeight; camera.fov = innerWidth < innerHeight ? 64 : 50; camera.updateProjectionMatrix(); }
+addEventListener('resize', resize); resize();
+
+/* ---------- loop ---------- */
+const clock = new THREE.Clock(); let fpsA = 0, fpsN = 0, ready = false;
+const pP = new THREE.Vector3(), pT = new THREE.Vector3();
+function frame() {
+  requestAnimationFrame(frame);
+  if (!ready || document.hidden) return;
+  const dt = Math.min(.05, clock.getDelta()), T = clock.elapsedTime;
+  cur += (target - cur) * Math.min(1, dt * 3.2);
+  const u = clamp(cur, 0, 1);
+  curveP.getPoint(u, pP); curveT.getPoint(u, pT);
+  camera.position.copy(pP); camera.position.y += Math.sin(T * .6) * .03; camera.lookAt(pT);
+  // dusk → night
+  const night = sstep(.22, .72, u), lampOn = sstep(.18, .42, u);
+  SKY.uNight.value = night; SKY.uTime.value = T;
+  sun.intensity = 2.6 * (1 - night); sun.color.setRGB(1, .7 - .2 * night, .42 - .2 * night);
+  moon.intensity = .45 * night; hemi.intensity = .35 * night;
+  scene.environmentIntensity = mix(1.0, .06, night);
+  scene.fog.color.copy(FOGD).lerp(FOGN, night); scene.fog.density = mix(.0022, .004, night);
+  renderer.toneMappingExposure = mix(.78, 1.1, night);
+  lamps.forEach((l) => { const fl = .85 + .1 * Math.sin(T * 7 + l.ph) + .05 * Math.sin(T * 23 + l.ph * 3); l.light.intensity = 9 * lampOn * fl; l.mesh.material.emissiveIntensity = 6 * lampOn * fl; });
+  bilikGlow.opacity = .55 * lampOn;
+  fireflies.material.uniforms.uT.value = T; fireflies.material.uniforms.uA.value = night; fireflies.material.uniforms.uS.value = pr;
+  water.material.uniforms.time.value += dt * .35;
+  water.material.uniforms.sunColor.value.setRGB(1 * (1 - night) + .25 * night, .7 * (1 - night) + .3 * night, .44 * (1 - night) + .4 * night);
+  // the longboat drifts upriver while you read
+  if (boatObj) { const bx = mix(42, -18, sstep(.02, .3, u)); boatObj.position.x = bx; boatObj.position.y = Math.sin(T * 1.2) * .04; boatObj.rotation.x = Math.sin(T * .9) * .015; }
+  // progress dots
+  const idx = Math.round(u * (KEYS.length - 1)); [...prog.children].forEach((d, i) => d.classList.toggle('on', i === idx));
+  composer.render();
+  fpsA += dt; fpsN++;
+  if (fpsA > 2) { const f = fpsN / fpsA; if (f < 34 && pr > .55) { pr = Math.max(.55, pr - .15); resize(); } else if (f > 57 && pr < Math.min(devicePixelRatio, 1.5)) { pr = Math.min(pr + .1, Math.min(devicePixelRatio, 1.5)); resize(); } fpsA = 0; fpsN = 0; }
+}
+build().then(() => { ready = true; target = cur = scrollProgress(); $('#loader').classList.add('done'); frame(); })
+  .catch((e) => { console.error(e); $('#lmsg').textContent = 'Could not load the river.'; });
+window.__rp = { setT: (v) => { target = cur = v; }, get ready() { return ready; } };
+</script>
+</body>
+</html>
