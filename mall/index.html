@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Cahaya Avenue</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&family=Fraunces:opsz,wght@9..144,600&family=Bebas+Neue&family=Pacifico&family=Playfair+Display:wght@700&family=Archivo+Black&family=Righteous&display=swap">
+<style>
+:root{
+  --ink:#16201f; --dim:#5b6766; --faint:#8a9493; --panel:rgba(252,250,245,.94); --line:rgba(22,32,31,.12);
+  --teal:#0e5a57; --teal2:#0b4442; --gold:#e3a72f; --gold2:#f5c766; --red:#c2412d;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:#d9d4c9;color:var(--ink);font:15px/1.5 "Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+canvas#gl{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;outline:none}
+button{font:inherit;color:inherit}
+
+/* intro */
+.intro{position:fixed;inset:0;z-index:20;display:flex;align-items:flex-end;padding:0 max(24px,env(safe-area-inset-right,0px)) calc(48px + env(safe-area-inset-bottom,0px)) max(24px,env(safe-area-inset-left,0px));
+  background:linear-gradient(90deg,rgba(10,30,29,.78) 0%,rgba(10,30,29,.45) 45%,rgba(10,30,29,0) 75%),linear-gradient(0deg,rgba(10,30,29,.55),rgba(10,30,29,0) 45%);color:#fff;transition:opacity .7s}
+.intro.off{opacity:0;pointer-events:none}
+.intro .in{max-width:620px}
+.logo{display:flex;align-items:center;gap:14px}
+.sun{width:46px;height:46px;border-radius:50%;background:radial-gradient(circle at 40% 40%,#ffe39a,var(--gold) 60%,#b97a14);box-shadow:0 0 30px rgba(245,199,102,.6);position:relative;flex:none}
+.sun::after{content:"";position:absolute;inset:-8px;border-radius:50%;border:2px dashed rgba(245,199,102,.6)}
+.logo b{font:600 34px/1 "Fraunces",Georgia,serif;letter-spacing:.01em}
+.logo small{display:block;font-size:11px;letter-spacing:.28em;text-transform:uppercase;opacity:.75;margin-top:6px}
+.intro h1{font:800 clamp(34px,5.2vw,64px)/1.02 "Plus Jakarta Sans",sans-serif;letter-spacing:-.02em;margin:26px 0 12px;text-wrap:balance}
+.intro h1 em{font-style:normal;color:var(--gold2)}
+.intro p{font-size:17px;opacity:.86;max-width:520px;margin:0}
+.keys{display:flex;flex-wrap:wrap;gap:10px 18px;margin:22px 0 26px;font-size:13px;opacity:.9}
+.keys span{display:flex;align-items:center;gap:8px}
+kbd{font:700 12px/1 "Plus Jakarta Sans",sans-serif;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.35);border-bottom-width:3px;border-radius:6px;padding:5px 8px;min-width:26px;text-align:center;display:inline-block}
+.btn{border:0;cursor:pointer;font-weight:700;letter-spacing:.04em;padding:15px 26px;border-radius:999px;background:var(--gold);color:#2a1a00;font-size:15px;box-shadow:0 10px 30px rgba(227,167,47,.35);transition:transform .2s}
+.btn:hover{transform:translateY(-2px)}
+.btn.sec{background:rgba(255,255,255,.14);color:#fff;box-shadow:none;border:1px solid rgba(255,255,255,.35)}
+.btn.small{padding:10px 16px;font-size:13px}
+.btn.teal{background:var(--teal);color:#fff;box-shadow:none}
+.hours{margin-top:20px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.7}
+
+/* HUD */
+.hud{position:fixed;inset:0;z-index:10;pointer-events:none;opacity:0;transition:opacity .5s}
+.hud.on{opacity:1}
+.tl{position:absolute;top:calc(16px + env(safe-area-inset-top,0px));left:max(16px,env(safe-area-inset-left,0px));display:flex;gap:10px;align-items:stretch}
+.chip{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 14px;box-shadow:0 8px 24px rgba(0,0,0,.12);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.lvl{display:flex;align-items:center;gap:10px}
+.lvl b{font:800 26px/1 "Plus Jakarta Sans",sans-serif;color:var(--teal);min-width:38px;text-align:center}
+.lvl small{display:block;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint)}
+.lvl span{font-weight:700;font-size:14px}
+.tr{position:absolute;top:calc(16px + env(safe-area-inset-top,0px));right:max(16px,env(safe-area-inset-right,0px));display:flex;gap:8px;pointer-events:auto}
+.ib{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px;font-weight:700;font-size:13px;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.12);display:flex;gap:8px;align-items:center}
+.ib .n{background:var(--red);color:#fff;border-radius:999px;font-size:11px;padding:1px 7px}
+.ib kbd{background:rgba(14,90,87,.08);border-color:rgba(14,90,87,.25);color:var(--teal);padding:3px 6px}
+.mm{position:absolute;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));padding:8px;border-radius:16px}
+.mm canvas{display:block;width:240px;height:90px;border-radius:10px}
+.prompt{position:absolute;left:50%;bottom:calc(120px + env(safe-area-inset-bottom,0px));transform:translate(-50%,10px);background:rgba(14,30,29,.88);color:#fff;border-radius:16px;padding:12px 16px 12px 12px;display:flex;align-items:center;gap:12px;opacity:0;transition:opacity .2s,transform .2s;pointer-events:auto;cursor:pointer;max-width:min(92vw,520px)}
+.prompt.on{opacity:1;transform:translate(-50%,0)}
+.prompt kbd{background:var(--gold);color:#2a1a00;border-color:#b97a14;font-size:15px;padding:7px 11px}
+.prompt b{display:block;font-size:15px}
+.prompt small{display:block;font-size:12px;opacity:.75}
+.xh{position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:rgba(255,255,255,.9);box-shadow:0 0 0 1.5px rgba(0,0,0,.35)}
+.ticker{position:absolute;left:0;right:0;bottom:0;height:0}
+.ann{position:absolute;left:50%;top:calc(80px + env(safe-area-inset-top,0px));transform:translateX(-50%);background:rgba(14,30,29,.82);color:#fff;border-radius:999px;padding:8px 16px;font-size:13px;opacity:0;transition:opacity .5s;white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis}
+.ann.on{opacity:1}
+.help{position:absolute;left:max(16px,env(safe-area-inset-left,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));font-size:12px;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6);display:flex;gap:12px;flex-wrap:wrap;max-width:50vw}
+.help kbd{background:rgba(0,0,0,.35);border-color:rgba(255,255,255,.4);color:#fff;padding:3px 6px;font-size:11px}
+@media (pointer:coarse){.help,.xh{display:none}}
+
+/* panels */
+.panel{position:fixed;z-index:15;top:0;right:0;bottom:0;width:min(440px,100vw);background:var(--panel);border-left:1px solid var(--line);box-shadow:-20px 0 60px rgba(0,0,0,.2);transform:translateX(105%);transition:transform .35s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.panel.on{transform:none}
+.ph{padding:calc(22px + env(safe-area-inset-top,0px)) 24px 18px;border-bottom:1px solid var(--line);position:relative}
+.ph .cat{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--teal);font-weight:700}
+.ph h2{font:800 28px/1.1 "Plus Jakarta Sans",sans-serif;margin:8px 0 6px;letter-spacing:-.01em;text-wrap:balance}
+.ph .meta{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--dim)}
+.x{position:absolute;top:calc(16px + env(safe-area-inset-top,0px));right:16px;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:#fff;cursor:pointer;font-size:18px;line-height:1}
+.pb{padding:20px 24px calc(28px + env(safe-area-inset-bottom,0px));overflow:auto;flex:1;min-height:0}
+.hero{height:150px;border-radius:16px;margin-bottom:18px;position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:16px;color:#fff;font:800 22px/1.1 "Plus Jakarta Sans",sans-serif}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.45),rgba(0,0,0,0) 60%)}
+.hero span{position:relative;z-index:1}
+.pb p{color:var(--dim);margin:0 0 18px}
+.prods{display:grid;gap:10px}
+.prod{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:12px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:10px;background:#fff}
+.prod i{width:52px;height:52px;border-radius:10px;display:block}
+.prod b{display:block;font-size:14px}
+.prod small{color:var(--faint);font-size:12px}
+.prod .pr{font-weight:800;color:var(--teal);font-size:14px;text-align:right}
+.prod button{margin-top:4px;border:1px solid var(--teal);background:transparent;color:var(--teal);border-radius:999px;font-size:11px;font-weight:700;padding:4px 10px;cursor:pointer}
+.prod button.done{background:var(--teal);color:#fff}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:6px 0 18px}
+.fact{background:rgba(14,90,87,.06);border-radius:12px;padding:10px 12px;font-size:13px}
+.fact small{display:block;color:var(--faint);font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.search{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);font:inherit;background:#fff;margin-bottom:14px}
+.tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.tabs button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer}
+.tabs button.on{background:var(--teal);border-color:var(--teal);color:#fff}
+.dl{display:grid;gap:6px}
+.di{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 10px;border-radius:12px;border:1px solid transparent;cursor:pointer;background:transparent;text-align:left;width:100%}
+.di:hover{background:#fff;border-color:var(--line)}
+.di .u{font:800 11px/1 "Plus Jakarta Sans",sans-serif;background:rgba(14,90,87,.08);color:var(--teal);border-radius:8px;padding:7px 0;text-align:center}
+.di b{display:block;font-size:14px}
+.di small{color:var(--faint);font-size:12px}
+.di .go{font-size:12px;font-weight:700;color:var(--teal)}
+.bagline{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px;gap:12px}
+.total{display:flex;justify-content:space-between;font-weight:800;font-size:18px;margin:16px 0}
+.note{font-size:12px;color:var(--faint)}
+
+/* touch */
+.joy{position:fixed;z-index:11;left:28px;bottom:calc(34px + env(safe-area-inset-bottom,0px));width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.5);display:none;pointer-events:none}
+.joy i{position:absolute;left:50%;top:50%;width:52px;height:52px;margin:-26px 0 0 -26px;border-radius:50%;background:rgba(255,255,255,.75)}
+.ebtn{position:fixed;z-index:11;right:24px;bottom:calc(130px + env(safe-area-inset-bottom,0px));width:70px;height:70px;border-radius:50%;border:0;background:var(--gold);color:#2a1a00;font:800 22px/1 "Plus Jakarta Sans",sans-serif;display:none;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+@media (pointer:coarse){body.walking .joy{display:block}body.walking.near .ebtn{display:block}.mm canvas{width:180px;height:68px}}
+@media (max-width:900px){.tl .chip.where{display:none}}
+@media (max-width:760px){.ib .lbl{display:none}}
+@media (max-width:560px){.tl .chip.where{display:none}.ib .lbl{display:none}.lvl small,.lvl span{display:none}.lvl b{font-size:22px;min-width:30px}.chip{padding:8px 10px}.ib{padding:9px 11px}.ib kbd{display:none}}
+.ib svg{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tkeys{display:none}
+@media (pointer:coarse){.keys{display:none}.tkeys{display:flex}.prompt{bottom:calc(196px + env(safe-area-inset-bottom,0px));max-width:calc(100vw - 32px)}.ebtn{bottom:calc(116px + env(safe-area-inset-bottom,0px));right:max(18px,env(safe-area-inset-right,0px))}.mm{bottom:calc(14px + env(safe-area-inset-bottom,0px))}}
+@media (max-height:760px) and (max-width:560px){.intro h1{font-size:30px;margin:16px 0 8px}.intro p{font-size:15px}.logo b{font-size:26px}.sun{width:36px;height:36px}}
+.intro{overflow-y:auto}
+.loader{position:fixed;inset:0;z-index:40;display:grid;place-items:center;background:#0e2a29;color:#fff;transition:opacity .8s}.loader.done{opacity:0;pointer-events:none}.loader .in{text-align:center;width:min(320px,80vw)}.loader .bar{height:3px;border-radius:3px;background:rgba(255,255,255,.18);margin-top:18px;overflow:hidden}.loader .bar i{display:block;height:100%;width:0;background:var(--gold);transition:width .3s}.loader p{font-size:12px;letter-spacing:.18em;text-transform:uppercase;opacity:.7;margin:12px 0 0}
+.fallback{position:fixed;inset:0;display:none;place-items:center;text-align:center;padding:24px;background:#0e2a29;color:#fff;z-index:30}
+.nogl .fallback{display:grid}
+</style>
+</head>
+<body>
+<canvas id="gl" tabindex="0" aria-label="Walkable 3D view of Cahaya Avenue mall"></canvas>
+<div class="loader" id="loader"><div class="in"><span class="sun" aria-hidden="true" style="display:inline-block"></span><div class="bar"><i id="lbar"></i></div><p id="lmsg">Opening the doors…</p></div></div>
+<div class="fallback"><div><h2>Your browser can't open the 3D mall.</h2><p>Cahaya Avenue needs WebGL. Try a recent Chrome, Edge, Safari or Firefox.</p></div></div>
+
+<section class="intro" id="intro">
+  <div class="in">
+    <div class="logo"><span class="sun" aria-hidden="true"></span><span><b>Cahaya Avenue</b><small>Petaling Jaya · Selangor</small></span></div>
+    <h1>Jalan-jalan, <em>cari makan</em>, window shop. All from here.</h1>
+    <p>Walk the whole mall: three floors, 40-odd shops, a Medan Selera and a cinema. Walk up to any shopfront and press E to see what's inside.</p>
+    <div class="keys tkeys"><span>Drag the left side to walk</span><span>Drag the right side to look</span><span>Tap <kbd>E</kbd> to view more</span></div>
+    <div class="keys">
+      <span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> walk</span>
+      <span><kbd>Shift</kbd> walk faster</span>
+      <span>Mouse: look around</span>
+      <span><kbd>E</kbd> view more</span>
+      <span><kbd>M</kbd> directory</span>
+    </div>
+    <button class="btn" id="enter" type="button" disabled>Masuk · Enter the mall</button>
+    <div class="hours">Open daily 10:00 AM – 10:00 PM · Free Wi-Fi “Cahaya_Free”</div>
+  </div>
+</section>
+
+<div class="hud" id="hud">
+  <div class="tl">
+    <div class="chip lvl"><b id="lvl">G</b><div><small>Level</small><span id="lvlname">Ground · Concourse</span></div></div>
+    <div class="chip lvl where"><div><small>Near</small><span id="near">Main Entrance</span></div></div>
+  </div>
+  <div class="tr">
+    <button class="ib" id="dirBtn" type="button" aria-label="Directory"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span class="lbl">Directory</span> <kbd>M</kbd></button>
+    <button class="ib" id="bagBtn" type="button" aria-label="Shopping bag"><svg viewBox="0 0 24 24"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8a3 3 0 0 1 6 0"/></svg><span class="lbl">Bag</span> <span class="n" id="bagN">0</span></button>
+    <button class="ib" id="sndBtn" type="button" aria-pressed="false" aria-label="Sound"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M17 9a4 4 0 0 1 0 6"/></svg><span class="lbl">Sound</span> <span id="sndS">off</span></button>
+  </div>
+  <div class="xh" aria-hidden="true"></div>
+  <div class="ann" id="ann"></div>
+  <div class="prompt" id="prompt"><kbd>E</kbd><div><b id="pT">View more</b><small id="pS">Shop</small></div></div>
+  <div class="help"><span><kbd>Click</kbd> to look</span><span><kbd>Esc</kbd> free mouse</span><span><kbd>E</kbd> view more</span></div>
+  <div class="chip mm"><canvas id="mm" width="480" height="180" aria-label="Floor map"></canvas></div>
+</div>
+<div class="joy" id="joy" aria-hidden="true"><i></i></div>
+<button class="ebtn" id="ebtn" type="button" aria-label="View more">E</button>
+
+<aside class="panel" id="shopP" aria-label="Shop details">
+  <div class="ph"><div class="cat" id="sCat"></div><h2 id="sName"></h2><div class="meta" id="sMeta"></div><button class="x" type="button" data-close aria-label="Close">×</button></div>
+  <div class="pb"><div class="hero" id="sHero"><span id="sTag"></span></div><p id="sDesc"></p><div class="facts" id="sFacts"></div><div class="prods" id="sProds"></div></div>
+</aside>
+<aside class="panel" id="dirP" aria-label="Mall directory">
+  <div class="ph"><div class="cat">Cahaya Avenue</div><h2>Mall directory</h2><div class="meta">Pick a shop to walk straight there.</div><button class="x" type="button" data-close aria-label="Close">×</button></div>
+  <div class="pb"><input class="search" id="q" placeholder="Search shops, food, services…" autocomplete="off"><div class="tabs" id="tabs"></div><div class="dl" id="dl"></div></div>
+</aside>
+<aside class="panel" id="bagP" aria-label="Shopping bag">
+  <div class="ph"><div class="cat">Your bag</div><h2>Shopping bag</h2><div class="meta" id="bagMeta">Nothing yet. Go jalan-jalan.</div><button class="x" type="button" data-close aria-label="Close">×</button></div>
+  <div class="pb"><div id="bagL"></div><div class="total"><span>Total</span><span id="bagT">RM 0.00</span></div><button class="btn teal" id="pay" type="button">Checkout</button><p class="note" id="payN" style="margin-top:12px">Cahaya Avenue is a demo mall. Nothing is charged.</p></div>
+</aside>
+<script type="importmap">{"imports":{"three":"./lib/three/build/three.module.js","three/addons/":"./lib/three/examples/jsm/"}}</script>
+<script src="core.js"></script>
+<script type="module" src="main.js"></script>
+</body>
+</html>

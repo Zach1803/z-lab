@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Hollow Reef Light</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{--bg:#06090d;--ink:#e9e2d1;--dim:rgba(233,226,209,.68);--faint:rgba(233,226,209,.4);--line:rgba(233,226,209,.14);--lamp:#f2d48a;--panel:rgba(8,13,18,.82);color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 "Inter",system-ui,-apple-system,"Segoe UI",sans-serif;overflow-x:hidden;-webkit-text-size-adjust:100%}
+body.watching{overflow:hidden}
+#view{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0;touch-action:none;background:#05080b}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:"Cormorant Garamond",Georgia,"Times New Roman",serif;font-weight:600;line-height:1.02;margin:0;text-wrap:balance}
+.site{position:relative;z-index:2;transition:opacity .7s}
+body.watching .site,body.watching footer{opacity:0;pointer-events:none}
+header.top{position:fixed;top:0;left:0;right:0;z-index:10;padding:calc(14px + env(safe-area-inset-top,0px)) max(18px,env(safe-area-inset-right,0px)) 14px max(18px,env(safe-area-inset-left,0px));display:flex;align-items:center;justify-content:space-between;gap:12px;background:linear-gradient(180deg,rgba(6,9,13,.85),rgba(6,9,13,0));transition:opacity .4s}
+body.watching header.top{opacity:0;pointer-events:none}
+.mark{display:flex;align-items:center;gap:12px;color:var(--ink);text-decoration:none}
+.mark svg{width:28px;height:28px;flex:none}
+.mark b{font:600 20px/1 "Cormorant Garamond",Georgia,serif;letter-spacing:.06em}
+.mark small{display:block;font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--faint);margin-top:3px}
+nav.links{display:flex;gap:22px}
+nav.links a{color:var(--dim);text-decoration:none;font-size:13px;letter-spacing:.08em}
+nav.links a:hover{color:var(--ink)}
+@media (max-width:760px){nav.links{display:none}}
+.hero{min-height:100svh;display:flex;align-items:flex-end;padding-block:120px 70px;background:linear-gradient(0deg,rgba(6,9,13,.9) 0%,rgba(6,9,13,.2) 42%,rgba(6,9,13,0) 70%)}
+.eyebrow{font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--lamp)}
+.hero h1{font-size:clamp(44px,8vw,104px);margin:14px 0 16px;max-width:900px}
+.hero h1 em{font-style:italic;color:var(--lamp)}
+.lede{color:var(--dim);font-size:clamp(16px,1.6vw,19px);max-width:560px;margin:0}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.btn{font:600 14px/1 "Inter",sans-serif;letter-spacing:.06em;border:1px solid var(--lamp);background:var(--lamp);color:#1a1406;padding:15px 22px;border-radius:999px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:10px;min-height:48px}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn:disabled{opacity:.5;cursor:wait}
+.scroll{margin-top:36px;font-size:12px;color:var(--faint);letter-spacing:.2em;text-transform:uppercase}
+section{padding-block:90px;background:var(--bg)}
+section.tint{background:linear-gradient(180deg,var(--bg),#0a1219 50%,var(--bg))}
+.sh{max-width:680px;margin-bottom:34px}
+.sh .eyebrow{display:block;margin-bottom:12px}
+.sh h2{font-size:clamp(34px,5vw,58px)}
+.sh p{color:var(--dim);margin:14px 0 0}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media (max-width:860px){.grid3{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px;min-width:0}
+.card h3{font-size:26px;margin-bottom:8px}
+.card p{color:var(--dim);margin:0;font-size:15px}
+.card .k{font:500 12px "IBM Plex Mono",monospace;color:var(--lamp);letter-spacing:.08em;text-transform:uppercase}
+.card .big{font:600 34px/1.1 "Cormorant Garamond",serif;margin:6px 0 10px}
+.tl{position:relative;display:grid;gap:22px;max-width:760px;padding-left:28px;border-left:1px solid var(--line)}
+.tl div{position:relative}
+.tl div::before{content:"";position:absolute;left:-34px;top:8px;width:11px;height:11px;border-radius:50%;background:var(--bg);border:2px solid var(--lamp)}
+.tl b{font:600 26px/1 "Cormorant Garamond",serif;color:var(--lamp);display:block;margin-bottom:4px}
+.tl p{margin:0;color:var(--dim)}
+.logs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media (max-width:860px){.logs{grid-template-columns:minmax(0,1fr)}}
+.log{background:#e8dfc8;color:#2a2318;border-radius:4px;padding:24px;font:15px/1.6 "IBM Plex Mono",ui-monospace,monospace;box-shadow:0 18px 40px rgba(0,0,0,.45);background-image:linear-gradient(transparent 27px,rgba(80,60,30,.12) 28px),radial-gradient(ellipse at 90% 10%,rgba(120,90,40,.22),transparent 50%);background-size:100% 28px,100% 100%;min-width:0;white-space:pre-line}
+.log .d{font-size:12px;letter-spacing:.1em;color:#7a6243;text-transform:uppercase;margin-bottom:8px}
+.log.locked{background:#141c23;color:var(--faint);box-shadow:none;border:1px dashed var(--line);background-image:none}
+.log.locked .d{color:var(--faint)}
+.log .how{font:500 12px "Inter",sans-serif;letter-spacing:.06em;color:var(--lamp);margin-top:10px}
+.log.final{grid-column:1/-1}
+.log.final:not(.locked){background-color:#d9cfb5}
+.how2{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:10px}
+@media (max-width:860px){.how2{grid-template-columns:minmax(0,1fr)}}
+.how2 .card b{font:600 46px/1 "Cormorant Garamond",serif;color:var(--lamp)}
+.prog{margin-top:22px;color:var(--dim);font-size:14px}
+footer{position:relative;z-index:2;background:#040608;padding-block:34px calc(34px + env(safe-area-inset-bottom,0px));color:var(--faint);font-size:13px;transition:opacity .6s}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+/* loader */
+.loader{position:fixed;inset:0;z-index:40;display:grid;place-items:center;background:#05080b;transition:opacity .9s}
+.loader.done{opacity:0;pointer-events:none}
+.loader .in{text-align:center;width:min(320px,80vw)}
+.loader .bar{height:2px;background:var(--line);margin-top:18px;overflow:hidden}
+.loader .bar i{display:block;height:100%;width:0;background:var(--lamp);transition:width .3s}
+.loader p{font:500 12px "IBM Plex Mono",monospace;color:var(--faint);letter-spacing:.14em;text-transform:uppercase;margin:10px 0 0}
+/* HUD */
+.hud{position:fixed;inset:0;z-index:20;pointer-events:none;opacity:0;transition:opacity .6s;font-family:"IBM Plex Mono",ui-monospace,monospace;color:#e9e2d1}
+body.watching .hud{opacity:1}
+.hud .tl1{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));left:max(16px,env(safe-area-inset-left,0px));text-shadow:0 1px 6px #000}
+.hud .tl1 small{display:block;font-size:11px;letter-spacing:.2em;color:var(--faint);text-transform:uppercase}
+.hud .tl1 b{font-size:26px;font-weight:500}
+.hud .tr1{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:max(16px,env(safe-area-inset-right,0px));display:flex;gap:10px;align-items:center;pointer-events:auto}
+.pill{background:rgba(6,9,13,.7);border:1px solid var(--line);border-radius:999px;padding:9px 14px;font:500 13px "IBM Plex Mono",monospace;color:var(--ink)}
+.pill.btnx{cursor:pointer;min-height:42px}
+.cross{position:absolute;left:50%;top:50%;width:34px;height:34px;transform:translate(-50%,-50%)}
+.cross::before,.cross::after{content:"";position:absolute;background:rgba(233,226,209,.75)}
+.cross::before{left:50%;top:0;bottom:0;width:1px;transform:translateX(-50%)}
+.cross::after{top:50%;left:0;right:0;height:1px;transform:translateY(-50%)}
+.scope{position:absolute;inset:0;opacity:0;transition:opacity .3s;background:radial-gradient(circle at 50% 50%,transparent 0,transparent min(36vw,36vh),rgba(0,0,0,.92) calc(min(36vw,36vh) + 2px))}
+.scope.on{opacity:1}
+.bear{position:absolute;left:50%;top:calc(50% + 34px);transform:translateX(-50%);font-size:12px;letter-spacing:.14em;color:rgba(233,226,209,.7);text-shadow:0 1px 4px #000}
+.dock{position:absolute;left:0;right:0;bottom:0;padding:14px max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;pointer-events:auto;background:linear-gradient(0deg,rgba(4,6,9,.85),rgba(4,6,9,0))}
+.dock button{font:600 14px "Inter",sans-serif;border-radius:999px;border:1px solid var(--line);background:rgba(10,15,20,.8);color:var(--ink);padding:0 20px;min-height:52px;cursor:pointer}
+.dock button.on{border-color:var(--lamp);color:var(--lamp)}
+.dock .log1{background:var(--lamp);border-color:var(--lamp);color:#1a1406;padding:0 28px;font-size:15px}
+.zoom{display:flex;align-items:center;gap:10px;background:rgba(10,15,20,.8);border:1px solid var(--line);border-radius:999px;padding:0 16px;min-height:52px}
+.zoom input{width:140px;accent-color:var(--lamp)}
+.zoom span{font:500 12px "IBM Plex Mono",monospace;color:var(--dim);min-width:34px}
+.toast{position:absolute;left:50%;top:calc(76px + env(safe-area-inset-top,0px));transform:translateX(-50%);width:min(560px,calc(100vw - 32px));background:rgba(232,223,200,.95);color:#2a2318;border-radius:6px;padding:14px 18px;font:14px/1.55 "IBM Plex Mono",monospace;opacity:0;transition:opacity .4s;box-shadow:0 14px 40px rgba(0,0,0,.5)}
+.toast.on{opacity:1}
+.toast.plain{background:rgba(6,9,13,.82);color:var(--ink);border:1px solid var(--line);text-align:center}
+.toast b{display:block;font:600 20px "Cormorant Garamond",serif;margin-bottom:4px}
+.hint{position:absolute;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);font:13px "Inter",sans-serif;color:var(--dim);text-align:center;transition:opacity 1s;text-shadow:0 1px 4px #000;width:min(520px,90vw)}
+.end{position:fixed;inset:0;z-index:30;display:none;place-items:center;padding:24px;background:radial-gradient(ellipse at 50% 120%,rgba(242,212,138,.25),rgba(6,9,13,.94) 60%)}
+.end.on{display:grid}
+.end .in{max-width:560px;text-align:center}
+.end h2{font-size:clamp(40px,7vw,64px)}
+.end p{color:var(--dim)}
+.end .row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:24px}
+@media (max-width:560px){.hint{bottom:calc(150px + env(safe-area-inset-bottom,0px))}.hud .tl1{top:calc(62px + env(safe-area-inset-top,0px))}.toast{top:calc(124px + env(safe-area-inset-top,0px))}.pill{padding:8px 11px;font-size:12px}.zoom input{width:90px}.dock{gap:8px}.dock button{padding:0 14px}.dock .log1{padding:0 18px}.hud .tl1 b{font-size:20px}}
+.glnote{display:none;position:fixed;inset:auto 16px 16px;z-index:41;background:var(--panel);border:1px solid var(--line);padding:12px 16px;border-radius:10px;font-size:14px}
+.nogl .glnote{display:block}
+</style>
+<script type="importmap">{"imports":{"three":"./lib/three/build/three.module.js","three/addons/":"./lib/three/examples/jsm/"}}</script>
+</head>
+<body>
+<canvas id="view" aria-label="Live 3D view of Hollow Reef Light at night"></canvas>
+<div class="loader" id="loader"><div class="in"><svg viewBox="0 0 32 32" width="40" height="40" aria-hidden="true"><path d="M13 30h6l-1-18h-4z" fill="#e9e2d1"/><rect x="12" y="8" width="8" height="4" fill="#f2d48a"/><path d="M11 8l5-5 5 5z" fill="#e9e2d1"/></svg><div class="bar"><i id="lbar"></i></div><p id="lmsg">Lighting the lamp…</p></div></div>
+
+<header class="top">
+  <a class="mark" href="#top"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M13 30h6l-1-18h-4z" fill="#e9e2d1"/><rect x="12" y="8" width="8" height="4" fill="#f2d48a"/><path d="M11 8l5-5 5 5z" fill="#e9e2d1"/><path d="M20 10l11-3v6z" fill="#f2d48a" opacity=".5"/></svg><span><b>Hollow Reef Light</b><small>Lighthouse &amp; Museum</small></span></a>
+  <nav class="links" aria-label="Sections"><a href="#visit">Visit</a><a href="#history">History</a><a href="#logs">Keeper's logs</a><a href="#watch">Night watch</a></nav>
+</header>
+
+<div class="site" id="top">
+  <section class="hero" style="background-color:transparent"><div class="wrap">
+    <div class="eyebrow">Lighthouse &amp; maritime museum · Est. 1874</div>
+    <h1>The light has <em>never once</em> gone out.</h1>
+    <p class="lede">Hollow Reef Light stands on a rock two miles off the northern coast. It has warned ships away from the reef every night for 152 years. Since 1931, it has also been watching something else.</p>
+    <div class="cta"><button class="btn" type="button" data-watch disabled>Keep the night watch</button><a class="btn ghost" href="#visit">Plan a visit</a></div>
+    <div class="scroll">Scroll · the sea is live</div>
+  </div></section>
+
+  <section id="visit"><div class="wrap">
+    <div class="sh"><span class="eyebrow">Visit</span><h2>A crossing worth making.</h2><p>The island is reached by ferry from Harrow Quay. Crossings depend on the weather and the tide, so please check the morning of your visit.</p></div>
+    <div class="grid3">
+      <div class="card"><div class="k">Ferry</div><div class="big">10:00 · 13:00</div><p>Departs Harrow Quay, returning at 12:30 and 16:30. About 25 minutes each way. The last return is not negotiable.</p></div>
+      <div class="card"><div class="k">Tickets</div><div class="big">£14 adult</div><p>£8 children, £36 family. Includes the ferry, the museum and the 112-step climb to the lantern gallery.</p></div>
+      <div class="card"><div class="k">Season</div><div class="big">April – October</div><p>Closed in winter storms. Overnight stays in the keeper's cottage are no longer offered.</p></div>
+    </div>
+  </div></section>
+
+  <section id="history" class="tint"><div class="wrap">
+    <div class="sh"><span class="eyebrow">History</span><h2>One light, three keepers, one night.</h2></div>
+    <div class="tl">
+      <div><b>1874</b><p>The granite tower is completed after six years of work on the reef. Two ships were lost during construction.</p></div>
+      <div><b>1903</b><p>A first-order Fresnel lens is installed. Its beam can be seen twenty-two nautical miles out to sea.</p></div>
+      <div><b>1931</b><p>Assistant keeper Elias Marr, alone on the rock for the autumn watch, disappears. The relief boat finds the lamp still burning and his log open on the desk.</p></div>
+      <div><b>1987</b><p>The light is automated and the last keepers leave. The lamp has not missed a night since.</p></div>
+      <div><b>2004</b><p>The keeper's cottage opens as a museum. Marr's log is on display in the lantern room, open at his last page.</p></div>
+    </div>
+  </div></section>
+
+  <section id="logs"><div class="wrap">
+    <div class="sh"><span class="eyebrow">Keeper's logs · Elias Marr · 1931</span><h2>What he saw from the gallery.</h2><p>The museum is restoring Marr's water-damaged log one page at a time. Pages unlock as you log the same sightings on the night watch.</p></div>
+    <div class="logs" id="logGrid"></div>
+  </div></section>
+
+  <section id="watch" class="tint"><div class="wrap">
+    <div class="sh"><span class="eyebrow">Night watch</span><h2>Stand where he stood.</h2><p>Take the 1 AM to 5 AM watch from the lantern gallery. The sea is calm, the fog is low, and the beam turns every seven seconds. Look carefully. Some of what you see will not be ships.</p></div>
+    <div class="how2">
+      <div class="card"><b>I</b><h3>Look</h3><p>Drag to turn around the gallery. On a computer you can also use the arrow keys or A and D.</p></div>
+      <div class="card"><b>II</b><h3>Zoom</h3><p>Pinch, scroll or use the telescope slider to see across the water. Distant things are small.</p></div>
+      <div class="card"><b>III</b><h3>Log it</h3><p>Put the crosshair on anything strange and press Log sighting. Wrong reports are noted too.</p></div>
+    </div>
+    <div class="cta"><button class="btn" type="button" data-watch disabled>Begin the watch</button></div>
+    <p class="prog" id="progLine"></p>
+  </div></section>
+</div>
+<footer><div class="wrap"><span>Hollow Reef Light is fictional. So, we are told, is everything Elias Marr wrote.</span><span>Materials and night sky from Poly Haven (CC0). Best with sound.</span></div></footer>
+
+<div class="hud" id="hud" aria-live="polite">
+  <div class="tl1"><small>Night watch · Gallery</small><b id="clock">1:00 AM</b></div>
+  <div class="tr1"><span class="pill" id="count">Sightings 0 / 5</span><button class="pill btnx" id="snd" type="button">Sound on</button><button class="pill btnx" id="quit" type="button">End watch</button></div>
+  <div class="scope" id="scope"></div>
+  <div class="cross"></div>
+  <div class="bear" id="bear">N 000°</div>
+  <div class="toast" id="toast"></div>
+  <div class="hint" id="hint">Drag to look around · pinch or scroll to use the telescope</div>
+  <div class="dock">
+    <button type="button" id="scopeBtn">Telescope</button>
+    <label class="zoom"><input type="range" id="zoom" min="1" max="8" step="0.1" value="1" aria-label="Telescope zoom"><span id="zv">1.0×</span></label>
+    <button type="button" class="log1" id="logBtn">Log sighting</button>
+  </div>
+</div>
+<div class="end" id="end"><div class="in"><div class="eyebrow">5:00 AM · First light</div><h2 id="endT">The watch is over.</h2><p id="endP"></p><div class="row"><a class="btn" href="#logs" id="endLogs">Read the keeper's logs</a><button class="btn ghost" type="button" id="endAgain">Keep another watch</button></div></div></div>
+<div class="glnote">This browser can't show the live 3D view (WebGL2 is unavailable). The site still works.</div>
+
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+import { Water } from 'three/addons/objects/Water.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+const $ = (s) => document.querySelector(s);
+const TAU = Math.PI * 2, clamp = (v, a, b) => v < a ? a : v > b ? b : v, mix = (a, b, t) => a + (b - a) * t;
+const lsGet = (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+const coarse = matchMedia('(pointer:coarse)').matches;
+
+/* ---------------- story data ---------------- */
+const ANOM = [
+  { key: 'boat', name: 'A rowing boat with a lantern', ang: 1.15, t0: 14, t1: 205, log: ['11 October 1931', 'A rowing boat with a lantern came in toward the reef at two o\'clock. Nobody at the oars. I rang the bell. It came no closer and no further. At dawn there was nothing on the water.'] },
+  { key: 'lights', name: 'Green lights under the water', ang: 2.75, t0: 40, t1: 150, log: ['14 October 1931', 'Lights under the water off the east rocks, green, like the lamps in a chapel. They move when the beam is turned away from them and they are perfectly still when it passes.'] },
+  { key: 'figure', name: 'A man standing on the sea', ang: 4.2, t0: 62, t1: 236, log: ['19 October 1931', 'A man standing on the water. Not swimming. Standing. Each time the light came round he was nearer. I have stopped turning the lamp toward the south.'] },
+  { key: 'ship', name: 'A steamer with no lights', ang: 5.45, t0: 100, t1: 225, log: ['22 October 1931', 'A steamer broadside a mile out with no lights showing and no smoke. When the beam crossed her I counted the portholes. Every one was open. Every one was dark.'] },
+  { key: 'beam', name: 'A second lighthouse beam', ang: 0.3, t0: 140, t1: 240, log: ['26 October 1931', 'Another light to the north, where there is no lighthouse and never has been. Its beam turns the wrong way round. I think it was looking for this one.'] }
+];
+const FIRST = ['3 October 1931', 'Relief boat gone at noon. Lamp lit at 6.10. Wind north-west, fog sitting low on the water. I like the quiet. Mother says it will do me good.'];
+const FINAL = ['30 October 1931', 'The relief boat is not due until the 4th. The man is on the rocks below the gallery now. He is very patient. I am going to go down and ask him what he wants. The lamp must not go out. Whoever reads this, keep it lit.'];
+let found = {}; try { found = JSON.parse(lsGet('hr_found') || '{}') || {}; } catch (e) { found = {}; }
+function renderLogs() {
+  const g = $('#logGrid'); g.innerHTML = '';
+  const add = (d, txt, cls, how) => { const el = document.createElement('article'); el.className = 'log ' + (cls || ''); const dd = document.createElement('div'); dd.className = 'd'; dd.textContent = d; el.appendChild(dd); const p = document.createElement('div'); p.textContent = txt; el.appendChild(p); if (how) { const h = document.createElement('div'); h.className = 'how'; h.textContent = how; el.appendChild(h); } g.appendChild(el); };
+  add(FIRST[0], FIRST[1]);
+  ANOM.forEach((a) => found[a.key] ? add(a.log[0], a.log[1]) : add(a.log[0], 'This page is too water-damaged to read.', 'locked', 'Unlocks when you log: ' + a.name.toLowerCase() + '.'));
+  const n = Object.keys(found).length;
+  if (n >= 5) add(FINAL[0], FINAL[1] + '\n\nMuseum note: Elias Marr was never found. The lamp was burning when the relief boat arrived on 4 November.', 'final');
+  else add(FINAL[0], 'The last page. It will not open yet.', 'locked final', 'Unlocks when all five sightings are logged.');
+  $('#progLine').textContent = n ? 'Pages restored: ' + (n + 1) + ' of 7.' : 'No pages restored yet.';
+}
+renderLogs();
+
+/* ---------------- renderer ---------------- */
+const canvas = $('#view');
+let renderer;
+try { renderer = new THREE.WebGLRenderer({ canvas, antialias: !coarse, powerPreference: 'high-performance' }); } catch (e) { document.documentElement.classList.add('nogl'); $('#loader').classList.add('done'); throw e; }
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.0;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+let pixelScale = coarse ? 1.0 : Math.min(devicePixelRatio, 1.5);
+const scene = new THREE.Scene();
+const FOG = new THREE.Color(0x111a24);
+scene.fog = new THREE.FogExp2(FOG, 0.0011);
+const camera = new THREE.PerspectiveCamera(55, innerWidth / innerHeight, 0.1, 9000);
+
+/* ---------------- loading ---------------- */
+const manager = new THREE.LoadingManager();
+manager.onProgress = (url, a, b) => { $('#lbar').style.width = (a / b * 100).toFixed(0) + '%'; };
+const tl = new THREE.TextureLoader(manager), gltf = new GLTFLoader(manager), rgbe = new RGBELoader(manager);
+const fl = new THREE.FileLoader(manager); fl.setResponseType('json');
+const loadBin = async (url) => { const bin = atob((await fl.loadAsync(url)).b64), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u.buffer; };
+const maxAniso = renderer.capabilities.getMaxAnisotropy();
+function tex(name, srgb, rep) {
+  const t = tl.load('tex/' + name + '.jpg');
+  t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = Math.min(8, maxAniso);
+  if (srgb) t.colorSpace = THREE.SRGBColorSpace;
+  if (rep) t.repeat.set(rep, rep);
+  return t;
+}
+function pbr(base, opts = {}) {
+  const m = new THREE.MeshStandardMaterial({ map: tex(base + '_diff', true), normalMap: tex(base + '_nor'), roughnessMap: tex(base + '_rough'), roughness: opts.rough ?? 1, metalness: opts.metal ?? 0, color: opts.color ?? 0xffffff, envMapIntensity: opts.env ?? 1 });
+  if (opts.ns) m.normalScale.set(opts.ns, opts.ns);
+  return m;
+}
+const MATS = {
+  rock: pbr('rock', { ns: 1.4, color: 0x9a9690 }),
+  stone: pbr('stone', { color: 0xbab4aa }),
+  plaster: pbr('plaster', { color: 0xf2ece0 }),
+  plaster_red: pbr('plaster', { color: 0xa8281e }),
+  stucco: pbr('stucco', { color: 0xe6e0d2 }),
+  slate: pbr('slate', { color: 0x8a8f96 }),
+  planks: pbr('planks', { color: 0x9a8670 }),
+  door_wood: pbr('planks', { color: 0x4a2c18 }),
+  boat: pbr('boat', { color: 0xc8d0d4 }),
+  metal: pbr('metal', { metal: .6, rough: .9, color: 0x6a6e66 }),
+  metal_dark: pbr('metal', { metal: .7, rough: .8, color: 0x2a2c2a }),
+  roof_copper: pbr('metal', { metal: .5, rough: .8, color: 0x3d6e5c }),
+  ship_hull: pbr('metal', { metal: .5, rough: .7, color: 0x1a1c1e }),
+  ship_super: pbr('metal', { metal: .4, rough: .8, color: 0x3a3a38 }),
+  ship_metal: pbr('metal', { metal: .6, rough: .7, color: 0x242220 }),
+  porthole: new THREE.MeshStandardMaterial({ color: 0x050607, roughness: .2, metalness: .3 }),
+  glass: new THREE.MeshPhysicalMaterial({ color: 0xbfd4d8, roughness: .05, metalness: 0, transparent: true, opacity: .22, envMapIntensity: 1.5, depthWrite: false }),
+  glass_dark: new THREE.MeshStandardMaterial({ color: 0x0a0d10, roughness: .12, metalness: .4 }),
+  lens: new THREE.MeshStandardMaterial({ color: 0xfff1cc, emissive: 0xffd9a0, emissiveIntensity: 6, roughness: .2 }),
+  window_lit: new THREE.MeshStandardMaterial({ color: 0x331a08, emissive: 0xffa548, emissiveIntensity: 2.2 }),
+  lantern: new THREE.MeshStandardMaterial({ color: 0x331a08, emissive: 0xffb050, emissiveIntensity: 9 }),
+  cloth_dark: new THREE.MeshStandardMaterial({ color: 0x0c0d0f, roughness: .95 }),
+  skin_pale: new THREE.MeshStandardMaterial({ color: 0xb8bcb4, roughness: .7 })
+};
+function applyMats(root, shadows) {
+  root.traverse((o) => {
+    if (!o.isMesh) return;
+    const name = (o.material && o.material.name || '').replace(/\.\d+$/, '');
+    let m = MATS[name];
+    if (m) {
+      if (o.geometry.attributes.color) { m = m.clone(); m.vertexColors = true; }
+      o.material = m;
+    }
+    o.castShadow = shadows && name !== 'glass';
+    o.receiveShadow = shadows;
+  });
+}
+
+/* ---------------- world ---------------- */
+let water, beams = [], spots = [], props = {}, ready = false, lensMat = MATS.lens;
+const moonDir = new THREE.Vector3(0.88, 0.34, 0.32).normalize();
+const moon = new THREE.DirectionalLight(0xa9bce0, 0.55);
+moon.position.copy(moonDir).multiplyScalar(300); moon.castShadow = true;
+moon.shadow.mapSize.set(coarse ? 1024 : 2048, coarse ? 1024 : 2048);
+Object.assign(moon.shadow.camera, { left: -90, right: 90, top: 90, bottom: -90, near: 10, far: 800 });
+moon.shadow.bias = -0.0006; moon.shadow.normalBias = 0.6;
+scene.add(moon); scene.add(moon.target);
+scene.add(new THREE.HemisphereLight(0x2a3a52, 0x05080a, 0.25));
+// horizon haze skirt: blends the sea's far edge into the sky
+const haze = new THREE.Mesh(new THREE.CylinderGeometry(3200, 3200, 900, 64, 1, true), new THREE.ShaderMaterial({
+  transparent: true, depthWrite: false, side: THREE.BackSide, fog: false,
+  uniforms: { uCol: { value: FOG } },
+  vertexShader: 'varying float vY; void main(){ vY = position.y; gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.); }',
+  fragmentShader: 'uniform vec3 uCol; varying float vY; void main(){ float a = 1. - smoothstep(-40., 380., vY); gl_FragColor = vec4(uCol, a*a); }'
+}));
+haze.position.y = 0; haze.geometry.translate(0, 360, 0); haze.renderOrder = -1; haze.frustumCulled = false; scene.add(haze);
+const LAMP = new THREE.Vector3(0, 40.7, 0);
+// beams: spotlights + volumetric cones
+const beamGeo = (() => { const L = 1600, g = new THREE.CylinderGeometry(0.45, 70, L, 48, 24, true); g.translate(0, -L / 2, 0); g.rotateZ(Math.PI / 2); return g; })();
+const beamMat = new THREE.ShaderMaterial({
+  transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, fog: false,
+  uniforms: { uTime: { value: 0 }, uInt: { value: 1 }, uNear: { value: new THREE.Vector2(8, 60) }, uAxis: { value: new THREE.Vector3(1, 0, 0) }, uAx: { value: 0 }, uCol: { value: new THREE.Color(1.0, 0.86, 0.62) } },
+  vertexShader: `varying vec3 vL; varying vec3 vN; varying vec3 vV; varying vec3 vW;
+    void main(){ vL = position; vec4 w = modelMatrix*vec4(position,1.); vW = w.xyz; vN = normalize(mat3(modelMatrix)*normal); vV = normalize(cameraPosition - w.xyz); gl_Position = projectionMatrix*viewMatrix*w; }`,
+  fragmentShader: `uniform float uTime; uniform float uInt; uniform vec2 uNear; uniform vec3 uCol; uniform vec3 uAxis; uniform float uAx; varying vec3 vL; varying vec3 vN; varying vec3 vV; varying vec3 vW;
+    float h(vec3 p){ return fract(sin(dot(p, vec3(12.9898,78.233,37.719)))*43758.5453); }
+    float n3(vec3 p){ vec3 i=floor(p), f=fract(p); f=f*f*(3.-2.*f); return mix(mix(mix(h(i),h(i+vec3(1,0,0)),f.x),mix(h(i+vec3(0,1,0)),h(i+vec3(1,1,0)),f.x),f.y),mix(mix(h(i+vec3(0,0,1)),h(i+vec3(1,0,1)),f.x),mix(h(i+vec3(0,1,1)),h(i+vec3(1,1,1)),f.x),f.y),f.z); }
+    void main(){
+      float x = vL.x; float along = clamp(x/1600., 0., 1.);
+      float core = pow(abs(dot(normalize(vN), normalize(vV))), 2.2);
+      float fall = pow(1. - along, 2.2)*smoothstep(0., 18., x);
+      float fog = .55 + .9*n3(vW*.012 + vec3(uTime*.08, 0., uTime*.05));
+      float hfade = smoothstep(-2., 30., vW.y + 6.);
+      float d = length(vW - cameraPosition); float near = smoothstep(uNear.x, uNear.y, d);
+      float axial = abs(dot(normalize(vW - cameraPosition), uAxis)); float side = mix(1., 1. - smoothstep(.55, .97, axial), uAx);
+      float a = core*fall*fog*near*hfade*side*.22*uInt;
+      gl_FragColor = vec4(uCol*a, a);
+    }`
+});
+for (let i = 0; i < 2; i++) {
+  const cone = new THREE.Mesh(beamGeo, beamMat.clone()); cone.position.copy(LAMP); cone.frustumCulled = false; cone.renderOrder = 5; scene.add(cone); beams.push(cone);
+  const sp = new THREE.SpotLight(0xffe2b0, 60, 0, 0.055, 0.6, 0); sp.position.copy(LAMP); scene.add(sp); scene.add(sp.target); spots.push(sp);
+}
+const lampGlow = new THREE.PointLight(0xffd9a0, 6, 22, 1.6); lampGlow.position.copy(LAMP); scene.add(lampGlow);
+const cottageLight = new THREE.PointLight(0xffa04a, 5, 14, 1.8); cottageLight.position.set(16.5, 11.5, 3.5); scene.add(cottageLight);
+
+// anomaly helpers
+const boatLight = new THREE.PointLight(0xffb060, 3, 30, 1.6);
+const glowTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d'), g = x.createRadialGradient(64, 64, 0, 64, 64, 64); g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(.25, 'rgba(255,255,255,.5)'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect(0, 0, 128, 128); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; })();
+const sprite = (col, size, fog = true) => { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: col, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, fog })); s.scale.setScalar(size); return s; };
+const greenGroup = new THREE.Group(); scene.add(greenGroup);
+const greens = [];
+for (let i = 0; i < 4; i++) {
+  const m = new THREE.Mesh(new THREE.CircleGeometry(1, 32), new THREE.MeshBasicMaterial({ map: glowTex, color: 0x33ff99, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: 0 }));
+  m.rotation.x = -Math.PI / 2; m.position.y = .25; m.scale.setScalar(10 + i * 3); greenGroup.add(m); greens.push(m);
+}
+const farBeacon = sprite(0xd8fff0, 60, false); scene.add(farBeacon);
+const farBeam = new THREE.Mesh(beamGeo, beamMat.clone()); farBeam.material.uniforms.uCol.value = new THREE.Color(.7, .95, .88); farBeam.frustumCulled = false; scene.add(farBeam);
+const lanternSprite = sprite(0xffb060, 3);
+
+async function load() {
+  rgbe.setDataType(THREE.FloatType);
+  const hd = rgbe.parse(await loadBin('tex/sky.json'));
+  const hdr = new THREE.DataTexture(hd.data, hd.width, hd.height, THREE.RGBAFormat, THREE.FloatType);
+  Object.assign(hdr, { colorSpace: THREE.LinearSRGBColorSpace, flipY: true, minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, generateMipmaps: false });
+  { const d = hd.data; for (let i = 0; i < d.length; i++) { if ((i & 3) === 3) continue; if (d[i] > 4) d[i] = 4 + Math.log(d[i] - 3) * .4; } hdr.needsUpdate = true; }
+  hdr.mapping = THREE.EquirectangularReflectionMapping;
+  scene.background = hdr; scene.backgroundIntensity = 0.11; scene.backgroundBlurriness = 0.0;
+  const pm = new THREE.PMREMGenerator(renderer); scene.environment = pm.fromEquirectangular(hdr).texture; scene.environmentIntensity = 0.28;
+  const wn = tl.load('tex/waternormals.jpg', (t) => { t.wrapS = t.wrapT = THREE.RepeatWrapping; });
+  water = new Water(new THREE.PlaneGeometry(12000, 12000), { textureWidth: coarse ? 256 : 512, textureHeight: coarse ? 256 : 512, waterNormals: wn, sunDirection: moonDir.clone(), sunColor: 0x9fb4d8, waterColor: 0x02121a, distortionScale: 2.2, fog: true, alpha: 1 });
+  water.rotation.x = -Math.PI / 2; water.renderOrder = -2; water.material.uniforms.size.value = 3.2; scene.add(water);
+  const [isl, boat, fig, ship] = await Promise.all(['island', 'rowboat', 'figure', 'steamer'].map(async (n) => gltf.parseAsync(await loadBin('models/' + n + '.json'), './models/')));
+  applyMats(isl.scene, true); scene.add(isl.scene);
+  isl.scene.traverse((o) => { if (o.isMesh && o.name === 'Lens') { lensMat = o.material; } });
+  applyMats(boat.scene, false); applyMats(fig.scene, false); applyMats(ship.scene, false);
+  props.boat = boat.scene; props.fig = fig.scene; props.ship = ship.scene;
+  boat.scene.add(boatLight); boatLight.position.set(-1.6, 1.9, -.3); boat.scene.add(lanternSprite); lanternSprite.position.set(-1.6, 1.9, -.3);
+  Object.values(props).forEach((p) => { p.visible = false; scene.add(p); });
+  ready = true;
+  $('#loader').classList.add('done');
+  document.querySelectorAll('[data-watch]').forEach((b) => { b.disabled = false; });
+}
+load().catch((e) => { console.error(e); $('#lmsg').textContent = 'Could not load the scene.'; });
+
+/* ---------------- post ---------------- */
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(new THREE.Vector2(256, 256), 0.85, 0.55, 0.82); composer.addPass(bloom);
+composer.addPass(new OutputPass());
+function resize() {
+  const w = innerWidth, h = innerHeight;
+  renderer.setPixelRatio(pixelScale); renderer.setSize(w, h, false); composer.setPixelRatio(pixelScale); composer.setSize(w, h);
+  bloom.resolution.set(w * pixelScale * .5, h * pixelScale * .5);
+  camera.aspect = w / h; camera.updateProjectionMatrix();
+}
+addEventListener('resize', resize); resize();
+
+/* ---------------- state ---------------- */
+const S = { mode: 'site', t: 0, watchT: 0, yaw: 1.0, pitch: -.04, zoom: 1, fov: 55, logged: {}, misses: 0, figDist: 430, ended: false, lastD: 0, lastD2: 0, fpsAcc: 0, fpsN: 0 };
+const DUR = 240;
+const POS = [];
+function anomState(i, wt) {
+  const a = ANOM[i]; let act = 0;
+  if (S.mode === 'watch' && wt >= a.t0 && wt <= a.t1) act = Math.min(1, (wt - a.t0) / 3, (a.t1 - wt) / 3);
+  let ang = a.ang, dist, y = 0;
+  if (i === 0) { dist = mix(640, 140, clamp((wt - a.t0) / (a.t1 - a.t0), 0, 1)); ang += Math.sin(wt * .05) * .03; }
+  else if (i === 1) dist = 230;
+  else if (i === 2) dist = S.figDist;
+  else if (i === 3) { dist = 1150; ang += (wt - a.t0) * .0009; }
+  else { dist = 3300; y = 28; }
+  return { x: Math.cos(ang) * dist, y, z: Math.sin(ang) * dist, w: act, ang, dist };
+}
+const camPos = () => new THREE.Vector3(Math.cos(S.yaw) * 3.05, 40.05, Math.sin(S.yaw) * 3.05);
+const viewDir = () => new THREE.Vector3(Math.cos(S.yaw) * Math.cos(S.pitch), Math.sin(S.pitch), Math.sin(S.yaw) * Math.cos(S.pitch));
+
+/* ---------------- input ---------------- */
+let drag = null, pinch = null; const keys = {};
+canvas.addEventListener('pointerdown', (e) => { if (S.mode !== 'watch') return; drag = drag || { id: e.pointerId, x: e.clientX, y: e.clientY }; try { canvas.setPointerCapture(e.pointerId); } catch (er) {} hideHint(); });
+canvas.addEventListener('pointermove', (e) => { if (S.mode !== 'watch' || !drag || drag.id !== e.pointerId || pinch) return; const k = 1.6 / innerHeight * (S.fov / 55); S.yaw += (e.clientX - drag.x) * k; S.pitch = clamp(S.pitch - (e.clientY - drag.y) * k, -.75, .45); drag.x = e.clientX; drag.y = e.clientY; });
+const endDrag = (e) => { if (drag && drag.id === e.pointerId) drag = null; };
+canvas.addEventListener('pointerup', endDrag); canvas.addEventListener('pointercancel', endDrag);
+canvas.addEventListener('touchstart', (e) => { if (S.mode !== 'watch') return; if (e.touches.length === 2) { const [a, b] = e.touches; pinch = { d: Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY), z: S.zoom }; drag = null; } }, { passive: true });
+canvas.addEventListener('touchmove', (e) => { if (pinch && e.touches.length === 2) { const [a, b] = e.touches; setZoom(pinch.z * Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY) / pinch.d); e.preventDefault(); } }, { passive: false });
+canvas.addEventListener('touchend', (e) => { if (e.touches.length < 2) pinch = null; });
+canvas.addEventListener('wheel', (e) => { if (S.mode !== 'watch') return; e.preventDefault(); setZoom(S.zoom * Math.exp(-e.deltaY * .0015)); hideHint(); }, { passive: false });
+addEventListener('keydown', (e) => { if (S.mode !== 'watch') return; const k = e.key.toLowerCase(); keys[k] = true; if (k === 'escape') finishWatch(false, true); if (k === ' ' || k === 'enter') { e.preventDefault(); logSighting(); } if (k === 'z' || k === '=' || k === '+') setZoom(S.zoom * 1.25); if (k === 'x' || k === '-') setZoom(S.zoom / 1.25); });
+addEventListener('keyup', (e) => { keys[e.key.toLowerCase()] = false; });
+const zoomEl = $('#zoom'), zv = $('#zv');
+function setZoom(z) { S.zoom = clamp(z, 1, 8); zoomEl.value = S.zoom.toFixed(1); zv.textContent = S.zoom.toFixed(1) + '×'; $('#scope').classList.toggle('on', S.zoom > 1.9); $('#scopeBtn').classList.toggle('on', S.zoom > 1.9); }
+zoomEl.addEventListener('input', () => setZoom(parseFloat(zoomEl.value)));
+$('#scopeBtn').addEventListener('click', () => setZoom(S.zoom > 1.9 ? 1 : 5));
+const hintEl = $('#hint'); const hideHint = () => { hintEl.style.opacity = 0; };
+
+/* ---------------- sightings ---------------- */
+const toastEl = $('#toast'); let toastT = null;
+function toast(title, body, plain, ms) { toastEl.className = 'toast on' + (plain ? ' plain' : ''); toastEl.innerHTML = ''; if (title) { const b = document.createElement('b'); b.textContent = title; toastEl.appendChild(b); } const s = document.createElement('span'); s.textContent = body; toastEl.appendChild(s); clearTimeout(toastT); toastT = setTimeout(() => toastEl.classList.remove('on'), ms || 4200); }
+function logSighting() {
+  if (S.mode !== 'watch' || S.ended) return;
+  const v = viewDir(), ro = camPos(); let best = -1, bestA = 1e9;
+  const fovR = S.fov * Math.PI / 180;
+  for (let i = 0; i < 5; i++) {
+    const p = POS[i]; if (!p || p.w < .3) continue;
+    const ty = i === 4 ? p.y : i === 3 ? 8 : i === 1 ? 0 : 1;
+    const d = new THREE.Vector3(p.x - ro.x, ty - ro.y, p.z - ro.z).normalize();
+    const ang = Math.acos(clamp(d.dot(v), -1, 1));
+    const tol = Math.max(.035, fovR * .085) * (i === 1 ? 1.8 : i === 3 ? 1.6 : 1);
+    if (ang < tol && ang < bestA) { bestA = ang; best = i; }
+  }
+  if (best < 0) { S.misses++; toast(null, ['Only fog and water.', 'Nothing there. The beam moves on.', 'Just the swell. Keep looking.', 'You wrote it down, then crossed it out.'][S.misses % 4], true, 2200); bell(.3); return; }
+  const a = ANOM[best];
+  if (S.logged[a.key]) { toast(null, 'Already in the log: ' + a.name.toLowerCase() + '.', true, 2200); return; }
+  S.logged[a.key] = true; found[a.key] = true; lsSet('hr_found', JSON.stringify(found));
+  toast('Logged · ' + a.name, a.log[0] + ' · ' + a.log[1].split('. ')[0] + '.', false, 5200);
+  bell(1); drone();
+  $('#count').textContent = 'Sightings ' + Object.keys(S.logged).length + ' / 5';
+  renderLogs();
+  if (Object.keys(S.logged).length >= 5) setTimeout(() => finishWatch(true), 5500);
+}
+$('#logBtn').addEventListener('click', logSighting);
+
+/* ---------------- audio ---------------- */
+let AC = null, master = null, soundOn = true;
+function audioInit() {
+  if (AC) { if (AC.state === 'suspended') AC.resume(); return; }
+  try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return; }
+  master = AC.createGain(); master.gain.value = 0; master.connect(AC.destination);
+  const len = AC.sampleRate * 4, bf = AC.createBuffer(2, len, AC.sampleRate);
+  for (let ch = 0; ch < 2; ch++) { const d = bf.getChannelData(ch); let l = 0; for (let i = 0; i < len; i++) { l = l * .97 + (Math.random() * 2 - 1) * .03; d[i] = l * 5; } }
+  const sea = AC.createBufferSource(); sea.buffer = bf; sea.loop = true; const lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 700; const sg = AC.createGain(); sg.gain.value = .5;
+  const lfo = AC.createOscillator(); lfo.frequency.value = .11; const lg = AC.createGain(); lg.gain.value = .3; lfo.connect(lg); lg.connect(sg.gain); lfo.start();
+  sea.connect(lp); lp.connect(sg); sg.connect(master); sea.start();
+  const wn = AC.createBufferSource(); wn.buffer = bf; wn.loop = true; wn.playbackRate.value = 1.7; const bp = AC.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 900; bp.Q.value = .8; const wg = AC.createGain(); wg.gain.value = .05;
+  wn.connect(bp); bp.connect(wg); wg.connect(master); wn.start();
+  const hum = AC.createOscillator(); hum.frequency.value = 58; const hg = AC.createGain(); hg.gain.value = .012; hum.connect(hg); hg.connect(master); hum.start();
+}
+const setMaster = (on) => { if (AC) master.gain.setTargetAtTime(on && soundOn ? .8 : 0, AC.currentTime, .6); };
+function foghorn() { if (!AC || !soundOn) return; const t = AC.currentTime; [98, 99.5, 196].forEach((f, i) => { const o = AC.createOscillator(), g = AC.createGain(), fl = AC.createBiquadFilter(); o.type = 'sawtooth'; o.frequency.value = f; fl.type = 'lowpass'; fl.frequency.value = 420; const v = i === 2 ? .03 : .09; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + .5); g.gain.setValueAtTime(v, t + 2.6); g.gain.linearRampToValueAtTime(0, t + 3.6); o.connect(fl); fl.connect(g); g.connect(master); o.start(t); o.stop(t + 3.7); }); }
+function bell(v) { if (!AC || !soundOn) return; const t = AC.currentTime; [523.25, 1046.5, 1568, 2093].forEach((f, i) => { const o = AC.createOscillator(), g = AC.createGain(); o.frequency.value = f * (1 + i * .002); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.12 * v / (i + 1), t + .01); g.gain.exponentialRampToValueAtTime(.0005, t + 3.5 / (i * .5 + 1)); o.connect(g); g.connect(master); o.start(t); o.stop(t + 4); }); }
+function drone() { if (!AC || !soundOn) return; const t = AC.currentTime; [41, 61.7, 82.4].forEach((f) => { const o = AC.createOscillator(), g = AC.createGain(); o.frequency.value = f; o.frequency.linearRampToValueAtTime(f * .97, t + 6); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.06, t + 2); g.gain.linearRampToValueAtTime(0, t + 7); o.connect(g); g.connect(master); o.start(t); o.stop(t + 7.2); }); }
+function buoy() { if (!AC || !soundOn) return; const t = AC.currentTime; [330, 495, 742].forEach((f, i) => { const o = AC.createOscillator(), g = AC.createGain(); o.frequency.value = f; g.gain.setValueAtTime(.025 / (i + 1), t); g.gain.exponentialRampToValueAtTime(.0005, t + 4); o.connect(g); g.connect(master); o.start(t); o.stop(t + 4.2); }); }
+$('#snd').addEventListener('click', () => { soundOn = !soundOn; $('#snd').textContent = soundOn ? 'Sound on' : 'Sound off'; setMaster(S.mode === 'watch'); });
+
+/* ---------------- flow ---------------- */
+let nextHorn = 8, nextBuoy = 20, announced = {};
+function startWatch() {
+  if (!ready) return;
+  audioInit(); setMaster(true);
+  Object.assign(S, { mode: 'watch', watchT: 0, logged: {}, misses: 0, figDist: 430, ended: false, yaw: 1.0, pitch: -.05 }); setZoom(1);
+  document.body.classList.add('watching'); $('#end').classList.remove('on'); hintEl.style.opacity = 1; setTimeout(hideHint, 8000);
+  $('#count').textContent = 'Sightings 0 / 5';
+  toast(null, 'The relief boat has gone. You have the watch until five.', true, 3500);
+  nextHorn = 8; nextBuoy = 20; announced = {};
+}
+function finishWatch(all, early) {
+  if (S.mode !== 'watch' || S.ended) return; S.ended = true;
+  const n = Object.keys(S.logged).length;
+  $('#endT').textContent = all ? 'The sea goes quiet.' : early ? 'You left the gallery early.' : 'The watch is over.';
+  $('#endP').textContent = all ? 'You logged all five. Down on the rocks below the gallery, something waited until the light came round, and then it was gone. The last page of the keeper\'s log has opened.' : 'You logged ' + n + ' of 5 sightings' + (S.misses ? ' and ' + S.misses + ' false report' + (S.misses > 1 ? 's' : '') : '') + '. ' + (n ? 'The museum has restored the matching pages of Elias Marr\'s log.' : 'The sea kept its secrets tonight.');
+  $('#end').classList.add('on'); setMaster(false); bell(.6);
+}
+function backToSite() { S.mode = 'site'; document.body.classList.remove('watching'); $('#end').classList.remove('on'); toastEl.classList.remove('on'); }
+document.querySelectorAll('[data-watch]').forEach((b) => b.addEventListener('click', startWatch));
+$('#quit').addEventListener('click', () => finishWatch(false, true));
+$('#endAgain').addEventListener('click', startWatch);
+$('#endLogs').addEventListener('click', backToSite);
+
+/* ---------------- loop ---------------- */
+const clock = new THREE.Clock();
+const bearing = () => { const v = viewDir(), b = (Math.atan2(v.x, -v.z) * 180 / Math.PI + 360) % 360; return ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'][Math.round(b / 22.5) % 16] + ' ' + String(Math.round(b)).padStart(3, '0') + '°'; };
+const tmpV = new THREE.Vector3();
+function aimBeam(cone, sp, ang, origin) {
+  const d = tmpV.set(Math.cos(ang), -0.012, Math.sin(ang)).normalize();
+  cone.position.copy(origin); cone.quaternion.setFromUnitVectors(new THREE.Vector3(1, 0, 0), d);
+  if (cone.material.uniforms) cone.material.uniforms.uAxis.value.copy(d);
+  if (sp) { sp.position.copy(origin); sp.target.position.copy(origin).addScaledVector(d, 500); }
+}
+function frame() {
+  requestAnimationFrame(frame);
+  if (document.hidden) return;
+  const dt = Math.min(.05, clock.getDelta()); S.t += dt;
+  if (!ready) return;
+  const beam = S.t * TAU / 7;
+  if (S.mode === 'watch' && !S.ended) {
+    S.watchT += dt;
+    if (keys.a || keys.arrowleft) S.yaw -= dt * .9 * (S.fov / 55); if (keys.d || keys.arrowright) S.yaw += dt * .9 * (S.fov / 55);
+    if (keys.w || keys.arrowup) S.pitch = clamp(S.pitch + dt * .5 * (S.fov / 55), -.75, .45); if (keys.s || keys.arrowdown) S.pitch = clamp(S.pitch - dt * .5 * (S.fov / 55), -.75, .45);
+    const fa = ANOM[2].ang, d1 = Math.atan2(Math.sin(beam - fa), Math.cos(beam - fa)), d2 = Math.atan2(Math.sin(beam + Math.PI - fa), Math.cos(beam + Math.PI - fa));
+    if (S.watchT > ANOM[2].t0 && ((S.lastD < 0 && d1 >= 0) || (S.lastD2 < 0 && d2 >= 0))) S.figDist = Math.max(150, S.figDist - 16);
+    S.lastD = d1; S.lastD2 = d2;
+    ANOM.forEach((a, i) => { if (!announced[i] && S.watchT > a.t0 + 2) { announced[i] = true; if (i !== 1) drone(); } });
+    if (S.watchT > nextHorn) { foghorn(); nextHorn = S.watchT + 42 + Math.random() * 20; }
+    if (S.watchT > nextBuoy) { buoy(); nextBuoy = S.watchT + 9 + Math.random() * 14; }
+    const hrs = 1 + S.watchT / DUR * 4, hh = Math.floor(hrs), mm = Math.floor((hrs - hh) * 60);
+    $('#clock').textContent = hh + ':' + String(mm).padStart(2, '0') + ' AM';
+    $('#bear').textContent = bearing();
+    if (S.watchT >= DUR) finishWatch(false);
+  }
+  // camera
+  const targetFov = S.mode === 'watch' ? 55 / S.zoom : 42;
+  S.fov = mix(S.fov, targetFov, Math.min(1, dt * 6)); camera.fov = S.fov; camera.updateProjectionMatrix();
+  if (S.mode === 'watch') {
+    const p = camPos(); camera.position.copy(p); camera.lookAt(p.clone().add(viewDir()));
+    camera.near = .1;
+  } else {
+    const a = S.t * .035 + 2.2, R = 175 + Math.sin(S.t * .05) * 20;
+    camera.position.set(Math.cos(a) * R, 26 + Math.sin(S.t * .07) * 6, Math.sin(a) * R);
+    camera.lookAt(0, 22, 0);
+  }
+  // beams
+  aimBeam(beams[0], spots[0], -beam, LAMP); aimBeam(beams[1], spots[1], -beam + Math.PI, LAMP);
+  for (const c of beams) { const u = c.material.uniforms; u.uTime.value = S.t; if (S.mode === 'watch') { u.uNear.value.set(40, 260); u.uInt.value = .6; u.uAx.value = 1; } else { u.uNear.value.set(8, 60); u.uInt.value = 1; u.uAx.value = 0; } }
+  haze.position.set(camera.position.x, 0, camera.position.z);
+  // the lens flashes bright when a beam faces the camera
+  const toCam = camera.position.clone().sub(LAMP).setY(0).normalize();
+  const face = Math.max(Math.cos(-beam - Math.atan2(toCam.z, toCam.x)), Math.cos(-beam + Math.PI - Math.atan2(toCam.z, toCam.x)));
+  if (lensMat) lensMat.emissiveIntensity = 4 + 40 * Math.pow(Math.max(0, face), 60);
+  // anomalies
+  for (let i = 0; i < 5; i++) POS[i] = anomState(i, S.watchT);
+  const P = POS;
+  const place = (obj, p, face) => { obj.visible = p.w > .01; if (!obj.visible) return; obj.position.set(p.x, p.y, p.z); obj.rotation.y = face; };
+  place(props.boat, P[0], -P[0].ang + Math.PI / 2); props.boat.position.y = Math.sin(S.t * 1.1) * .15; props.boat.rotation.z = Math.sin(S.t * .9) * .05;
+  boatLight.intensity = 3 * P[0].w * (.8 + .2 * Math.sin(S.t * 7)); lanternSprite.material.opacity = P[0].w;
+  const toTower = Math.atan2(-P[2].x, -P[2].z);
+  place(props.fig, P[2], toTower); props.fig.position.y = -.05;
+  place(props.ship, P[3], -P[3].ang); props.ship.position.y = Math.sin(S.t * .4) * .3;
+  greenGroup.visible = P[1].w > .01; greenGroup.position.set(P[1].x, 0, P[1].z);
+  greens.forEach((m, k) => { m.position.x = Math.sin(S.t * .13 + k * 1.7) * (9 + k * 4); m.position.z = Math.cos(S.t * .11 + k * 2.3) * (9 + k * 4); m.material.opacity = P[1].w * (.7 + .3 * Math.sin(S.t * 1.3 + k * 2)); });
+  farBeacon.visible = farBeam.visible = P[4].w > .01;
+  if (farBeam.visible) { const o = new THREE.Vector3(P[4].x, P[4].y, P[4].z); farBeacon.position.copy(o); farBeacon.material.opacity = P[4].w; aimBeam(farBeam, null, S.t * .95 + 1.3, o); farBeam.material.uniforms.uInt.value = P[4].w * 1.8; farBeam.material.uniforms.uTime.value = S.t; }
+  water.material.uniforms.time.value += dt * .6;
+  // adaptive resolution
+  S.fpsAcc += dt; S.fpsN++;
+  if (S.fpsAcc > 2) { const fps = S.fpsN / S.fpsAcc; if (fps < 38 && pixelScale > .55) { pixelScale = Math.max(.55, pixelScale - .15); resize(); } else if (fps > 58 && pixelScale < (coarse ? 1.25 : Math.min(devicePixelRatio, 1.5))) { pixelScale = Math.min(pixelScale + .1, coarse ? 1.25 : 1.5); resize(); } S.fpsAcc = 0; S.fpsN = 0; }
+  composer.render();
+}
+frame();
+window.__hr = { S, start: startWatch, log: logSighting, pos: () => POS, zoom: setZoom, ready: () => ready, aim(i) { const p = POS[i], ro = camPos(), ty = i === 4 ? p.y : i === 3 ? 8 : i === 1 ? 0 : 1; S.yaw = Math.atan2(p.z - ro.z, p.x - ro.x); S.pitch = Math.atan2(ty - ro.y, Math.hypot(p.x - ro.x, p.z - ro.z)); } };
+</script>
+</body>
+</html>

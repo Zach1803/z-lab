@@ -1,0 +1,1019 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Margin Properties</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;700&family=IBM+Plex+Sans:wght@400;500&family=VT323&family=Caveat:wght@500&display=swap">
+<style>
+:root{
+  --ink:#f1e8c8; --dim:rgba(241,232,200,.66); --faint:rgba(241,232,200,.38);
+  --line:rgba(241,225,160,.22); --panel:rgba(22,19,8,.66); --accent:#e3cb6b; --warn:#d0452f;
+  --paper:#e9dfb9; --pen:#2b2a6a;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:#0b0a05;color:var(--ink)}
+body{font:16px/1.6 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;overflow-x:hidden}
+canvas#world{position:fixed;inset:0;width:100%;height:100%;z-index:0;display:block;background:#2a2410}
+.shade{position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(90deg,rgba(9,8,3,.72) 0%,rgba(9,8,3,.34) 44%,rgba(9,8,3,0) 66%),linear-gradient(0deg,rgba(9,8,3,.5),rgba(9,8,3,0) 26%)}
+.blackout{position:fixed;inset:0;z-index:7;pointer-events:none;background:#000;opacity:0;transition:opacity .25s}
+.fallback{position:fixed;inset:0;z-index:0;display:none;background:radial-gradient(ellipse at 60% 30%,#cdb963 0%,#8a7a36 40%,#2a2410 100%)}
+.nogl .fallback{display:block}
+
+header.top{position:fixed;top:0;left:0;right:0;z-index:8;display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:calc(14px + env(safe-area-inset-top,0px)) max(20px,env(safe-area-inset-right,0px)) 14px max(20px,env(safe-area-inset-left,0px));
+  background:linear-gradient(180deg,rgba(9,8,3,.82),rgba(9,8,3,0))}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--ink)}
+.brand .mk{width:30px;height:30px;border:1.5px solid var(--accent);display:grid;place-items:center}
+.brand .mk i{width:12px;height:12px;border:1.5px solid var(--accent);border-top:none;border-left:none;display:block;transform:translate(-2px,-2px)}
+.brand b{font:700 17px/1 "Archivo Narrow","Arial Narrow",sans-serif;letter-spacing:.2em;text-transform:uppercase}
+.brand small{display:block;font:500 10px/1.4 "IBM Plex Sans",sans-serif;letter-spacing:.24em;color:var(--dim);text-transform:uppercase;margin-top:3px}
+nav.links{display:flex;gap:22px}
+nav.links a{color:var(--dim);text-decoration:none;font:500 12px/1 "IBM Plex Sans",sans-serif;letter-spacing:.18em;text-transform:uppercase}
+nav.links a:hover{color:var(--ink)}
+@media (max-width:820px){nav.links{display:none}}
+
+.osd{position:fixed;z-index:8;font:22px/1 "VT323","Courier New",monospace;color:#f4f1e6;text-shadow:0 0 6px rgba(255,255,240,.45),2px 0 rgba(255,0,60,.25),-2px 0 rgba(0,200,255,.2);pointer-events:none;letter-spacing:.04em}
+.osd.tl{top:calc(136px + env(safe-area-inset-top,0px));right:max(22px,env(safe-area-inset-right,0px));text-align:right}
+.osd.tr{top:calc(78px + env(safe-area-inset-top,0px));right:max(22px,env(safe-area-inset-right,0px));text-align:right}
+.osd .rec{color:#ff3b2f}
+.osd .rec i{display:inline-block;width:12px;height:12px;border-radius:50%;background:#ff3b2f;margin-right:6px;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+.bat{display:inline-flex;gap:2px;border:2px solid #f4f1e6;padding:2px;vertical-align:middle;margin-left:6px}
+.bat b{width:7px;height:10px;background:#f4f1e6}
+.bat b.off{background:transparent}
+
+main{position:relative;z-index:3}
+section{min-height:100vh;display:flex;align-items:center;padding-block:120px;
+  padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+.wrap{width:100%;max-width:1180px;margin:0 auto}
+.col{max-width:560px}
+.eyebrow{font:500 12px/1.4 "IBM Plex Sans",sans-serif;letter-spacing:.26em;text-transform:uppercase;color:var(--accent);display:flex;gap:10px;align-items:center}
+.eyebrow::before{content:"";width:28px;height:1px;background:var(--accent)}
+h1,h2{font-family:"Archivo Narrow","Arial Narrow","Helvetica Neue",sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.01em;line-height:.95;text-wrap:balance;margin:.4em 0 .35em;text-shadow:0 2px 30px rgba(0,0,0,.55)}
+h1{font-size:clamp(44px,6.4vw,88px)}
+h2{font-size:clamp(34px,5vw,64px)}
+p.lede{font-size:clamp(16px,1.5vw,19px);color:var(--dim);max-width:520px}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+.btn{font:500 13px/1 "IBM Plex Sans",sans-serif;letter-spacing:.18em;text-transform:uppercase;padding:16px 22px;border:1px solid var(--accent);color:#14110a;background:var(--accent);cursor:pointer;text-decoration:none;display:inline-block;transition:transform .2s,background .2s}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn:hover{transform:translateY(-2px)}
+.hint{margin-top:34px;font:20px/1 "VT323",monospace;color:var(--faint);letter-spacing:.06em}
+
+.panel{background:var(--panel);border:1px solid var(--line);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);margin-top:36px;border:1px solid var(--line)}
+.stat{background:rgba(18,16,7,.78);padding:22px 20px;min-width:0}
+.stat small{display:block;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint)}
+.stat b{display:block;font:700 clamp(26px,3vw,38px)/1.1 "Archivo Narrow",sans-serif;margin-top:8px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.stat em{font-style:normal;font-size:12px;color:var(--dim)}
+@media (max-width:700px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.plan{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:24px;margin-top:30px;align-items:start}
+.plan .map{padding:14px}
+.plan canvas{width:100%;height:auto;display:block;background:#0d1a24;image-rendering:pixelated}
+.legend{padding:18px;font-size:13px;color:var(--dim)}
+.legend div{display:flex;gap:10px;align-items:center;margin:6px 0}
+.legend i{width:14px;height:14px;display:inline-block;border:1px solid rgba(200,230,255,.6)}
+.legend .lnote{margin-top:16px;padding-top:14px;border-top:1px dashed var(--line);font:20px/1.1 "VT323",monospace;color:#cfe6ff}
+@media (max-width:820px){.plan{grid-template-columns:minmax(0,1fr)}}
+
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:34px}
+.card{padding:24px;min-width:0}
+.card small{font:20px/1 "VT323",monospace;color:var(--accent)}
+.card h3{font:700 22px/1.1 "Archivo Narrow",sans-serif;text-transform:uppercase;letter-spacing:.04em;margin:10px 0 8px}
+.card p{margin:0;color:var(--dim);font-size:15px}
+.card.struck h3{text-decoration:line-through;text-decoration-color:var(--warn);opacity:.6}
+@media (max-width:900px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.cards{grid-template-columns:minmax(0,1fr)}}
+
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:26px;margin-top:40px}
+.note{background:var(--paper);color:var(--pen);padding:22px 22px 26px;font:500 23px/1.25 "Caveat","Comic Sans MS",cursive;
+  box-shadow:0 18px 40px rgba(0,0,0,.55);position:relative;opacity:0;transform:translateY(30px) rotate(var(--r,0deg));transition:opacity 1.1s,transform 1.1s;
+  background-image:linear-gradient(transparent 31px,rgba(43,42,106,.13) 32px),radial-gradient(ellipse at 80% 90%,rgba(120,90,20,.25),transparent 55%);background-size:100% 32px,100% 100%}
+.note.in{opacity:1;transform:translateY(0) rotate(var(--r,0deg))}
+.note::before{content:"";position:absolute;top:-10px;left:50%;width:70px;height:22px;transform:translateX(-50%) rotate(-3deg);background:rgba(240,230,190,.55);box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.note b{display:block;font-weight:500;color:#6a1f1a;font-size:20px;margin-bottom:6px}
+.note.last{color:#4a1210}
+.note.last span{display:inline-block;filter:blur(.3px)}
+
+form.enq{display:grid;gap:16px;margin-top:30px;padding:28px;max-width:560px}
+form.enq label{display:grid;gap:6px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint)}
+form.enq input,form.enq select{font:16px "IBM Plex Sans",sans-serif;background:rgba(0,0,0,.35);color:var(--ink);border:1px solid var(--line);padding:13px 14px;border-radius:0;width:100%}
+form.enq input:focus,form.enq select:focus{outline:1px solid var(--accent)}
+.thanks{display:none;margin-top:30px;padding:28px;max-width:560px;font:24px/1.25 "VT323",monospace;color:#f4f1e6}
+.thanks.on{display:block}
+footer{position:relative;z-index:3;padding:40px max(24px,env(safe-area-inset-right,0px)) 150px max(24px,env(safe-area-inset-left,0px));color:var(--faint);font-size:12px;letter-spacing:.08em}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+.hud{position:fixed;left:0;right:0;bottom:0;z-index:8;display:flex;align-items:center;gap:20px;flex-wrap:wrap;justify-content:space-between;
+  padding:12px max(20px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(20px,env(safe-area-inset-left,0px));
+  background:rgba(10,9,4,.84);border-top:1px solid var(--line);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.hud .grp{display:flex;gap:22px;align-items:center;min-width:0}
+.hud .m small{display:block;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--faint)}
+.hud .m b{font:22px/1 "VT323",monospace;color:var(--ink);letter-spacing:.05em}
+.hud .m b.bad{color:var(--warn)}
+.lbar{width:120px;height:4px;background:rgba(255,255,255,.1);margin-top:6px}
+.lbar i{display:block;height:100%;background:var(--accent);width:100%;transition:width .4s}
+.hud .btn{padding:12px 16px;font-size:11px}
+#leave{position:relative;transition:transform .18s ease-out}
+.banner{position:fixed;left:50%;top:44%;transform:translate(-50%,-50%);z-index:9;font:clamp(26px,4vw,46px)/1.1 "VT323",monospace;color:#f4f1e6;text-align:center;letter-spacing:.08em;
+  text-shadow:0 0 12px rgba(255,255,240,.5),3px 0 rgba(255,0,60,.35),-3px 0 rgba(0,200,255,.3);opacity:0;transition:opacity .6s;pointer-events:none;width:min(92vw,900px)}
+.banner.on{opacity:1}
+@media (max-width:640px){.hud .hide-s{display:none}.osd{font-size:18px}.osd.tl{display:none}.hint{font-size:17px}.hud{gap:10px;padding-top:10px}.hud .grp{gap:8px;flex-wrap:wrap}.hud .btn{padding:10px 12px;font-size:10px;letter-spacing:.12em}.hud .m b{font-size:20px}section{padding-block:96px}footer{padding-bottom:190px}.osd.tr{top:calc(70px + env(safe-area-inset-top,0px));font-size:16px}h1{font-size:clamp(40px,11vw,64px)}}
+@media (max-width:640px){body.explore .hud .m,body.explore #snd{display:none}.osd.tr{display:none}body.explore .osd.tr{display:block}.xhint{font-size:17px;bottom:calc(84px + env(safe-area-inset-bottom,0px))}}
+@media (prefers-reduced-motion:reduce){.note{transition:none}}
+main,footer,.shade{transition:opacity .6s}
+body.explore main,body.explore footer,body.explore .shade{opacity:0;pointer-events:none}
+body.explore canvas#world{cursor:crosshair}
+.xhair{position:fixed;left:50%;top:50%;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:rgba(255,250,230,.75);box-shadow:0 0 6px rgba(255,250,230,.6);z-index:6;display:none;pointer-events:none}
+.xhint{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:8;font:21px/1.2 "VT323",monospace;color:#f4f1e6;text-align:center;letter-spacing:.06em;text-shadow:0 0 8px rgba(0,0,0,.8);display:none;pointer-events:none;width:min(92vw,760px)}
+body.explore .xhair,body.explore .xhint{display:block}
+.xexit{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));right:max(14px,env(safe-area-inset-right,0px));z-index:12;display:none;font:20px/1 "VT323",monospace;letter-spacing:.08em;color:#f4f1e6;background:rgba(10,9,4,.78);border:1px solid rgba(241,225,160,.45);padding:10px 14px;cursor:pointer}
+body.explore .xexit{display:block}
+body.explore header.top{opacity:0;pointer-events:none}
+header.top{transition:opacity .4s}
+.joy{position:fixed;z-index:9;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;border:2px solid rgba(244,241,230,.45);background:rgba(10,9,4,.25);pointer-events:none;display:none}
+.joy i{position:absolute;left:50%;top:50%;width:48px;height:48px;margin:-24px 0 0 -24px;border-radius:50%;background:rgba(244,241,230,.55)}
+.joy.on{display:block}
+@media (pointer:coarse){.xhint .desk{display:none}}
+@media (pointer:fine){.xhint .touch{display:none}}
+</style>
+</head>
+<body>
+<canvas id="world" aria-hidden="true"></canvas>
+<div class="fallback" aria-hidden="true"></div>
+<div class="shade" aria-hidden="true"></div>
+<div class="blackout" id="blackout" aria-hidden="true"></div>
+
+<header class="top">
+  <a class="brand" href="#reception"><span class="mk"><i></i></span><span><b>Margin</b><small>Properties · Commercial Leasing</small></span></a>
+  <nav class="links" aria-label="Sections">
+    <a href="#space">The space</a><a href="#plan">Floor plan</a><a href="#amenities">Amenities</a><a href="#tenants">Tenants</a><a href="#enquire">Enquire</a>
+  </nav>
+</header>
+
+<div class="osd tl" aria-hidden="true"><span class="rec"><i></i>REC</span>&nbsp; SP<br><span id="tc">00:00:00</span></div>
+<div class="osd tr" aria-hidden="true"><span id="osddate">OCT 19 1996</span><span class="bat" id="bat"><b></b><b></b><b></b><b></b></span><br><span id="osdtime">3:14 AM</span></div>
+
+<main>
+  <section id="reception">
+    <div class="wrap"><div class="col">
+      <div class="eyebrow">Margin Properties · Est. 1987</div>
+      <h1>More room than you will ever need.</h1>
+      <p class="lede">Open-plan office space, available immediately. Fully carpeted, lit around the clock, and quiet. Our current vacancy is roughly six hundred million square feet, and it is still growing.</p>
+      <div class="cta"><a class="btn" href="#enquire">Book a viewing</a><button class="btn ghost" type="button" data-explore>Explore freely</button></div>
+      <div class="hint" id="heroHint">SCROLL TO WALK &nbsp;·&nbsp; PRESS W TO WANDER</div>
+    </div></div>
+  </section>
+
+  <section id="space">
+    <div class="wrap"><div class="col" style="max-width:820px">
+      <div class="eyebrow">01 · The space</div>
+      <h2>Every hallway is the main hallway.</h2>
+      <p class="lede">One continuous floor. No stairs, no lifts, no awkward partitions. Walk in any direction and you will find more of it. Our surveyors confirm the layout is consistent throughout, though not always in the same place.</p>
+      <div class="stats">
+        <div class="stat"><small>Vacant floor area</small><b id="sqft">600,214,880</b><em>sq ft, rising</em></div>
+        <div class="stat"><small>Ceiling height</small><b>2.74 m</b><em>suspended tile</em></div>
+        <div class="stat"><small>Relative humidity</small><b>71%</b><em>carpet retains moisture</em></div>
+        <div class="stat"><small>Ambient sound</small><b>60 Hz</b><em>ballast hum, constant</em></div>
+        <div class="stat"><small>Natural light</small><b>—</b><em>not applicable</em></div>
+        <div class="stat"><small>Exits on record</small><b id="exits">1</b><em>last verified 1991</em></div>
+      </div>
+    </div></div>
+  </section>
+
+  <section id="plan">
+    <div class="wrap">
+      <div class="col">
+        <div class="eyebrow">02 · Floor plan</div>
+        <h2>Floor plan (partial).</h2>
+        <p class="lede">We have surveyed 0.0004% of the property. The plan below follows you as you walk, so it is always current where you are standing.</p>
+      </div>
+      <div class="plan">
+        <div class="map panel"><canvas id="map" width="480" height="240" aria-label="Live floor plan around your position"></canvas></div>
+        <div class="legend panel">
+          <div><i style="background:#cfe6ff"></i> Load-bearing wall</div>
+          <div><i style="background:#0d1a24"></i> Open floor</div>
+          <div><i style="background:#ffd75e;border-radius:50%"></i> You are here</div>
+          <div><i style="background:#ff4a38;border-radius:50%"></i> Unidentified occupant</div>
+          <div class="lnote">SURVEY TEAM 3 HAS NOT<br>RETURNED THEIR EQUIPMENT.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="amenities">
+    <div class="wrap">
+      <div class="col">
+        <div class="eyebrow">03 · Amenities</div>
+        <h2>Everything a team needs. Nothing else.</h2>
+      </div>
+      <div class="cards">
+        <div class="card panel"><small>4000 K</small><h3>Lighting</h3><p>Fluorescent panels, always on. You will stop hearing the hum after the first week. Most people do.</p></div>
+        <div class="card panel"><small>WALL-TO-WALL</small><h3>Flooring</h3><p>Commercial loop-pile carpet in a warm mustard. Slightly damp. We are looking into it.</p></div>
+        <div class="card panel"><small>NO WINDOWS</small><h3>Privacy</h3><p>No windows, no neighbours, no interruptions. Mostly no neighbours.</p></div>
+        <div class="card panel"><small>SIGNPOSTED</small><h3>Wayfinding</h3><p>Every corridor junction is signposted. The signs are blank. Please do not write on them.</p></div>
+        <div class="card panel struck"><small>N/A</small><h3>Parking</h3><p>The car park entrance has been temporarily misplaced.</p></div>
+        <div class="card panel"><small>1 BAR</small><h3>Mobile signal</h3><p>Available near the water stain on the third left after the pillar room, some Tuesdays.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="tenants">
+    <div class="wrap">
+      <div class="col">
+        <div class="eyebrow">04 · Tenants</div>
+        <h2>Notes left by previous tenants.</h2>
+        <p class="lede">Found pinned to the wallpaper during routine inspection. We keep them for our records.</p>
+      </div>
+      <div class="notes">
+        <div class="note" style="--r:-2deg"><b>Day 1</b>Moved in. It is so quiet. The light is very even, no shadows anywhere. Nice to be somewhere this calm.</div>
+        <div class="note" style="--r:1.5deg"><b>Day 4</b>Walked to the end of the corridor to find the kitchen. There wasn't an end. Came back the same way and it was a different way.</div>
+        <div class="note" style="--r:-1deg"><b>Day 9</b>Counted the ceiling panels on my stretch. 1,204. Counted again today. 1,205.</div>
+        <div class="note" style="--r:2.5deg"><b>Day 23</b>When the lights flicker something is standing at the far end. It never comes closer. I think it only moves when the lights are off.</div>
+        <div class="note last" style="--r:-3deg"><b>Day ??</b><span id="lastnote">if you can still hear the hum you are too close to the lights. walk toward the dark ones. do not run.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="enquire">
+    <div class="wrap">
+      <div class="col">
+        <div class="eyebrow">05 · Enquire</div>
+        <h2>Reserve your unit.</h2>
+        <p class="lede">Leases start the moment you arrive. Our team will meet you wherever you are.</p>
+      </div>
+      <form class="enq panel" id="enq">
+        <label>Your name<input id="fname" required autocomplete="off" placeholder="Full name"></label>
+        <label>Team size<select><option>Just me</option><option>2–10</option><option>11–50</option><option>We were 12. Now 9.</option></select></label>
+        <label>Move-in date<select><option>Immediately</option><option disabled>Later</option><option disabled>Never</option></select></label>
+        <button class="btn" type="submit">Reserve</button>
+      </form>
+      <div class="thanks panel" id="thanks" role="status"></div>
+    </div>
+  </section>
+</main>
+
+<footer><div class="wrap"><span>© 1987–∞ Margin Properties. A fictional company. Leases are permanent.</span><span>Unit enquiries are answered by whoever is nearest.</span></div></footer>
+
+<div class="hud" role="region" aria-label="Premises status">
+  <div class="grp">
+    <div class="m"><small>Time on premises</small><b id="tp">00:00</b></div>
+    <div class="m hide-s"><small>Lights operational</small><b id="lp">100%</b><div class="lbar"><i id="lbar"></i></div></div>
+    <div class="m hide-s"><small>Status</small><b id="stat">NOMINAL</b></div>
+  </div>
+  <div class="grp">
+    <button class="btn ghost" id="xbtn" type="button" data-explore>Explore (WASD)</button>
+    <button class="btn ghost" id="snd" type="button" aria-pressed="false">Sound off</button>
+    <button class="btn" id="leave" type="button">Leave the premises</button>
+  </div>
+</div>
+<div class="banner" id="banner" aria-live="polite"></div>
+<div class="xhair" aria-hidden="true"></div>
+<button class="xexit" id="xexit" type="button">✕ Exit</button>
+<div class="joy" id="joy" aria-hidden="true"><i></i></div>
+<div class="xhint" aria-hidden="true"><span class="desk">WASD MOVE · SHIFT RUN · CLICK, THEN MOUSE TO LOOK · ESC RETURNS</span><span class="touch">DRAG LEFT SIDE TO WALK · RIGHT SIDE TO LOOK · ✕ TO RETURN</span></div>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (s) { return document.querySelector(s); };
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------------- maze (shared by shader + floor plan) ---------------- */
+  var N = 511, P = 7, MAZE = new Uint8Array(N * N);
+  function H(a, b, c) {
+    var h = (Math.imul(a | 0, 374761393) + Math.imul(b | 0, 668265263) + Math.imul(c | 0, 1274126177)) | 0;
+    h = Math.imul(h ^ (h >>> 13), 1274126177); h ^= h >>> 16; return (h >>> 0) / 4294967296;
+  }
+  (function gen() {
+    for (var j = 0; j < N; j++) {
+      for (var i = 0; i < N; i++) {
+        var ci = Math.floor(i / P), cj = Math.floor(j / P), li = i % P, lj = j % P, onX = li === 0, onZ = lj === 0, s = 0;
+        if (onX || onZ) {
+          if (onX && onZ) { s = 1; }
+          else if (cj === 0 && onX) { s = 0; }
+          else if (onZ && (cj === 0 || cj === 1)) {
+            s = 1;
+            if (H(ci, cj, 5) < .42 && li >= 3 && li <= 4) { s = 0; }
+            if (H(ci, cj, 6) < .14) { s = 0; }
+          } else {
+            var room = H(Math.floor(ci / 4), Math.floor(cj / 4), 9) < .22;
+            if (room) { s = 0; }
+            else if (onX) { s = (H(ci, cj, 1) < .55 && !(H(ci, cj, 3) < .55 && lj >= 3 && lj <= 4)) ? 1 : 0; }
+            else { s = (H(ci, cj, 2) < .55 && !(H(ci, cj, 4) < .55 && li >= 3 && li <= 4)) ? 1 : 0; }
+          }
+        }
+        MAZE[j * N + i] = s ? 255 : 0;
+      }
+    }
+  })();
+  var WRAP = N * 0.5; // metres
+
+  /* ---------------- WebGL ---------------- */
+  var cv = $('#world'), gl = null;
+  try { gl = cv.getContext('webgl', { antialias: false, alpha: false, preserveDrawingBuffer: false }); } catch (e) {}
+  var VS = 'attribute vec2 p; void main(){ gl_Position = vec4(p, 0., 1.); }';
+  var SCENE = `precision highp float;
+uniform vec2 uRes; uniform float uTime; uniform vec3 uCam; uniform vec2 uLook; uniform float uDark; uniform vec4 uFig; uniform sampler2D uMap; uniform float uPulse; uniform vec2 uCamCell;
+uniform sampler2D uWallT; uniform sampler2D uWallN; uniform sampler2D uCarT; uniform sampler2D uCarN; uniform sampler2D uCeilT;
+const float NM = 511.;
+float h2(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7)))*43758.5453); }
+float vn(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3. - 2.*f);
+  return mix(mix(h2(i), h2(i + vec2(1., 0.)), f.x), mix(h2(i + vec2(0., 1.)), h2(i + vec2(1., 1.)), f.x), f.y); }
+float fbm(vec2 p){ float a = .5, s = 0.; for (int i = 0; i < 5; i++){ s += a*vn(p); p = p*2.03 + 17.1; a *= .5; } return s; }
+float fbm3(vec2 p){ float a = .5, s = 0.; for (int i = 0; i < 3; i++){ s += a*vn(p); p = p*2.07 + 9.3; a *= .5; } return s; }
+bool solid(vec2 b){ vec2 m = mod(b, NM); return texture2D(uMap, (m + .5)/NM).r > .5; }
+
+float panelI(vec2 c){
+  vec2 m = mod(c, 73.);
+  float hv = h2(m + .37);
+  float on = step(.07, hv);
+  float isCam = 1. - step(.5, length(c - uCamCell));
+  float kill = mix(step(uDark*1.12, hv - .02), step(uDark, .965), isCam);
+  float fh = h2(m + 9.1), fl = 1.;
+  if (fh < .13) { float n = vn(vec2(uTime*13. + m.x*7.3, m.y*3.1)); fl = mix(.05, 1., step(.42, n)) * (.85 + .15*vn(vec2(uTime*60., m.x))); }
+  if (fh > .13 && fh < .2) { fl = .78; }
+  return on*kill*fl*uPulse;
+}
+vec3 panelPos(vec2 c){ return vec3(c.x*3.5 + 2.0, 2.73, c.y*3.5 + 2.0); }
+const vec3 LCOL = vec3(1.0, .93, .74);
+
+// 2D grid march: is the straight line a->b (world xz) blocked by a wall cell?
+float vis(vec2 a, vec2 b){
+  vec2 q0 = a*2., d = b*2. - q0; float L = length(d); if (L < .02) return 1.;
+  vec2 rdb = d/L, cell = floor(q0), sg = sign(rdb), dd = 1./max(abs(rdb), vec2(1e-5));
+  vec2 sd = (sg*(cell - q0) + sg*.5 + .5)*dd;
+  for (int k = 0; k < 30; k++){
+    float t;
+    if (sd.x < sd.y){ t = sd.x; sd.x += dd.x; cell.x += sg.x; } else { t = sd.y; sd.y += dd.y; cell.y += sg.y; }
+    if (t >= L) return 1.;
+    if (solid(cell)) return 0.;
+  }
+  return 1.;
+}
+vec3 lightAt(vec3 p, vec3 n, float hemi, vec2 c0){
+  vec3 acc = vec3(0.);
+  for (int i = -1; i <= 1; i++){
+    for (int j = -1; j <= 1; j++){
+      vec2 c = c0 + vec2(float(i), float(j));
+      float I = panelI(c);
+      if (I <= .001) continue;
+      vec3 lp = panelPos(c);
+      // soft shadow: visibility to both ends of the fluorescent panel
+      float V = (i == 0 && j == 0) ? .5*(vis(p.xz, lp.xz + vec2(-.45, 0.)) + vis(p.xz, lp.xz + vec2(.45, 0.))) : vis(p.xz, lp.xz);
+      if (V <= .001) continue;
+      I *= V;
+      // area light approximation: closest point on panel rectangle
+      vec3 q = vec3(clamp(p.x, lp.x - .6, lp.x + .6), lp.y, clamp(p.z, lp.z - .3, lp.z + .3));
+      vec3 l = q - p; float d2 = dot(l, l); vec3 ln = l*inversesqrt(d2 + 1e-4);
+      float df = mix(max(dot(n, ln), 0.), .55 + .45*max(dot(n, ln), 0.), hemi);
+      float emit = max(-ln.y, 0.)*.85 + .15;
+      float same = (i == 0 && j == 0) ? 1. : .42;
+      acc += LCOL*I*df*emit*same*7.5/(1. + d2*.55);
+    }
+  }
+  return acc;
+}
+float wallAO(vec2 q){
+  vec2 b0 = floor(q); float dm = 9.;
+  for (int i = -1; i <= 1; i++){ for (int j = -1; j <= 1; j++){
+    vec2 b = b0 + vec2(float(i), float(j));
+    if (solid(b)) { vec2 d = max(abs(q - (b + .5)) - .5, 0.); dm = min(dm, length(d)); }
+  } }
+  return dm;
+}
+vec3 wallpaper(vec2 uv, float lod, out float rough){
+  vec3 base = vec3(.86, .75, .38);
+  float x = uv.x*6.;
+  float stripe = smoothstep(.40, .44, abs(fract(x) - .5));
+  float stripe2 = smoothstep(.465, .48, abs(fract(x + .5) - .5));
+  vec2 g = vec2(uv.x*6., uv.y*6.);
+  vec2 ce = fract(g + vec2(.5, 0.)*mod(floor(g.y), 2.)) - .5;
+  float motif = smoothstep(.13, .09, abs(ce.x) + abs(ce.y)*1.6) - smoothstep(.07, .04, abs(ce.x) + abs(ce.y)*1.6);
+  float det = 1. - lod;
+  base *= 1. - .055*stripe*det - .04*stripe2*det;
+  base = mix(base, base*vec3(.86, .80, .66), motif*.55*det);
+  float s = fbm(uv*vec2(.9, .7) + 3.);
+  base = mix(base, base*vec3(.84, .77, .55), smoothstep(.48, .78, s)*.55);
+  float drip = fbm3(vec2(uv.x*2.2, uv.y*.25 + 4.));
+  float stainH = .55 + .9*fbm3(vec2(uv.x*.6, 1.7));
+  float dmp = smoothstep(stainH, stainH - .45, uv.y)*smoothstep(.42, .62, fbm(vec2(uv.x*.55, 2.)));
+  float edge = smoothstep(.0, .05, abs(uv.y - (stainH - .2)) - .0);
+  base *= 1. - .32*dmp;
+  base = mix(base, base*vec3(.7, .58, .36), dmp*(1. - edge)*.6);
+  base *= 1. - .18*smoothstep(.62, .82, drip)*smoothstep(2.6, 1.2, uv.y)*smoothstep(.2, 1.0, uv.y);
+  float seam = smoothstep(.0035, .0, abs(fract(uv.x/.53 + .13) - .5) - .4955);
+  base *= 1. - .14*seam*det;
+  float peel = smoothstep(.79, .83, fbm(uv*vec2(1.6, 1.1) + 11.))*det;
+  base = mix(base, vec3(.62, .58, .48), peel*.6);
+  base *= .95 + .07*mix(vn(uv*vec2(260., 300.)), .5, lod);
+  vec3 scan = texture2D(uWallT, uv*vec2(.42, .42)).rgb/vec3(.466, .419, .368);
+  base *= mix(vec3(1.), scan*vec3(1.02, 1., .94), .75);
+  rough = .8;
+  if (uv.y < .1) { float tb = smoothstep(.088, .1, uv.y); base = mix(vec3(.38, .30, .19)*(.85 + .15*vn(uv*vec2(40., 4.))), base, tb); base *= 1. + .25*smoothstep(.07, .09, uv.y)*(1. - tb); base *= 1. - .3*smoothstep(.015, .0, uv.y); rough = .45; }
+  if (uv.y > 2.66) { base *= .9; }
+  return base;
+}
+vec3 carpet(vec2 p, float lod, out float wet){
+  vec3 c = vec3(.62, .52, .28);
+  float f = vn(p*vec2(120., 118.))*.45 + vn(p*vec2(55., 61.))*.35 + vn(p*17.)*.2;
+  c *= .86 + .2*mix(f, .5, lod);
+  float pile = dot(texture2D(uCarT, p/.6).rgb, vec3(.333))/.178;
+  c *= mix(1., pile, .55*(1. - lod*.6));
+  float loop = sin(p.x*190.)*sin(p.y*190.);
+  c *= 1. + .05*loop*(1. - lod)*(1. - lod);
+  float damp = smoothstep(.52, .74, fbm(p*.32 + 2.));
+  float puddle = smoothstep(.70, .80, fbm(p*.5 + 13.));
+  wet = damp*.6 + puddle;
+  c *= 1. - .40*damp - .25*puddle;
+  c = mix(c, c*vec3(.86, .82, .72), smoothstep(.45, .7, fbm(p*1.4 + 9.))*.6);
+  float path = exp(-pow((p.y - 2.0)*1.1, 2.));
+  c *= 1. - .1*path*smoothstep(.3, .7, vn(p*3.));
+  return c;
+}
+vec3 ceiling(vec2 p, float lod){
+  vec2 gx = abs(fract(p/.61 + .5) - .5);
+  float line = smoothstep(.478, .492, max(gx.x, gx.y));
+  vec3 c = vec3(.80, .77, .63)*(.93 + .07*mix(vn(p*80.), .5, lod));
+  c *= mix(vec3(1.), texture2D(uCeilT, p*.5).rgb/vec3(.484, .434, .396), .45);
+  float pin = smoothstep(.55, .75, vn(p*140.))*(1. - lod)*.12; c *= 1. - pin;
+  float st = smoothstep(.6, .82, fbm(p*.45 + 4.));
+  c = mix(c, c*vec3(.70, .60, .36), st*.7);
+  float ring = smoothstep(.02, .0, abs(fbm(p*.45 + 4.) - .62))*.3; c *= 1. - ring;
+  float sag = h2(floor(p/.61) + 3.); c *= .96 + .06*sag;
+  c = mix(c, vec3(.48, .45, .36), line*.85);
+  return c;
+}
+float sdCap(vec2 p, vec2 a, vec2 b, float r){ vec2 pa = p - a, ba = b - a; float h = clamp(dot(pa, ba)/dot(ba, ba), 0., 1.); return length(pa - ba*h) - r; }
+float figure(vec2 p){
+  p /= 1.1;
+  float d = sdCap(p, vec2(0., .98), vec2(0., 1.72), .15);
+  d = min(d, length((p - vec2(0., 2.0))*vec2(1., .82)) - .12);
+  d = min(d, sdCap(p, vec2(0., 1.8), vec2(0., 1.95), .05));
+  d = min(d, sdCap(p, vec2(-.08, .02), vec2(-.06, 1.02), .052));
+  d = min(d, sdCap(p, vec2(.08, .02), vec2(.065, 1.02), .052));
+  d = min(d, sdCap(p, vec2(-.17, 1.72), vec2(.17, 1.72), .055));
+  d = min(d, sdCap(p, vec2(-.21, 1.70), vec2(-.27, .42), .038));
+  d = min(d, sdCap(p, vec2(.21, 1.70), vec2(.29, .38), .038));
+  return d*1.1;
+}
+void main(){
+  vec2 uv = (gl_FragCoord.xy - .5*uRes)/uRes.y;
+  vec3 ro = uCam;
+  float yaw = uLook.x, pit = uLook.y;
+  vec3 fw = vec3(cos(yaw)*cos(pit), sin(pit), sin(yaw)*cos(pit));
+  vec3 rt = normalize(cross(fw, vec3(0., 1., 0.)));
+  vec3 up = cross(rt, fw);
+  // slight barrel lens like a camcorder
+  float r2 = dot(uv, uv); uv *= 1. + .06*r2;
+  vec3 rd = normalize(fw*1.05 + rt*uv.x + up*uv.y);
+
+  float tp = rd.y < 0. ? -ro.y/rd.y : (2.74 - ro.y)/max(rd.y, 1e-4);
+  tp = min(tp, 70.);
+  vec2 q0 = ro.xz*2., rdb = rd.xz*2.;
+  vec2 cell = floor(q0), sg = sign(rdb);
+  vec2 dd = 1./max(abs(rdb), vec2(1e-5));
+  vec2 sd = (sg*(cell - q0) + sg*.5 + .5)*dd;
+  float tw = 1e9, side = 0., t = 0.;
+  for (int k = 0; k < 170; k++){
+    if (sd.x < sd.y){ t = sd.x; sd.x += dd.x; cell.x += sg.x; side = 0.; }
+    else { t = sd.y; sd.y += dd.y; cell.y += sg.y; side = 1.; }
+    if (t > tp) break;
+    if (solid(cell)) { tw = t; break; }
+  }
+  vec3 col; float th; vec3 p, n; float lod;
+  float camI = panelI(uCamCell) + panelI(uCamCell + vec2(1., 0.)) + panelI(uCamCell + vec2(2., 0.));
+  vec3 bounce = vec3(.62, .52, .26)*(.16 + .08*camI)*(1. - uDark*.95)*uPulse;
+  if (tw < tp){
+    th = tw; p = ro + rd*th;
+    n = side < .5 ? vec3(-sg.x, 0., 0.) : vec3(0., 0., -sg.y);
+    lod = clamp(th/18., 0., 1.);
+    float rough;
+    vec2 wuv = vec2(side < .5 ? p.z : p.x, p.y);
+    vec3 alb = wallpaper(wuv, lod, rough);
+    // fine normal bump for paper texture
+    vec2 e = vec2(.004, 0.);
+    vec3 tg = side < .5 ? vec3(0., 0., 1.) : vec3(1., 0., 0.);
+    vec3 tn = texture2D(uWallN, wuv*vec2(.42, .42)).xyz*2. - 1.;
+    vec3 nb = normalize(n + (tg*tn.x*(side < .5 ? -sg.x : sg.y) + vec3(0., 1., 0.)*tn.y)*.9*(1. - lod));
+    vec2 c0 = floor((p.xz - n.xz*.05)/3.5);
+    vec3 L = lightAt(p + n*.02, nb, 0., c0);
+    float ao = mix(.55, 1., smoothstep(0., .45, p.y))*mix(.7, 1., smoothstep(2.74, 2.45, p.y));
+    float cornerX = side < .5 ? fract(p.z*2.) : fract(p.x*2.);
+    ao *= mix(.72, 1., smoothstep(0., .14, min(cornerX, 1. - cornerX)));
+    col = alb*(L + bounce)*ao;
+    // glossy damp sheen near floor
+    vec3 lp = panelPos(c0); vec3 hv = normalize(normalize(lp - p) - rd);
+    col += LCOL*pow(max(dot(nb, hv), 0.), 18.)*.05*panelI(c0)*(1. - rough);
+  } else {
+    th = tp; p = ro + rd*th; lod = clamp(th/14., 0., 1.);
+    vec2 c0 = floor(p.xz/3.5);
+    float dW = wallAO(p.xz*2.);
+    float ao = mix(.42, 1., smoothstep(0., 1.1, dW));
+    if (rd.y < 0.){
+      float wet;
+      vec3 cn = texture2D(uCarN, p.xz/.6).xyz*2. - 1.;
+      n = normalize(vec3(cn.x*.5*(1. - lod), 1., -cn.y*.5*(1. - lod)));
+      vec3 alb = carpet(p.xz, lod, wet);
+      vec3 L = lightAt(p + vec3(0., .01, 0.), n, 0., c0);
+      col = alb*(L + bounce)*ao;
+      // wet reflection of the panels
+      vec3 r = reflect(rd, n);
+      for (int i = -1; i <= 1; i++){ for (int j = -1; j <= 1; j++){
+        vec2 c = c0 + vec2(float(i), float(j)); float I = panelI(c); if (I < .01) continue;
+        vec3 lp = panelPos(c); vec3 ld = lp - p; float tr = ld.y/max(r.y, 1e-3); vec3 hp = p + r*tr;
+        vec2 dq = abs(hp.xz - lp.xz) - vec2(.6, .3);
+        float m = 1. - smoothstep(-.08, .25 + .25*(1. - wet), max(dq.x, dq.y));
+        float glossy = smoothstep(.0, .25, wet);
+        col += LCOL*I*m*(.025 + .22*glossy)*ao/(1. + tr*.35);
+      } }
+    } else {
+      n = vec3(0., -1., 0.);
+      vec3 lp = panelPos(c0); float I = panelI(c0);
+      vec2 lc = p.xz - lp.xz;
+      vec2 dq = abs(lc) - vec2(.6, .3);
+      float inside = 1. - step(0., max(dq.x, dq.y));
+      vec3 alb = ceiling(p.xz, lod);
+      vec3 L = lightAt(p - vec3(0., .02, 0.), n, 1., c0)*.55;
+      col = alb*(L + bounce*1.15)*mix(.65, 1., smoothstep(0., 1.4, dW));
+      // fixture: aluminium frame, prismatic diffuser, tube hot-spots
+      float frame = 1. - step(0., max(dq.x, dq.y) + .035);
+      if (inside > .5){
+        vec2 pr = fract(lc*vec2(28., 28.));
+        float prism = .9 + .1*(abs(pr.x - .5) + abs(pr.y - .5));
+        float tubes = .75 + .5*(exp(-pow((lc.y - .11)*16., 2.)) + exp(-pow((lc.y + .11)*16., 2.)));
+        float endDark = smoothstep(.6, .48, abs(lc.x));
+        vec3 em = vec3(1.0, .97, .86)*4.5*I*prism*tubes*endDark;
+        vec3 dead = vec3(.62, .62, .58)*(.25 + .3*fbm3(lc*8.)) + col*.4;
+        float grime = smoothstep(.55, .75, fbm3(lc*5. + c0));
+        col = mix(dead, em*(1. - .25*grime), clamp(I*1.4, 0., 1.));
+        col = mix(vec3(.55, .55, .52)*(.3 + I*.5), col, frame);
+      }
+    }
+  }
+  // figure
+  if (uFig.w > .002){
+    vec2 F = uFig.xy; vec2 dF = F - ro.xz; float dl = length(dF);
+    vec2 nF = dF/dl;
+    float den = dot(rd.xz, nF);
+    if (den > .01){
+      float tf = dot(dF, nF)/den;
+      if (tf < th){
+        vec3 hp = ro + rd*tf;
+        float s = dot(hp.xz - F, vec2(-nF.y, nF.x));
+        float d = figure(vec2(s, hp.y));
+        float a = (1. - smoothstep(-.005, .012 + tf*.0018, d))*uFig.w;
+        vec3 fc = vec3(.008, .006, .004) + col*.04;
+        col = mix(col, fc, a); th = mix(th, tf, a);
+      }
+    }
+  }
+  // haze: lit, warm, dense
+  float lit = 1. - uDark*.92;
+  vec3 fogc = vec3(.78, .68, .36)*lit*(.55 + .45*uPulse);
+  float fg = 1. - exp(-th*.027);
+  col = mix(col, fogc, fg);
+  gl_FragColor = vec4(col, 1.);
+}`;
+  var POST = `precision highp float;
+uniform sampler2D uTex; uniform vec2 uRes; uniform float uTime; uniform float uGlitch; uniform float uDark;
+float h2(vec2 p){ return fract(sin(dot(p, vec2(12.9898, 78.233)))*43758.5453); }
+vec3 tx(vec2 u){ return texture2D(uTex, clamp(u, 0., 1.)).rgb; }
+void main(){
+  vec2 uv = gl_FragCoord.xy/uRes;
+  float by = fract(uTime*.045 + .3);
+  float band = 1. - smoothstep(0., .035, abs(uv.y - by));
+  float jit = band*(h2(vec2(floor(uv.y*240.), floor(uTime*40.))) - .5)*.012;
+  jit += uGlitch*(h2(vec2(floor(uv.y*70.), floor(uTime*24.))) - .5)*.045;
+  jit += (h2(vec2(floor(uv.y*480.), floor(uTime*60.))) - .5)*.0012;
+  vec2 u = uv + vec2(jit, 0.);
+  vec2 o = (uv - .5)*.007 + vec2(.0018, 0.);
+  vec3 c = vec3(tx(u + o).r, tx(u).g, tx(u - o).b);
+  // chroma smear like tape
+  vec3 sm = (tx(u + vec2(.004, 0.)) + tx(u + vec2(.009, 0.)) + tx(u + vec2(.015, 0.)))/3.;
+  float Y = dot(c, vec3(.299, .587, .114));
+  vec3 chroma = mix(c, sm, .38) - dot(mix(c, sm, .38), vec3(.299, .587, .114));
+  c = Y + chroma*.92;
+  // bloom
+  vec3 b = vec3(0.);
+  for (int i = 0; i < 12; i++){
+    float a = float(i)*.5236; vec2 d = vec2(cos(a), sin(a)*uRes.x/uRes.y);
+    b += max(tx(uv + d*.012) - .62, 0.) + max(tx(uv + d*.03) - .62, 0.)*.7 + max(tx(uv + d*.06) - .62, 0.)*.4;
+  }
+  c += b*vec3(1., .94, .78)*.11;
+  // exposure + camcorder grade
+  c = vec3(1.) - exp(-c*1.95);
+  c = pow(c, vec3(.94, .97, 1.08));
+  c = mix(vec3(dot(c, vec3(.33))), c, 1.02);
+  c += vec3(.012, .01, .0);
+  float sl = .93 + .07*sin(gl_FragCoord.y*3.14159*.9);
+  c *= sl;
+  float g = h2(gl_FragCoord.xy + fract(uTime*7.3)*91.) - .5;
+  c += g*(.045 + .1*uDark);
+  c += band*.05*h2(uv*vec2(400., 2.) + uTime);
+  vec2 v = uv - .5; c *= 1. - dot(v, v)*.95;
+  gl_FragColor = vec4(clamp(c, 0., 1.), 1.);
+}`;
+  var ok = false, pS, pP, fbo, ftex, mapTex, U = {}, UP = {}, RS = (window.matchMedia && matchMedia('(pointer:coarse)').matches) ? 0.5 : 0.82, RSMAX = RS, RSMIN = 0.28, ftAvg = 16, ftT = 0;
+  function compile(type, src) { var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { console.error(gl.getShaderInfoLog(s)); return null; } return s; }
+  function prog(fs) { var v = compile(gl.VERTEX_SHADER, VS), f = compile(gl.FRAGMENT_SHADER, fs); if (!v || !f) { return null; } var p = gl.createProgram(); gl.attachShader(p, v); gl.attachShader(p, f); gl.bindAttribLocation(p, 0, 'p'); gl.linkProgram(p); if (!gl.getProgramParameter(p, gl.LINK_STATUS)) { console.error(gl.getProgramInfoLog(p)); return null; } return p; }
+  var TEXU = { uWallT: ['tex/wall_diff.jpg', 2], uWallN: ['tex/wall_nor.jpg', 3], uCarT: ['tex/carpet_diff.jpg', 4], uCarN: ['tex/carpet_nor.jpg', 5], uCeilT: ['tex/ceil_diff.jpg', 6] };
+  function loadTex(url, unit) {
+    var t = gl.createTexture(); gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, t);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(url.indexOf('nor') > 0 ? [128, 128, 255, 255] : [118, 106, 94, 255]));
+    var im = new Image(); im.onload = function () {
+      gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, t); gl.pixelStorei(gl.UNPACK_ALIGNMENT, 4);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, im); gl.generateMipmap(gl.TEXTURE_2D);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+      var ext = gl.getExtension('EXT_texture_filter_anisotropic'); if (ext) gl.texParameterf(gl.TEXTURE_2D, ext.TEXTURE_MAX_ANISOTROPY_EXT, 8);
+      gl.activeTexture(gl.TEXTURE0);
+    };
+    im.src = url; return t;
+  }
+  function initGL() {
+    if (!gl) { return false; }
+    pS = prog(SCENE); pP = prog(POST); if (!pS || !pP) { return false; }
+    for (var tk in TEXU) { loadTex(TEXU[tk][0], TEXU[tk][1]); }
+    var buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+    mapTex = gl.createTexture(); gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, mapTex);
+    gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, N, N, 0, gl.LUMINANCE, gl.UNSIGNED_BYTE, MAZE);
+    [gl.TEXTURE_MIN_FILTER, gl.TEXTURE_MAG_FILTER].forEach(function (k) { gl.texParameteri(gl.TEXTURE_2D, k, gl.NEAREST); });
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    ftex = gl.createTexture(); gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, ftex);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    fbo = gl.createFramebuffer();
+    ['uRes', 'uTime', 'uCam', 'uLook', 'uDark', 'uFig', 'uMap', 'uPulse', 'uCamCell', 'uWallT', 'uWallN', 'uCarT', 'uCarN', 'uCeilT'].forEach(function (k) { U[k] = gl.getUniformLocation(pS, k); });
+    ['uTex', 'uRes', 'uTime', 'uGlitch', 'uDark'].forEach(function (k) { UP[k] = gl.getUniformLocation(pP, k); });
+    return true;
+  }
+  var fw = 0, fh = 0;
+  function sizeGL() {
+    var dprc = Math.min(devicePixelRatio || 1, RSMAX < .6 ? 1 : 1.25);
+    var w = Math.max(2, Math.round(innerWidth * dprc * RS)), h = Math.max(2, Math.round(innerHeight * dprc * RS));
+    if (w === fw && h === fh) { return; }
+    fw = w; fh = h; cv.width = w; cv.height = h;
+    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, ftex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fbo); gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, ftex, 0);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  }
+  ok = initGL();
+  if (!ok) { document.documentElement.classList.add('nogl'); }
+
+  /* ---------------- state ---------------- */
+  var t0 = performance.now(), last = t0, time = 0;
+  var camX = 2.0, camZ = 2.0, explore = false, saveX = 2, K = {}, vel = [0, 0], joy = { x: 0, y: 0 }, walkPh = 0, mxN = 0, myN = 0, lookX = 0, lookY = 0, drift = 0;
+  var E = 0, dark = 0, pulse = 1, pulses = [], glitch = 0;
+  var fig = { x: 0, z: 2.0, a: 0, on: false, until: 0 }, nextFig = 22, blackout = null, blackouts = 0;
+  var onPage = 0, lastInput = 0;
+
+  addEventListener('pointermove', function (e) { mxN = e.clientX / innerWidth - .5; myN = e.clientY / innerHeight - .5; lastInput = time; });
+  addEventListener('scroll', function () { lastInput = time; }, { passive: true });
+
+  function stutter(seq) { var tt = time; pulses = seq.map(function (s) { tt += s[0]; return { t: tt, v: s[1] }; }); clickSnd(); }
+  function pulseNow() {
+    var v = 1;
+    for (var i = 0; i < pulses.length; i++) { if (time < pulses[i].t) { v = pulses[i].v; break; } }
+    if (pulses.length && time >= pulses[pulses.length - 1].t) { pulses = []; v = 1; }
+    return v;
+  }
+  var nextStutter = 6;
+
+  function solidW(x, z) { var i = ((Math.floor(x * 2) % N) + N) % N, j = ((Math.floor(z * 2) % N) + N) % N; return MAZE[j * N + i] > 0; }
+  function freeAt(x, z) { var r = .36; return !solidW(x - r, z - r) && !solidW(x + r, z - r) && !solidW(x - r, z + r) && !solidW(x + r, z + r); }
+  function placeAhead(d) {
+    var dx = Math.cos(lookX), dz = Math.sin(lookX), t = .5;
+    while (t < d && !solidW(camX + dx * t, camZ + dz * t)) { t += .25; }
+    var at = Math.min(d, t - .7); if (at < 2.6) { return null; }
+    return [camX + dx * at, camZ + dz * at];
+  }
+  var xBtn = $('#xbtn'), lockOK = false, drag = null, joyEl = $('#joy'), joyI = $('#joy i'), coarse = window.matchMedia && matchMedia('(pointer:coarse)').matches;
+  if (coarse) { xBtn.textContent = 'Explore'; var hh = $('#heroHint'); if (hh) { hh.innerHTML = 'SCROLL TO WALK &nbsp;·&nbsp; TAP EXPLORE TO WANDER'; } }
+  $('#xexit').addEventListener('click', function () { setExplore(false); });
+  function setExplore(on) {
+    if (on === explore) { return; }
+    explore = on; document.body.classList.toggle('explore', on); document.documentElement.style.overflow = on ? 'hidden' : '';
+    if (on) { saveX = camX; vel = [0, 0]; showBanner('YOU STEPPED OFF THE TOUR.'); }
+    else {
+      try { if (document.pointerLockElement) { document.exitPointerLock(); } } catch (e) {}
+      camX = saveX; camZ = 2; drift = camX - 2 - scrollY * .0105; K = {}; joy.x = joy.y = 0;
+      showBanner('YOU FOUND THE MAIN HALLWAY AGAIN.');
+    }
+    xBtn.textContent = on ? (coarse ? 'Back to brochure' : 'Back to brochure (Esc)') : (coarse ? 'Explore' : 'Explore (WASD)');
+    cv.style.touchAction = on ? 'none' : '';
+    joyEl.classList.remove('on');
+  }
+  document.querySelectorAll('[data-explore]').forEach(function (b) { b.addEventListener('click', function () { setExplore(!explore); if (explore) { b.blur(); } }); });
+  addEventListener('keydown', function (e) {
+    var tg = e.target && e.target.tagName; if (tg === 'INPUT' || tg === 'SELECT' || tg === 'TEXTAREA') { return; }
+    var k = e.key.toLowerCase();
+    if (k === 'escape') { setExplore(false); return; }
+    if (!explore && 'wasd'.indexOf(k) >= 0 && k.length === 1) { setExplore(true); }
+    if (explore) { K[k] = true; if (e.shiftKey) { K.shift = true; } if (k.indexOf('arrow') === 0 || k === ' ') { e.preventDefault(); } }
+  });
+  addEventListener('keyup', function (e) { K[e.key.toLowerCase()] = false; if (!e.shiftKey) { K.shift = false; } });
+  addEventListener('blur', function () { K = {}; });
+  cv.addEventListener('pointerdown', function (e) {
+    if (!explore) { return; }
+    if (e.pointerType === 'mouse') {
+      try { var pr = cv.requestPointerLock && cv.requestPointerLock(); if (pr && pr.catch) { pr.catch(function () {}); } } catch (er) {}
+      drag = { id: e.pointerId, look: true, x: e.clientX, y: e.clientY };
+    } else {
+      drag = { id: e.pointerId, look: e.clientX > innerWidth / 2, x: e.clientX, y: e.clientY, ox: e.clientX, oy: e.clientY };
+      if (!drag.look) { joyEl.style.left = e.clientX + 'px'; joyEl.style.top = e.clientY + 'px'; joyI.style.transform = ''; joyEl.classList.add('on'); }
+    }
+    try { cv.setPointerCapture(e.pointerId); } catch (er) {}
+  });
+  cv.addEventListener('pointermove', function (e) {
+    if (!explore) { return; }
+    var locked = document.pointerLockElement === cv;
+    if (locked) { lookX += e.movementX * .0024; lookY = Math.max(-.7, Math.min(.7, lookY - e.movementY * .0024)); return; }
+    if (!drag || drag.id !== e.pointerId) { return; }
+    if (drag.look) { lookX += (e.clientX - drag.x) * .005; lookY = Math.max(-.7, Math.min(.7, lookY - (e.clientY - drag.y) * .005)); drag.x = e.clientX; drag.y = e.clientY; }
+    else { joy.x = Math.max(-1, Math.min(1, (e.clientX - drag.ox) / 50)); joy.y = Math.max(-1, Math.min(1, (e.clientY - drag.oy) / 50)); joyI.style.transform = 'translate(' + (joy.x * 36) + 'px,' + (joy.y * 36) + 'px)'; }
+  });
+  function endDrag(e) { if (drag && drag.id === e.pointerId) { if (!drag.look) { joy.x = joy.y = 0; joyEl.classList.remove('on'); } drag = null; } }
+  cv.addEventListener('pointerup', endDrag); cv.addEventListener('pointercancel', endDrag);
+
+  function update(dt) {
+    time += dt; onPage += dt;
+    // walking: scroll + slow involuntary drift
+    if (!explore) {
+      drift += dt * (.22 + E * .25);
+      var target = 2.0 + scrollY * .0105 + drift;
+      var v = (target - camX) * Math.min(1, dt * 2.6);
+      camX += v; camZ += (2.0 - camZ) * Math.min(1, dt * 2);
+      walkPh += Math.abs(v) * 2.3;
+      lookX += ((mxN * 1.25 + Math.sin(time * .21) * .05) - lookX) * Math.min(1, dt * 3);
+      lookY += ((-myN * .42 + Math.sin(time * .17) * .015) - lookY) * Math.min(1, dt * 3);
+    } else {
+      var f = ((K.w || K.arrowup) ? 1 : 0) - ((K.s || K.arrowdown) ? 1 : 0) - joy.y;
+      var st = ((K.d || K.arrowright) ? 1 : 0) - ((K.a || K.arrowleft) ? 1 : 0) + joy.x;
+      var spd = K.shift ? 3.4 : 1.55, fx = Math.cos(lookX), fz = Math.sin(lookX);
+      var tx = fx * f - fz * st, tz = fz * f + fx * st, tl = Math.sqrt(tx * tx + tz * tz);
+      if (tl > 1) { tx /= tl; tz /= tl; }
+      vel[0] += (tx * spd - vel[0]) * Math.min(1, dt * 9); vel[1] += (tz * spd - vel[1]) * Math.min(1, dt * 9);
+      var ox0 = camX, oz0 = camZ;
+      if (freeAt(camX + vel[0] * dt, camZ)) { camX += vel[0] * dt; } else { vel[0] = 0; }
+      if (freeAt(camX, camZ + vel[1] * dt)) { camZ += vel[1] * dt; } else { vel[1] = 0; }
+      var mv = Math.sqrt((camX - ox0) * (camX - ox0) + (camZ - oz0) * (camZ - oz0));
+      walkPh += mv * 2.3 * (K.shift ? 1.25 : 1);
+      if (mv > .0005 && Math.floor(walkPh / Math.PI) !== Math.floor((walkPh - mv * 2.3) / Math.PI)) { stepSnd(); }
+    }
+
+    // exposure: the longer you stay, the worse it gets
+    if (!document.hidden && !blackout) { E = Math.min(1, E + dt / 80); }
+    var targetDark = blackout ? blackout.dark : Math.max(0, (E - .38) / .62) * .82;
+    dark += (targetDark - dark) * Math.min(1, dt * (blackout ? 6 : .8));
+
+    // ambient flicker stutters
+    if (time > nextStutter && !blackout) {
+      nextStutter = time + 4 + Math.random() * 9 * (1.2 - E);
+      if (Math.random() < .5 + E * .4) { stutter([[0, .25], [.05, 1], [.04, .15], [.09, 1], [.03, .5], [.05, 1]]); glitch = .6; }
+    }
+    // the occupant
+    if (E > .28 && time > nextFig && !blackout) {
+      var k = Math.min(1, (E - .28) / .72), spot = placeAhead(34 - 24 * k + Math.random() * 4);
+      if (!spot) { nextFig = time + 2; } else {
+      fig.x = spot[0]; fig.z = spot[1];
+      fig.on = true; fig.until = time + 1.4 + Math.random() * 1.6;
+      stutter([[0, .1], [.07, 1], [.05, .05], [.12, 1]]); glitch = 1;
+      nextFig = time + 9 + Math.random() * 9 * (1.1 - k);
+      footsteps(2);
+      }
+    }
+    if (fig.on && time > fig.until && !blackout) { fig.on = false; stutter([[0, .05], [.08, 1], [.05, .2], [.06, 1]]); glitch = .8; }
+    if (fig.on && !blackout && Math.hypot(fig.x - camX, fig.z - camZ) < 2.2) { fig.on = false; stutter([[0, .05], [.06, 1]]); }
+    // blackout when exposure maxes out
+    if (E >= 1 && !blackout) { startBlackout(); }
+    if (blackout) { runBlackout(); }
+
+    pulse = pulseNow();
+    var fa = fig.on ? (pulse > .6 ? 1 : .35) : 0;
+    fig.a += (fa - fig.a) * Math.min(1, dt * 30);
+    glitch = Math.max(0, glitch - dt * 2.2);
+  }
+
+  function startBlackout() {
+    blackouts++;
+    blackout = { t0: time, dark: dark, stage: 0 };
+    stutter([[0, .2], [.06, 1], [.05, .1], [.1, 1], [.04, .05], [.14, .8], [.08, .02]]);
+  }
+  function runBlackout() {
+    var b = blackout, el = time - b.t0, bo = $('#blackout');
+    if (el < .9) { b.dark = .82 + el * .2; }
+    else if (el < 3.6) { b.dark = 1; bo.style.opacity = '.55'; if (b.stage === 0) { b.stage = 1; footsteps(4); setStat('NO POWER', true); } }
+    else if (el < 3.95) {
+      if (b.stage === 1) { b.stage = 2; var sp3 = placeAhead(3.4) || [camX + Math.cos(lookX) * 1.6, camZ + Math.sin(lookX) * 1.6]; fig.x = sp3[0]; fig.z = sp3[1]; fig.on = true; fig.until = 1e9; bo.style.opacity = '0'; b.dark = 0; glitch = 1.4; pulses = [{ t: time + .33, v: 1 }]; clickSnd(); thudSnd(); }
+    } else if (el < 5.2) {
+      if (b.stage === 2) { b.stage = 3; fig.on = false; fig.a = 0; b.dark = 1; bo.style.opacity = '.8'; }
+    } else {
+      bo.style.opacity = '0'; blackout = null; E = .3; dark = .2; nextFig = time + 14;
+      $('#exits').textContent = '0'; $('#exits').style.color = 'var(--warn)';
+      showBanner('POWER RESTORED.<br>PLEASE REMAIN ON THE PREMISES.'); setStat('REMAIN CALM', true);
+      stutter([[0, .3], [.08, 1], [.06, .4], [.1, 1]]);
+    }
+  }
+
+  function render() {
+    if (!ok) { return; }
+    sizeGL();
+    var cx = ((camX % WRAP) + WRAP) % WRAP, cz = ((camZ % WRAP) + WRAP) % WRAP, bob = Math.sin(walkPh) * .022, sway = Math.cos(walkPh * .5) * .012;
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fbo); gl.viewport(0, 0, fw, fh);
+    gl.useProgram(pS);
+    gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, mapTex); gl.uniform1i(U.uMap, 1); for (var tk in TEXU) { gl.uniform1i(U[tk], TEXU[tk][1]); }
+    gl.uniform2f(U.uRes, fw, fh); gl.uniform1f(U.uTime, time);
+    gl.uniform3f(U.uCam, cx, 1.62 + bob, cz + sway * (explore ? .4 : 1));
+    gl.uniform2f(U.uLook, lookX + Math.sin(walkPh * .5) * .006, lookY + bob * .25);
+    gl.uniform1f(U.uDark, dark); gl.uniform1f(U.uPulse, pulse);
+    gl.uniform2f(U.uCamCell, Math.floor(cx / 3.5), Math.floor(cz / 3.5));
+    var fxr = fig.x - camX + cx;
+    gl.uniform4f(U.uFig, fxr, fig.z - camZ + cz, 0, fig.a);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null); gl.viewport(0, 0, fw, fh);
+    gl.useProgram(pP);
+    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, ftex); gl.uniform1i(UP.uTex, 0);
+    gl.uniform2f(UP.uRes, fw, fh); gl.uniform1f(UP.uTime, time); gl.uniform1f(UP.uGlitch, reduce ? 0 : glitch); gl.uniform1f(UP.uDark, dark);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  }
+
+  /* ---------------- floor plan ---------------- */
+  var map = $('#map'), mctx = map.getContext('2d'), mapVis = false;
+  if ('IntersectionObserver' in window) { new IntersectionObserver(function (es) { mapVis = es[0].isIntersecting; }).observe(map); } else { mapVis = true; }
+  function drawMap() {
+    if (!mapVis && !explore) { return; }
+    var S = 4, cw = map.width / S, ch = map.height / S, bx = Math.floor(camX * 2) - Math.floor(cw / 3), bz = Math.floor(camZ * 2) - Math.floor(ch / 2);
+    mctx.fillStyle = '#0d1a24'; mctx.fillRect(0, 0, map.width, map.height);
+    mctx.strokeStyle = 'rgba(160,200,230,.08)'; mctx.lineWidth = 1;
+    for (var gx = 0; gx < cw; gx++) { var wx = bx + gx; if (((wx % 7) + 7) % 7 === 0) { mctx.beginPath(); mctx.moveTo(gx * S + .5, 0); mctx.lineTo(gx * S + .5, map.height); mctx.stroke(); } }
+    mctx.fillStyle = '#cfe6ff';
+    for (var j = 0; j < ch; j++) {
+      var zz = (((bz + j) % N) + N) % N;
+      for (var i = 0; i < cw; i++) {
+        var xx = (((bx + i) % N) + N) % N;
+        if (MAZE[zz * N + xx]) { mctx.fillRect(i * S, j * S, S, S); }
+      }
+    }
+    // fog of the unknown: fade far edges
+    var g = mctx.createLinearGradient(0, 0, map.width, 0); g.addColorStop(0, 'rgba(13,26,36,.85)'); g.addColorStop(.2, 'rgba(13,26,36,0)'); g.addColorStop(.75, 'rgba(13,26,36,0)'); g.addColorStop(1, 'rgba(13,26,36,.95)');
+    mctx.fillStyle = g; mctx.fillRect(0, 0, map.width, map.height);
+    var px = (camX * 2 - bx) * S, pz = (camZ * 2 - bz) * S;
+    mctx.fillStyle = 'rgba(255,215,94,.18)'; mctx.beginPath(); mctx.moveTo(px, pz);
+    mctx.arc(px, pz, 60, lookX - .5, lookX + .5); mctx.closePath(); mctx.fill();
+    mctx.fillStyle = '#ffd75e'; mctx.beginPath(); mctx.arc(px, pz, 4 + Math.sin(time * 4), 0, 6.283); mctx.fill();
+    if (fig.a > .3) { var fx = (fig.x * 2 - bx) * S, fz = (fig.z * 2 - bz) * S; mctx.fillStyle = '#ff4a38'; mctx.beginPath(); mctx.arc(fx, fz, 4, 0, 6.283); mctx.fill(); mctx.font = '16px VT323, monospace'; mctx.fillText('?', fx + 7, fz - 5); }
+    mctx.fillStyle = 'rgba(207,230,255,.7)'; mctx.font = '16px VT323, monospace'; mctx.fillText('SECTOR ' + Math.floor(camX / 3.5) + '/' + Math.floor(camZ / 3.5) + ' · GRID 0.5 M', 8, map.height - 8);
+  }
+
+  /* ---------------- HUD ---------------- */
+  var sq = 600214880, tc = $('#tc'), tpEl = $('#tp'), lpEl = $('#lp'), lbar = $('#lbar'), statEl = $('#stat'), bats = document.querySelectorAll('#bat b'), statLock = 0;
+  var MON = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function setStat(s, bad) { statEl.textContent = s; statEl.classList.toggle('bad', !!bad); statLock = time + 5; }
+  function hud() {
+    var s = Math.floor(onPage);
+    tc.textContent = pad(Math.floor(s / 3600)) + ':' + pad(Math.floor(s / 60) % 60) + ':' + pad(s % 60);
+    tpEl.textContent = pad(Math.floor(s / 60)) + ':' + pad(s % 60);
+    var lp = Math.max(0, Math.round((1 - dark) * 100 * (pulse < .9 ? pulse : 1)));
+    lpEl.textContent = lp + '%'; lbar.style.width = lp + '%'; lpEl.classList.toggle('bad', lp < 60);
+    if (time > statLock) { statEl.textContent = E < .3 ? 'NOMINAL' : E < .6 ? 'BALLAST FAULT' : E < .9 ? 'OCCUPANT NEARBY' : 'LEAVE NOW'; statEl.classList.toggle('bad', E >= .6); }
+    var nb = Math.max(0, 4 - Math.floor(E * 4.4));
+    for (var i = 0; i < bats.length; i++) { bats[i].classList.toggle('off', i >= nb); }
+    sq += Math.floor(Math.random() * 90); $('#sqft').textContent = sq.toLocaleString('en-US');
+    var d = new Date(); $('#osddate').textContent = MON[d.getMonth()] + ' ' + pad(d.getDate()) + ' 1996';
+    var h = d.getHours(), ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12; $('#osdtime').textContent = h + ':' + pad(d.getMinutes()) + ' ' + ap;
+    if (Math.random() < .02 && blackouts === 0) { var ex = $('#exits'); ex.textContent = '0'; setTimeout(function () { if (blackouts === 0) { ex.textContent = '1'; } }, 140); }
+  }
+  setInterval(hud, 250);
+
+  var banner = $('#banner'), bT = null;
+  function showBanner(html) { banner.innerHTML = html; banner.classList.add('on'); clearTimeout(bT); bT = setTimeout(function () { banner.classList.remove('on'); }, 4200); }
+
+  /* ---------------- the exit that does not want to be found ---------------- */
+  var leave = $('#leave'), dodges = 0, ox = 0, oy = 0;
+  addEventListener('pointermove', function (e) {
+    if (dodges >= 6 || e.pointerType === 'touch') { return; }
+    var r = leave.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2, dx = e.clientX - cx, dy = e.clientY - cy;
+    if (dx * dx + dy * dy < 75 * 75) {
+      dodges++;
+      ox = Math.max(-260, Math.min(0, ox - 60 - Math.random() * 120)); oy = (Math.random() - .5) * 10;
+      leave.style.transform = 'translate(' + ox + 'px,' + oy + 'px)';
+      if (dodges === 6) { leave.textContent = 'Fine. Leave.'; setTimeout(function () { leave.style.transform = ''; }, 300); }
+    }
+  });
+  leave.addEventListener('click', function () {
+    if (blackout) { return; }
+    if (explore) { setExplore(false); }
+    E = 0; dark = 0; drift = 0; camX = 2; camZ = 2; saveX = 2; fig.on = false; dodges = 0; ox = 0; leave.style.transform = ''; leave.textContent = 'Leave the premises';
+    stutter([[0, 0], [.25, 1]]); glitch = 1.2;
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    showBanner('WELCOME BACK TO RECEPTION.<br>YOU HAVE BEEN HERE BEFORE.');
+  });
+
+  /* ---------------- form ---------------- */
+  $('#enq').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var nm = ($('#fname').value || 'tenant').trim().slice(0, 40), unit = 'UNIT ' + (1000 + Math.floor(Math.random() * 8999)) + '-' + 'ABCDEFGH'[Math.floor(Math.random() * 8)];
+    var t = $('#thanks'); t.innerHTML = '';
+    var lines = ['RESERVATION CONFIRMED.', 'THANK YOU, ' + nm.toUpperCase() + '.', unit + ' IS READY FOR YOU.', 'IT IS CLOSER THAN YOU THINK.', 'PLEASE DO NOT TRY TO LEAVE THE WAY YOU CAME IN.'];
+    lines.forEach(function (l) { var d = document.createElement('div'); d.textContent = l; t.appendChild(d); });
+    $('#enq').style.display = 'none'; t.classList.add('on');
+    E = Math.max(E, .7); stutter([[0, .1], [.1, 1], [.05, .2], [.1, 1]]); glitch = 1;
+  });
+
+  /* ---------------- tenant notes ---------------- */
+  var notes = document.querySelectorAll('.note');
+  if ('IntersectionObserver' in window) { var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }); }, { threshold: .3 }); notes.forEach(function (n) { io.observe(n); }); }
+  else { notes.forEach(function (n) { n.classList.add('in'); }); }
+  var ln = $('#lastnote'), LNT = ln.textContent, GL = 'ẅẍẏẑ▒░█▓#?';
+  setInterval(function () {
+    if (E < .4) { ln.textContent = LNT; return; }
+    var a = LNT.split(''), n = Math.floor(E * 8);
+    for (var i = 0; i < n; i++) { var k = Math.floor(Math.random() * a.length); if (a[k] !== ' ') { a[k] = GL[Math.floor(Math.random() * GL.length)]; } }
+    ln.textContent = a.join('');
+  }, 180);
+
+  /* ---------------- sound: the hum ---------------- */
+  var AC = null, master = null, humNodes = null, soundOn = false, sndBtn = $('#snd');
+  function noiseBuf(sec) { var b = AC.createBuffer(1, AC.sampleRate * sec, AC.sampleRate), d = b.getChannelData(0); for (var i = 0; i < d.length; i++) { d[i] = Math.random() * 2 - 1; } return b; }
+  function startAudio() {
+    AC = new (window.AudioContext || window.webkitAudioContext)();
+    master = AC.createGain(); master.gain.value = 0; master.connect(AC.destination);
+    var o1 = AC.createOscillator(); o1.type = 'sine'; o1.frequency.value = 60;
+    var o2 = AC.createOscillator(); o2.type = 'sawtooth'; o2.frequency.value = 120;
+    var o3 = AC.createOscillator(); o3.type = 'square'; o3.frequency.value = 180;
+    var lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 420; lp.Q.value = 2;
+    var g1 = AC.createGain(); g1.gain.value = .22; var g2 = AC.createGain(); g2.gain.value = .07; var g3 = AC.createGain(); g3.gain.value = .015;
+    o1.connect(g1); o2.connect(lp); lp.connect(g2); o3.connect(g3); g1.connect(master); g2.connect(master); g3.connect(master);
+    var nz = AC.createBufferSource(); nz.buffer = noiseBuf(2); nz.loop = true;
+    var bp = AC.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 5200; bp.Q.value = 3;
+    var gn = AC.createGain(); gn.gain.value = .012; nz.connect(bp); bp.connect(gn); gn.connect(master);
+    var room = AC.createBufferSource(); room.buffer = noiseBuf(3); room.loop = true;
+    var rl = AC.createBiquadFilter(); rl.type = 'lowpass'; rl.frequency.value = 160; var rg = AC.createGain(); rg.gain.value = .05;
+    room.connect(rl); rl.connect(rg); rg.connect(master);
+    [o1, o2, o3, nz, room].forEach(function (n) { n.start(); });
+    humNodes = { o1: o1, o2: o2, o3: o3, g1: g1, g2: g2 };
+  }
+  function stepSnd() {
+    if (!soundOn || !AC) { return; }
+    var t = AC.currentTime, s = AC.createBufferSource(); s.buffer = noiseBuf(.12);
+    var lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 520 + Math.random() * 200; var g = AC.createGain();
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.12, t + .008); g.gain.exponentialRampToValueAtTime(.001, t + .1);
+    s.connect(lp); lp.connect(g); g.connect(master); s.start(t);
+  }
+  function clickSnd() {
+    if (!soundOn || !AC) { return; }
+    var t = AC.currentTime, s = AC.createBufferSource(); s.buffer = noiseBuf(.05);
+    var hp = AC.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 1800; var g = AC.createGain(); g.gain.setValueAtTime(.35, t); g.gain.exponentialRampToValueAtTime(.001, t + .05);
+    s.connect(hp); hp.connect(g); g.connect(master); s.start(t);
+  }
+  function thudSnd() {
+    if (!soundOn || !AC) { return; }
+    var t = AC.currentTime, o = AC.createOscillator(), g = AC.createGain(); o.frequency.setValueAtTime(70, t); o.frequency.exponentialRampToValueAtTime(28, t + .6);
+    g.gain.setValueAtTime(.9, t); g.gain.exponentialRampToValueAtTime(.001, t + .8); o.connect(g); g.connect(master); o.start(t); o.stop(t + .9);
+  }
+  function footsteps(n) {
+    if (!soundOn || !AC) { return; }
+    for (var i = 0; i < n; i++) {
+      var t = AC.currentTime + .4 + i * (.55 + Math.random() * .1), s = AC.createBufferSource(); s.buffer = noiseBuf(.2);
+      var lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 240 + Math.random() * 80; var g = AC.createGain();
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.4 * (.6 + E * .6), t + .01); g.gain.exponentialRampToValueAtTime(.001, t + .18);
+      s.connect(lp); lp.connect(g); g.connect(master); s.start(t);
+    }
+  }
+  function audioTick() {
+    if (!AC || !humNodes) { return; }
+    var t = AC.currentTime, lvl = soundOn ? (1 - dark * .85) * (pulse < .5 ? .15 : 1) : 0;
+    master.gain.setTargetAtTime(soundOn ? .55 : 0, t, .3);
+    humNodes.g1.gain.setTargetAtTime(.22 * lvl, t, .03); humNodes.g2.gain.setTargetAtTime(.07 * lvl, t, .03);
+    humNodes.o1.frequency.setTargetAtTime(60 - dark * 4, t, .5); humNodes.o2.frequency.setTargetAtTime(120 - dark * 8, t, .5);
+  }
+  sndBtn.addEventListener('click', function () {
+    if (!AC) { try { startAudio(); } catch (e) { return; } }
+    soundOn = !soundOn; if (AC.state === 'suspended') { AC.resume(); }
+    sndBtn.textContent = soundOn ? 'Sound on' : 'Sound off'; sndBtn.setAttribute('aria-pressed', soundOn ? 'true' : 'false');
+  });
+
+  /* ---------------- loop ---------------- */
+  function frame(now) {
+    var raw = (now - last); var dt = Math.max(0, Math.min(.05, raw / 1000)); last = Math.max(last, now);
+    if (raw > 0 && raw < 500) { ftAvg += (raw - ftAvg) * .05; ftT += raw; if (ftT > 1500) { ftT = 0; if (ftAvg > 34 && RS > RSMIN) { RS = Math.max(RSMIN, RS - .06); } else if (ftAvg < 18 && RS < RSMAX) { RS = Math.min(RSMAX, RS + .04); } } }
+    if (document.hidden) { requestAnimationFrame(frame); return; }
+    update(dt); render(); drawMap(); audioTick();
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+  window.__dbg = { ray: function (y) { var t = 0; while (t < 40 && !solidW(camX + Math.cos(y) * t, camZ + Math.sin(y) * t)) { t += .25; } return t; }, sim: function (n, d) { for (var i = 0; i < n; i++) { update(d); } }, key: function (k, v) { K[k] = v; }, explore: setExplore, look: function (y) { lookX = y; }, pos: function () { return [camX, camZ]; }, setE: function (v) { E = v; }, get: function () { return { E: E, dark: dark, fig: fig.a, camX: camX }; }, fig: function (d) { fig.x = camX + d; fig.z = 2; fig.on = true; fig.until = time + 99; } };
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Z Lab</title>
+<meta name="description" content="Seven interactive web worlds: a haunted lighthouse, a Malaysian mall, a race track, a night shift, the backrooms and more.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{--bg:#0a0b0d;--card:#121418;--ink:#eeeae2;--dim:rgba(238,234,226,.62);--faint:rgba(238,234,226,.38);--line:rgba(255,255,255,.09);--acc:#f2b84b;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 "Inter",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-text-size-adjust:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
+header{padding-block:calc(54px + env(safe-area-inset-top,0px)) 34px}
+.mark{display:flex;align-items:center;gap:12px;font:700 15px "Space Grotesk",sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.mark i{width:30px;height:30px;border-radius:8px;background:var(--acc);display:grid;place-items:center;color:#1a1204;font-style:normal;font-size:16px;letter-spacing:0}
+h1{font:700 clamp(38px,6.4vw,76px)/1 "Space Grotesk",sans-serif;letter-spacing:-.025em;margin:22px 0 14px;max-width:880px;text-wrap:balance}
+h1 em{font-style:normal;color:var(--acc)}
+.lede{color:var(--dim);font-size:17px;max-width:620px;margin:0}
+.tips{display:flex;gap:10px 22px;flex-wrap:wrap;margin-top:22px;font:500 12px "JetBrains Mono",monospace;color:var(--faint);letter-spacing:.04em}
+.tips span::before{content:"● ";color:var(--acc)}
+h2{font:700 13px "Space Grotesk",sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);margin:34px 0 16px;display:flex;align-items:center;gap:14px}
+h2::after{content:"";flex:1;height:1px;background:var(--line)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));gap:18px}
+.card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;color:inherit;text-decoration:none;transition:transform .25s,border-color .25s;min-width:0}
+.card:hover,.card:focus-visible{transform:translateY(-4px);border-color:rgba(242,184,75,.45);outline:none}
+.shot{position:relative;aspect-ratio:16/10;max-width:100%;background:#000 center/cover no-repeat;overflow:hidden}
+.shot img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s}
+.card:hover .shot img{transform:scale(1.04)}
+.badge{position:absolute;left:12px;top:12px;font:500 11px "JetBrains Mono",monospace;letter-spacing:.06em;background:rgba(10,11,13,.78);border:1px solid var(--line);padding:4px 9px;border-radius:999px;color:var(--ink);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.badge.hot{background:var(--acc);color:#1a1204;border-color:var(--acc)}
+.body{padding:18px 20px 20px;display:flex;flex-direction:column;gap:8px;flex:1}
+.body h3{font:700 22px/1.15 "Space Grotesk",sans-serif;margin:0;letter-spacing:-.01em}
+.body p{margin:0;color:var(--dim);font-size:14.5px}
+.meta{margin-top:auto;padding-top:10px;display:flex;justify-content:space-between;gap:10px;font:500 11.5px "JetBrains Mono",monospace;color:var(--faint);letter-spacing:.03em}
+.meta b{color:var(--acc);font-weight:500}
+footer{padding-block:48px calc(40px + env(safe-area-inset-bottom,0px));color:var(--faint);font-size:13px}
+footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:22px}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="mark"><i>Z</i>Z Lab</div>
+  <h1>Seven worlds you can <em>walk into</em>, straight from the browser.</h1>
+  <p class="lede">A haunted lighthouse, a Malaysian mall, a hill-country race track, a night shift at a family restaurant and an office that never ends. No installs. Pick one and go.</p>
+  <div class="tips"><span>Best with sound on</span><span>Desktop: WASD + mouse</span><span>Phone: touch controls built in</span><span>First load 5–12 MB</span></div>
+</div></header>
+
+<main class="wrap">
+  <h2>Realistic 3D</h2>
+  <div class="grid">
+    <a class="card" href="hollowreef/"><div class="shot"><img src="thumbs/hollowreef.webp" alt="A lighthouse on a rocky islet at night" loading="lazy"><span class="badge hot">Horror · Story</span></div>
+      <div class="body"><h3>Hollow Reef Light</h3><p>Keep the 1 AM night watch from a lighthouse gallery. Use the telescope, log what you see on the water, and restore the keeper's lost log.</p><div class="meta"><span>Drag · Pinch · Log</span><b>~12 MB</b></div></div></a>
+    <a class="card" href="mall/"><div class="shot"><img src="thumbs/mall.webp" alt="Atrium of a three-storey mall with escalators" loading="lazy"><span class="badge">Explore · Shop</span></div>
+      <div class="body"><h3>Cahaya Avenue</h3><p>Walk a three-floor Malaysian mall lit by Blender-baked daylight. Browse 40-odd shops, the Medan Selera and the cinema, and fill your bag.</p><div class="meta"><span>WASD · E to view</span><b>~11 MB</b></div></div></a>
+    <a class="card" href="litar/"><div class="shot"><img src="thumbs/litar.webp" alt="Red race car on track by a grandstand" loading="lazy"><span class="badge hot">Racing</span></div>
+      <div class="body"><h3>Litar Kelana</h3><p>A time attack through palm oil hills. Set a lap, then race your own ghost. Golden hour or midday sun, three liveries.</p><div class="meta"><span>Arrows · Space · C</span><b>~6 MB</b></div></div></a>
+    <a class="card" href="riaceria/"><div class="shot"><img src="thumbs/riaceria.webp" alt="Animatronic band on a restaurant stage" loading="lazy"><span class="badge hot">Horror · Survival</span></div>
+      <div class="body"><h3>Taman Ria Ceria</h3><p>A cheerful family restaurant website, until you take the night shift. Watch the cameras, save power and keep the band on stage until 6 AM.</p><div class="meta"><span>Cameras · Doors · Lights</span><b>~8 MB</b></div></div></a>
+    <a class="card" href="vacancy/"><div class="shot"><img src="thumbs/vacancy.webp" alt="Endless yellow office corridor" loading="lazy"><span class="badge">Liminal · Explore</span></div>
+      <div class="body"><h3>Margin Properties</h3><p>A leasing brochure for office space that goes on forever. Step inside and wander the endless corridors. Try to find the exit.</p><div class="meta"><span>WASD · Mouse</span><b>~2 MB</b></div></div></a>
+  </div>
+
+  <h2>Websites</h2>
+  <div class="grid">
+    <a class="card" href="outbreak/"><div class="shot"><img src="thumbs/outbreak.webp" alt="Dark biotech website with red warnings" loading="lazy"><span class="badge">Horror · Interactive</span></div>
+      <div class="body"><h3>Veyra Biologics</h3><p>A biotech company's site with a live culture on the page. Click to infect it, then try to contain what you let out.</p><div class="meta"><span>Click · Scroll</span><b>&lt;1 MB</b></div></div></a>
+    <a class="card" href="norvane/"><div class="shot"><img src="thumbs/norvane.webp" alt="Clean corporate infrastructure website" loading="lazy"><span class="badge">Corporate</span></div>
+      <div class="body"><h3>Norvane Group</h3><p>A polished infrastructure-firm site with themes, a personal greeting and interactive project pages. The calm one in the set.</p><div class="meta"><span>Scroll</span><b>&lt;1 MB</b></div></div></a>
+  </div>
+</main>
+
+<footer><div class="wrap"><span>All places, companies and characters are fictional.</span><span>Materials and skies from Poly Haven (CC0) · Built with Three.js and Blender</span></div></footer>
+</body>
+</html>

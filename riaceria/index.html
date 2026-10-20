@@ -1,0 +1,1022 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Taman Ria Ceria</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;600;800&family=VT323&family=Special+Elite&display=swap">
+<style>
+:root{--sun:#ffc928;--red:#e2372b;--teal:#14a3a0;--cream:#fff8e7;--ink:#2a1d14;--dim:#6b5a4c;--line:rgba(42,29,20,.14);--card:#ffffff;color-scheme:light}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--cream);color:var(--ink);font:16px/1.6 "Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;overflow-x:hidden}
+body.ingame{overflow:hidden}
+img{max-width:100%;display:block}
+.wrap{max-width:1140px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:"Baloo 2","Trebuchet MS",sans-serif;line-height:1.05;margin:0;text-wrap:balance}
+/* header */
+header.top{position:sticky;top:0;z-index:30;background:var(--red);color:#fff;box-shadow:0 4px 0 #b3241a}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--red);z-index:31}
+header.top{top:env(safe-area-inset-top,0px)}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:10px}
+.logo{display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none}
+.logo .badge{width:46px;height:46px;border-radius:50%;background:var(--sun);display:grid;place-items:center;border:3px solid #fff;font:800 22px/1 "Baloo 2",sans-serif;color:var(--red);transform:rotate(-8deg)}
+.logo b{font:800 24px/1 "Baloo 2",sans-serif;letter-spacing:.01em}
+.logo small{display:block;font-size:11px;letter-spacing:.18em;text-transform:uppercase;opacity:.85}
+nav.links{display:flex;gap:18px;flex-wrap:wrap}
+nav.links a{color:#fff;text-decoration:none;font-weight:800;font-size:14px}
+nav.links a:hover{text-decoration:underline}
+@media (max-width:820px){nav.links{display:none}}
+/* hero */
+.hero{background:radial-gradient(circle at 20% 20%,#ffe17a,var(--sun) 60%);padding-block:46px 64px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:28px;background:repeating-linear-gradient(90deg,var(--red) 0 40px,#fff 40px 80px)}
+.hgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:36px;align-items:center}
+@media (max-width:860px){.hgrid{grid-template-columns:minmax(0,1fr)}}
+.hero h1{font-size:clamp(42px,6vw,76px);color:var(--red);text-shadow:3px 3px 0 #fff}
+.hero p{font-size:18px;max-width:480px;color:#4a3420}
+.burst{display:inline-block;background:var(--teal);color:#fff;font:800 14px/1 "Baloo 2",sans-serif;padding:8px 14px;border-radius:999px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px;transform:rotate(-2deg)}
+.photo{position:relative;border:8px solid #fff;border-radius:18px;box-shadow:0 18px 40px rgba(90,40,0,.3);transform:rotate(1.5deg);background:#222;aspect-ratio:16/10;overflow:hidden}
+.photo img{width:100%;height:100%;object-fit:cover}
+.photo .alt{position:absolute;inset:0;opacity:0}
+.photo.glitch .alt{opacity:1}
+.photo figcaption{position:absolute;left:10px;bottom:8px;background:rgba(255,255,255,.9);font:800 12px "Nunito",sans-serif;padding:3px 8px;border-radius:6px}
+.btn{display:inline-block;border:0;cursor:pointer;font:800 16px/1 "Baloo 2",sans-serif;padding:14px 22px;border-radius:999px;background:var(--red);color:#fff;text-decoration:none;box-shadow:0 5px 0 #a51f15;transition:transform .1s}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 #a51f15}
+.btn.alt{background:#fff;color:var(--red);box-shadow:0 5px 0 #d9c9a6}
+.btn.dark{background:#1b1b1b;color:#e6ffe6;box-shadow:0 5px 0 #000;font-family:"VT323",monospace;font-size:22px;letter-spacing:.06em}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}
+section{padding-block:70px}
+.sh{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:26px;flex-wrap:wrap}
+.sh h2{font-size:clamp(32px,4vw,48px);color:var(--red)}
+.sh p{margin:0;color:var(--dim);max-width:520px}
+/* band */
+.band{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+@media (max-width:900px){.band{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.mem{background:var(--card);border-radius:18px;overflow:hidden;box-shadow:0 8px 0 var(--line);border:2px solid var(--line);min-width:0}
+.mem .pic{aspect-ratio:1/1;background:#2b2b2b;position:relative}
+.mem .pic img{width:100%;height:100%;object-fit:cover}
+.mem .pic .alt{position:absolute;inset:0;opacity:0;transition:opacity .05s}
+.mem:hover .pic .alt.on{opacity:1}
+.mem .tx{padding:14px 16px 18px}
+.mem h3{font-size:24px}
+.mem small{display:block;color:var(--teal);font-weight:800;font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px}
+.mem p{margin:6px 0 0;font-size:14px;color:var(--dim)}
+/* menu */
+.menu{background:#fff;border-block:3px dashed #f0d79a}
+.mgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+@media (max-width:860px){.mgrid{grid-template-columns:minmax(0,1fr)}}
+.mcat h3{font-size:22px;color:var(--teal);margin-bottom:8px}
+.item{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px dotted #d8c8a8}
+.item b{font-weight:800}
+.item span{white-space:nowrap;font-weight:800;color:var(--red)}
+.item em{display:block;font-style:normal;font-size:13px;color:var(--dim)}
+/* parties */
+.pk{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+@media (max-width:860px){.pk{grid-template-columns:minmax(0,1fr)}}
+.pack{background:#fff;border-radius:18px;padding:22px;border:3px solid var(--sun);position:relative;min-width:0}
+.pack .pr{font:800 34px/1 "Baloo 2",sans-serif;color:var(--red);margin:8px 0}
+.pack ul{margin:0;padding-left:18px;color:var(--dim);font-size:14px}
+.pack.hot{border-color:var(--red)}
+.pack.hot::before{content:"POPULAR!";position:absolute;top:-14px;right:16px;background:var(--red);color:#fff;font:800 12px "Baloo 2",sans-serif;padding:4px 10px;border-radius:999px}
+form.book{margin-top:26px;background:#fff;border-radius:18px;padding:22px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;border:2px solid var(--line)}
+form.book label{display:grid;gap:4px;font-size:12px;font-weight:800;color:var(--dim);text-transform:uppercase;letter-spacing:.08em}
+form.book input,form.book select{font:inherit;padding:10px 12px;border-radius:10px;border:2px solid var(--line);background:var(--cream);width:100%}
+@media (max-width:860px){form.book{grid-template-columns:minmax(0,1fr)}}
+.ok{grid-column:1/-1;font-weight:800;color:var(--teal);display:none}
+/* news */
+.news{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+@media (max-width:860px){.news{grid-template-columns:minmax(0,1fr)}}
+.paper{background:#fbf6ea;border:1px solid #d9cfb8;padding:20px;font-family:"Special Elite","Courier New",monospace;font-size:14px;color:#3b3328;box-shadow:0 6px 18px rgba(60,40,10,.1);position:relative;min-width:0}
+.paper h3{font-family:"Special Elite","Courier New",monospace;font-size:18px;margin-bottom:8px}
+.paper .d{font-size:12px;color:#8a7c64;margin-bottom:8px}
+.red{background:#111;color:#111;border-radius:2px;padding:0 2px}
+.red.open{background:transparent;color:#a01010}
+.paper.locked{filter:blur(3px);user-select:none;pointer-events:none}
+.lock{position:absolute;inset:0;display:grid;place-items:center;font:800 14px "Nunito",sans-serif;color:var(--dim)}
+/* careers */
+.career{background:#151515;color:#d9f5d9}
+.career .sh h2{color:#ffe17a}
+.career .sh p{color:#a8c2a8}
+.job{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:26px;align-items:start}
+@media (max-width:860px){.job{grid-template-columns:minmax(0,1fr)}}
+.post{background:#1f1f1f;border:2px solid #333;border-radius:14px;padding:24px;font-family:"VT323",monospace;font-size:22px;line-height:1.25}
+.post h3{font-family:"VT323",monospace;font-size:34px;color:#ffe17a;margin-bottom:10px}
+.post ul{padding-left:20px;margin:10px 0}
+.post .fine{font-size:17px;color:#7f977f}
+.apply{background:#1f1f1f;border:2px solid #333;border-radius:14px;padding:24px}
+.apply label{display:grid;gap:6px;font:20px "VT323",monospace;color:#a8c2a8;margin-bottom:12px}
+.apply input{font:22px "VT323",monospace;background:#0b0b0b;border:2px solid #3a3a3a;color:#d9f5d9;padding:10px 12px;border-radius:8px;width:100%}
+.nights{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.nights button{font:22px "VT323",monospace;background:#0b0b0b;border:2px solid #3a3a3a;color:#d9f5d9;padding:8px 14px;border-radius:8px;cursor:pointer}
+.nights button.done{border-color:#2f8f4e;color:#7dff9e}
+.nights button:disabled{opacity:.35;cursor:not-allowed}
+.nights button.sel{background:#2a2a14;border-color:#ffe17a;color:#ffe17a}
+.warn{font:18px "VT323",monospace;color:#c98080;margin-top:10px}
+footer{background:var(--ink);color:#e8dccb;padding-block:30px 40px;font-size:13px}
+footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.memo{display:none}
+.memo.on{display:block}
+body.late .hero h1 .t2{color:#111;text-shadow:none}
+
+/* ================= GAME ================= */
+.game{position:fixed;inset:0;z-index:100;background:#000;display:none;color:#e6f2e6;font-family:"VT323",monospace;user-select:none;-webkit-user-select:none}
+.game.on{display:block}
+#gl{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.gh{position:absolute;inset:0;pointer-events:none}
+.clock{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:max(18px,env(safe-area-inset-right,0px));text-align:right;font-size:40px;line-height:1;text-shadow:0 0 8px rgba(0,0,0,.9)}
+.clock small{display:block;font-size:22px;opacity:.8}
+.pw{position:absolute;left:max(18px,env(safe-area-inset-left,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));font-size:24px;line-height:1.2;text-shadow:0 0 6px #000}
+.pw b{font-size:30px}
+.use{display:flex;gap:3px;vertical-align:middle;margin-left:6px;display:inline-flex}
+.use i{width:12px;height:20px;background:#3a3;display:block}
+.use i.y{background:#cc3}.use i.r{background:#c33}
+.side{position:absolute;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:12px;pointer-events:auto;transition:opacity .2s}
+.side.l{left:max(14px,env(safe-area-inset-left,0px))}.side.r{right:max(14px,env(safe-area-inset-right,0px))}
+.side button{width:84px;height:64px;border-radius:10px;border:3px solid #555;background:#2a0d0d;color:#ffb3b3;font:24px "VT323",monospace;cursor:pointer;box-shadow:0 0 0 3px #000}
+.side button.light{background:#1d1d1d;color:#eee}
+.side button.on{background:#c62014;color:#fff;border-color:#ff8a80;box-shadow:0 0 20px rgba(255,40,20,.6)}
+.side button.light.on{background:#e8e8d0;color:#111;border-color:#fff;box-shadow:0 0 22px rgba(255,255,220,.7)}
+.side small{font-size:16px;text-align:center;opacity:.7}
+.mon{position:absolute;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);width:min(560px,70vw);height:40px;border:3px solid #9aa;background:rgba(255,255,255,.08);color:#dfe;font:24px "VT323",monospace;pointer-events:auto;cursor:pointer;letter-spacing:.2em}
+.mon:hover{background:rgba(255,255,255,.18)}
+.camui{position:absolute;inset:0;display:none;pointer-events:none}
+.camui.on{display:block}
+.camlbl{position:absolute;left:max(24px,env(safe-area-inset-left,0px));top:calc(20px + env(safe-area-inset-top,0px));font-size:34px;text-shadow:0 0 6px #000;line-height:1}
+.camlbl .rec{color:#f33}
+.camlbl small{display:block;font-size:22px;opacity:.85;margin-top:6px}
+.audio{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);font-size:42px;text-align:center;display:none;text-shadow:0 0 10px #000}
+.audio.on{display:block}
+.map{position:absolute;right:max(18px,env(safe-area-inset-right,0px));bottom:calc(64px + env(safe-area-inset-bottom,0px));width:300px;height:330px;pointer-events:auto;border:2px solid rgba(220,255,220,.5);background:rgba(0,10,0,.45)}
+.map .rm{position:absolute;border:2px solid rgba(220,255,220,.55)}
+.map .cb{position:absolute;width:44px;height:26px;transform:translate(-50%,-50%);border:2px solid #cfe;background:#222;color:#cfe;font:18px/20px "VT323",monospace;cursor:pointer;padding:0}
+.map .cb.sel{background:#7c6;color:#020;border-color:#fff}
+.map .you{position:absolute;font-size:16px;color:#fff;transform:translate(-50%,-50%)}
+.cap{position:absolute;left:50%;bottom:calc(70px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);max-width:min(880px,90vw);text-align:center;font-size:26px;line-height:1.2;color:#fff;text-shadow:0 0 6px #000,0 0 2px #000;background:rgba(0,0,0,.45);padding:6px 14px;opacity:0;transition:opacity .3s}
+.cap.on{opacity:1}
+.mute{position:absolute;right:max(18px,env(safe-area-inset-right,0px));top:calc(96px + env(safe-area-inset-top,0px));pointer-events:auto;font:20px "VT323",monospace;background:rgba(0,0,0,.5);color:#cfe;border:2px solid #456;padding:4px 10px;cursor:pointer}
+.card{position:absolute;inset:0;display:none;place-items:center;text-align:center;background:#000;z-index:5}
+.card.on{display:grid}
+.card h2{font:72px/1 "VT323",monospace;margin:0}
+.card p{font-size:28px;margin:10px 0 0;opacity:.8}
+.card .row{display:flex;gap:12px;justify-content:center;margin-top:26px;flex-wrap:wrap}
+.card button{font:28px "VT323",monospace;background:#111;color:#dfe;border:2px solid #556;padding:10px 20px;cursor:pointer}
+.six{font:120px/1 "VT323",monospace}
+.six .roll{display:inline-block;height:1em;overflow:hidden;vertical-align:bottom}
+.six .roll span{display:block;transition:transform 2.6s cubic-bezier(.6,0,.2,1)}
+.six .roll.go span{transform:translateY(-1em)}
+.keys{position:absolute;left:50%;top:calc(14px + env(safe-area-inset-top,0px));transform:translateX(-50%);font-size:18px;opacity:.55;text-align:center;white-space:nowrap}
+@media (max-width:700px){.map{width:220px;height:242px}.keys{display:none}.side button{width:70px;height:54px;font-size:20px}}
+.nogl .game .card.err{display:grid}
+@media (pointer:coarse){.keys,.side small{display:none}}
+@media (max-width:700px){.pw{bottom:calc(58px + env(safe-area-inset-bottom,0px));font-size:20px}.pw b{font-size:24px}.mon{width:min(420px,62vw);height:38px;font-size:20px}}
+@media (max-height:520px){.clock{font-size:28px}.clock small{font-size:17px}.mute{top:calc(62px + env(safe-area-inset-top,0px));font-size:16px}
+  .map{width:210px;height:200px;right:max(10px,env(safe-area-inset-right,0px));top:calc(96px + env(safe-area-inset-top,0px));bottom:auto}
+  .map .cb{width:36px;height:24px;font-size:16px;line-height:18px}
+  .pw{bottom:calc(8px + env(safe-area-inset-bottom,0px));font-size:17px;line-height:1.1}.pw b{font-size:20px}
+  .mon{height:32px;font-size:18px;width:min(360px,46vw);bottom:calc(6px + env(safe-area-inset-bottom,0px))}
+  .side{gap:8px}.side button{width:66px;height:46px;font-size:19px}.side small{display:none}
+  .camlbl{font-size:26px}.camlbl small{font-size:17px}.cap{font-size:19px;bottom:calc(48px + env(safe-area-inset-bottom,0px))}}
+@media (max-height:520px) and (max-width:700px){.map{width:180px;height:172px}}
+.rot{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);z-index:4;display:none;background:rgba(0,0,0,.8);border:2px solid #556;padding:16px 18px;font-size:24px;text-align:center;pointer-events:auto;max-width:86vw}
+.rot button{margin-top:10px;font:22px "VT323",monospace;background:#111;color:#dfe;border:2px solid #556;padding:6px 14px}
+@media (orientation:portrait) and (pointer:coarse){.game.on.playing .rot:not(.dis){display:block}}
+.game.scare .rot{display:none!important}
+.game.scare .gh{display:none}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap nav">
+  <a class="logo" href="#home"><span class="badge">RC</span><span><b>Taman Ria Ceria</b><small>Family Restaurant · Since 1987</small></span></a>
+  <nav class="links" aria-label="Sections"><a href="#band">Meet the Band</a><a href="#menu">Menu</a><a href="#party">Birthday Parties</a><a href="#news">Newsletter</a><a href="#careers">Careers</a></nav>
+</div></header>
+
+<main>
+  <section class="hero" id="home"><div class="wrap hgrid">
+    <div>
+      <span class="burst">Makan · Main · Menyanyi!</span>
+      <h1>Where every kid is <span class="t2">family</span>.</h1>
+      <p id="heroP">Nasi lemak, pizza kampung and a live animatronic band that sings your name. Taman Ria Ceria has been the happiest place in Ipoh since 1987.</p>
+      <div class="cta"><a class="btn" href="#party">Book a party</a><a class="btn alt" href="#band">Meet the band</a></div>
+    </div>
+    <figure class="photo" id="heroPhoto"><img id="heroImg" alt="The Ria Ceria Band on stage" src=""><img class="alt" id="heroAlt" alt="" src=""><figcaption>The Ria Ceria Band, live every hour!</figcaption></figure>
+  </div></section>
+
+  <section id="band"><div class="wrap">
+    <div class="sh"><h2>Meet the Ria Ceria Band</h2><p>Four best friends from the Malaysian rainforest, built right here in Ipoh. They never miss a show, and they never forget a face.</p></div>
+    <div class="band" id="bandGrid"></div>
+  </div></section>
+
+  <section class="menu" id="menu"><div class="wrap">
+    <div class="sh"><h2>Menu</h2><p>Halal kitchen. All set meals come with a free balloon and a song from the band.</p></div>
+    <div class="mgrid">
+      <div class="mcat"><h3>Makan Utama</h3>
+        <div class="item"><div><b>Nasi Lemak Ceria</b><em>Ayam goreng, sambal, telur mata</em></div><span>RM 8.90</span></div>
+        <div class="item"><div><b>Pizza Kampung</b><em>Rendang, cheese, daun kari</em></div><span>RM 18.90</span></div>
+        <div class="item"><div><b>Mee Goreng Mamak</b><em>Extra pedas on request</em></div><span>RM 7.50</span></div>
+        <div class="item"><div><b>Chicken Chop Kenyalang</b><em>Black pepper sauce, fries</em></div><span>RM 14.90</span></div>
+      </div>
+      <div class="mcat"><h3>Kids' Corner</h3>
+        <div class="item"><div><b>Tenuk Burger Set</b><em>Mini burger, fries, Milo ais</em></div><span>RM 9.90</span></div>
+        <div class="item"><div><b>Kancil Nuggets</b><em>6 pieces, chilli sos</em></div><span>RM 6.50</span></div>
+        <div class="item"><div><b>Spaghetti Bolognese</b><em>Small portion</em></div><span>RM 7.90</span></div>
+        <div class="item"><div><b>Birthday Cake Slice</b><em>Pandan or chocolate</em></div><span>RM 5.00</span></div>
+      </div>
+      <div class="mcat"><h3>Minuman &amp; Pencuci Mulut</h3>
+        <div class="item"><div><b>Air Sirap Bandung</b><em>Jug for the table RM 12</em></div><span>RM 3.50</span></div>
+        <div class="item"><div><b>ABC Ria Ceria</b><em>Ais kacang, jelly, corn</em></div><span>RM 6.90</span></div>
+        <div class="item"><div><b>Cendol Mak Orang</b><em>Gula Melaka, santan</em></div><span>RM 5.90</span></div>
+        <div class="item"><div><b>Teh Tarik</b><em>Hot or ais</em></div><span>RM 2.80</span></div>
+      </div>
+    </div>
+  </div></section>
+
+  <section id="party"><div class="wrap">
+    <div class="sh"><h2>Birthday Parties</h2><p>The band comes to your table, sings your child's name and poses for photos. Every child gets a party hat they get to keep.</p></div>
+    <div class="pk">
+      <div class="pack"><h3>Parti Kecil</h3><div class="pr">RM 299</div><ul><li>10 kids · 1.5 hours</li><li>Kids' set meals</li><li>One song from the band</li></ul></div>
+      <div class="pack hot"><h3>Parti Ceria</h3><div class="pr">RM 499</div><ul><li>20 kids · 2 hours</li><li>Cake and balloons</li><li>Band visits your table</li><li>Photo with Pak Tenuk</li></ul></div>
+      <div class="pack"><h3>Parti Mega</h3><div class="pr">RM 899</div><ul><li>40 kids · 3 hours</li><li>Private dining hall</li><li>Kebun Kancil play area*</li><li>Goodie bags for everyone</li></ul><p style="font-size:12px;color:var(--dim);margin:8px 0 0">*Kebun Kancil is temporarily closed.</p></div>
+    </div>
+    <form class="book" id="book">
+      <label>Parent's name<input required placeholder="Puan Aminah"></label>
+      <label>Child's name<input required id="kid" placeholder="Adam"></label>
+      <label>Date<input type="date" required></label>
+      <label>Package<select><option>Parti Kecil</option><option>Parti Ceria</option><option>Parti Mega</option></select></label>
+      <button class="btn" type="submit">Book now</button>
+      <div class="ok" id="bookOk" role="status"></div>
+    </form>
+  </div></section>
+
+  <section id="news" style="background:#f6efdc"><div class="wrap">
+    <div class="sh"><h2>Ria Ceria Newsletter</h2><p>News from the restaurant. Older issues unlock as our archive is restored.</p></div>
+    <div class="news">
+      <article class="paper"><div class="d">Issue 1 · March 1987</div><h3>Grand opening in Ipoh!</h3><p>Taman Ria Ceria opens its doors on Jalan Sultan Idris with the first animatronic band in Perak. Pak Tenuk, Kak Kenyalang and Mak Orang perform every hour, and the brand-new Kebun Kancil play garden is open for kids under 10.</p></article>
+      <article class="paper locked" id="n2"><div class="d">Issue 19 · August 1991</div><h3>Kebun Kancil closes for maintenance</h3><p>Following <span class="red" data-r>an incident during a birthday party on 14 August</span>, Kebun Kancil will close until further notice. Si Kancil will remain behind the curtain <span class="red" data-r>and has been disconnected from the show controller. Staff report it is still moving at night.</span> We thank parents for their patience.</p><div class="lock">Survive Night 1 to restore this issue</div></article>
+      <article class="paper locked" id="n3"><div class="d">Issue 31 · June 1993</div><h3>New night security policy</h3><p>After <span class="red" data-r>two night guards resigned in one week</span>, management reminds staff the band is set to "free roam" after closing <span class="red" data-r>because their servos seize if they stand still overnight. They will try to greet anyone still in the building. Do not let them greet you.</span></p><div class="lock">Survive Night 3 to restore this issue</div></article>
+    </div>
+    <article class="paper memo" id="memo" style="margin-top:20px"><div class="d">Internal memo · not for publication · 1995</div><h3>Re: the orangutan</h3><p>Mak Orang has not been on the show schedule since 1993. Nobody has powered her on. She is still on the stage every morning, facing a different way. If the generator fails, do not wait in the dark for her to stop singing.</p></article>
+  </div></section>
+
+  <section class="career" id="careers"><div class="wrap">
+    <div class="sh"><h2>Careers · Jawatan Kosong</h2><p>Join the Ria Ceria family. We are always hiring.</p></div>
+    <div class="job">
+      <div class="post">
+        <h3>NIGHT SECURITY GUARD · URGENT</h3>
+        <ul><li>Shift: 12:00 AM – 6:00 AM</li><li>Pay: RM 1,200 / month + free nasi lemak</li><li>Watch the CCTV and keep the building safe</li><li>No experience needed</li></ul>
+        <p class="fine">Taman Ria Ceria is not responsible for injury, dismemberment or loss of sleep. Previous guard will leave you a recorded message. Position available immediately. Again.</p>
+      </div>
+      <div class="apply">
+        <label>Full name (as per IC)<input id="gname" maxlength="30" placeholder="Your name" autocomplete="off"></label>
+        <div style="font:20px 'VT323',monospace;color:#a8c2a8">Choose your shift:</div>
+        <div class="nights" id="nights"></div>
+        <button class="btn dark" id="startShift" type="button">START SHIFT ▶</button>
+        <div class="warn">Best with headphones. Mouse or touch to look, keyboard optional. Sound turns on when the shift starts.</div>
+      </div>
+    </div>
+  </div></section>
+</main>
+<footer><div class="wrap"><span>© 1987–1995 Taman Ria Ceria Sdn. Bhd. · Jalan Sultan Idris, Ipoh. A fictional restaurant.</span><span id="visits">Pengunjung: 000231</span></div></footer>
+
+<!-- ================= GAME ================= -->
+<div class="game" id="game" aria-label="Night shift game">
+  <canvas id="gl" tabindex="0" aria-label="Security office and CCTV view"></canvas>
+  <div class="gh">
+    <div class="clock"><span id="hour">12 AM</span><small id="nightL">Night 1</small></div>
+    <div class="keys">A/D look · Q/E doors · Z/C lights · SPACE cameras · ESC pause</div>
+    <div class="pw">Power left: <b id="pwr">100%</b><br>Usage: <span class="use" id="use"></span></div>
+    <div class="side l" id="sideL"><button id="doorL" type="button">DOOR</button><button class="light" id="lightL" type="button">LIGHT</button><small>Q · Z</small></div>
+    <div class="side r" id="sideR"><button id="doorR" type="button">DOOR</button><button class="light" id="lightR" type="button">LIGHT</button><small>E · C</small></div>
+    <div class="camui" id="camui"><div class="camlbl"><span class="rec">●</span> <span id="camName">CAM 1A</span><small id="camSub">Show Stage</small></div><div class="audio" id="audioOnly">CAMERA DISABLED<br><small>AUDIO ONLY</small></div><div class="map" id="map"></div></div>
+    <button class="mon" id="monBtn" type="button">▲ CAMERAS ▲</button>
+    <button class="mute" id="voiceBtn" type="button">Voice: on</button>
+    <div class="cap" id="cap"></div>
+    <div class="rot" id="rot">Turn your phone sideways<br>for the best view of the office.<br><button type="button" id="rotOk">Play like this</button></div>
+  </div>
+  <div class="card" id="cardIntro"><div><h2 id="ciT">12:00 AM</h2><p id="ciS">Night 1</p></div></div>
+  <div class="card" id="cardWin"><div><div class="six"><span class="roll" id="roll"><span>5</span><span>6</span></span> AM</div><p id="winP">You survived Night 1.</p><div class="row"><button id="winNext" type="button">Next night</button><button id="winSite" type="button">Back to the website</button></div></div></div>
+  <div class="card" id="cardDead"><div><h2>SHIFT TERMINATED</h2><p id="deadP">You were greeted.</p><div class="row"><button id="deadRetry" type="button">Try again</button><button id="deadSite" type="button">Back to the website</button></div></div></div>
+  <div class="card" id="cardPause"><div><h2>PAUSED</h2><p>The building waits for you.</p><div class="row"><button id="pResume" type="button">Resume</button><button id="pQuit" type="button">Quit shift</button></div></div></div>
+  <div class="card err"><div><h2>NO SIGNAL</h2><p>This browser can't run WebGL.</p></div></div>
+</div>
+
+<script type="importmap">{"imports":{"three":"./lib/three/build/three.module.js","three/addons/":"./lib/three/examples/jsm/"}}</script>
+<script src="core.js"></script>
+<script type="module">
+import * as THREE from 'three';
+(function () {
+  'use strict';
+  var $ = function (s) { return document.querySelector(s); };
+  var TAU = Math.PI * 2, clamp = function (v, a, b) { return v < a ? a : v > b ? b : v; }, mix = function (a, b, t) { return a + (b - a) * t; };
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  var PROG = { done: parseInt(lsGet('rc_done') || '0', 10) || 0 };
+
+  var AT = RC.AT, UV = RC.UV, WORLD = RC.WORLD, DOOR = RC.DOOR, FAN = RC.FAN, CHARS = RC.CHARS, ST = RC.ST, HT = RC.HT;
+  /* ============================== SHADERS ============================== */
+  var VS = `attribute vec3 aP; attribute vec3 aN; attribute vec2 aUV; attribute float aM; attribute vec4 aC;
+uniform mat4 uVP; uniform mat4 uModel;
+varying vec3 vP; varying vec3 vN; varying vec2 vUV; varying float vM; varying vec4 vC; varying vec3 vL;
+void main(){ vec4 w = uModel*vec4(aP, 1.); vP = w.xyz; vN = (uModel*vec4(aN, 0.)).xyz; vUV = aUV; vM = aM; vC = aC; vL = aP; gl_Position = uVP*w; }`;
+  var FS = `precision highp float;
+varying vec3 vP; varying vec3 vN; varying vec2 vUV; varying float vM; varying vec4 vC; varying vec3 vL;
+uniform vec3 uEye; uniform float uTime; uniform sampler2D uAtlas; uniform vec4 uL[12]; uniform vec3 uLC[12]; uniform vec3 uAmb;
+uniform float uEyeGlow; uniform float uWear; uniform float uFog; uniform float uScreen; uniform float uBulbs[9];
+float h2(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7)))*43758.5453); }
+float vn(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3. - 2.*f); return mix(mix(h2(i), h2(i + vec2(1., 0.)), f.x), mix(h2(i + vec2(0., 1.)), h2(i + vec2(1., 1.)), f.x), f.y); }
+float fbm(vec2 p){ float a = .5, s = 0.; for (int i = 0; i < 4; i++){ s += a*vn(p); p = p*2.03 + 17.1; a *= .5; } return s; }
+void main(){
+  float m = vM; vec3 n = normalize(vN); vec3 v = normalize(uEye - vP);
+  if (dot(n, v) < 0.) n = -n;
+  vec3 alb = vec3(.6); float rough = .8, spec = .03; vec3 emis = vec3(0.);
+  if (m < .5) { // checker floor
+    vec2 t = floor(vUV/.6); float ch = mod(t.x + t.y, 2.);
+    alb = mix(vec3(.55, .1, .08), vec3(.85, .8, .7), ch);
+    float g = fbm(vUV*1.3); alb *= .6 + .5*g; alb = mix(alb, vec3(.25, .2, .15), smoothstep(.55, .8, fbm(vUV*.4 + 3.))*.6);
+    float grout = 1. - smoothstep(0., .02, min(min(fract(vUV.x/.6), 1. - fract(vUV.x/.6)), min(fract(vUV.y/.6), 1. - fract(vUV.y/.6))));
+    alb = mix(alb, vec3(.12), grout*.6); rough = .4; spec = .25;
+  } else if (m < 1.5) { // walls
+    alb = vC.rgb;
+    if (vUV.y < 1.15) { vec2 t = fract(vec2(vUV.x/.3, vUV.y/.3)); float gr = 1. - smoothstep(0., .04, min(min(t.x, 1. - t.x), min(t.y, 1. - t.y))); alb = mix(alb, vec3(.2), gr*.5); spec = .2; rough = .4; }
+    float st = fbm(vec2(vUV.x*.7, vUV.y*.5)); alb *= .7 + .4*st;
+    float drip = smoothstep(.6, .9, vn(vec2(vUV.x*4., 0.)))*smoothstep(3., .6, vUV.y)*smoothstep(.3, .9, fbm(vec2(vUV.x*6., vUV.y*.6)));
+    alb = mix(alb, vec3(.18, .12, .08), drip*.6);
+  } else if (m < 2.5) { vec2 t = fract(vUV/.6); float gr = 1. - smoothstep(0., .03, min(min(t.x, 1. - t.x), min(t.y, 1. - t.y))); alb = mix(vec3(.5, .48, .44), vec3(.2), gr)*(.7 + .4*fbm(vUV*.8)); }
+  else if (m < 3.5) { alb = vC.rgb*(.8 + .3*vn(vec2(vP.x*2. + vP.z*2., vP.y*30.))); rough = .6; spec = .08; }
+  else if (m < 4.5) { alb = vC.rgb*(.85 + .2*vn(vP.xz*8. + vP.y*8.)); rough = .4; spec = .35; }
+  else if (m < 5.5) { alb = texture2D(uAtlas, vUV).rgb; rough = .7; }
+  else if (m < 6.5) { emis = vC.rgb*uBulbs[0]*.6; alb = vec3(.1); }
+  else if (m < 7.5) { vec2 q = floor(vP.xz*8. + vP.y*8.); alb = vC.rgb*(mod(q.x + q.y, 2.) > .5 ? 1. : .82)*(.75 + .3*vn(vP.xz*3.)); }
+  else if (m < 8.5) { // animatronic fur/plastic with wear
+    alb = vC.rgb;
+    float fur = vn(vL.xy*60. + vL.z*40.)*.5 + vn(vL.yz*25.)*.5;
+    alb *= .75 + .35*fur;
+    float dirt = fbm(vL.xy*4. + vL.z*3.); alb = mix(alb, alb*vec3(.55, .45, .35), smoothstep(.45, .8, dirt)*.7);
+    float tear = smoothstep(.78, .82, fbm(vL.xz*6. + vL.y*5. + 9.))*uWear;
+    alb = mix(alb, vec3(.55, .56, .58), tear); spec = mix(.08, .5, tear); rough = mix(.75, .3, tear);
+  }
+  else if (m < 9.5) { // eye: pinprick glow
+    alb = vec3(.02); vec3 pc = vec3(1., .96, .9);
+    emis = pc*uEyeGlow*(.6 + .4*sin(uTime*3. + vL.x*20.)); spec = .9; rough = .05;
+  }
+  else if (m < 10.5) { alb = vec3(.7, .7, .72); spec = .7; rough = .2; }
+  else if (m < 11.5) { // curtain (batik)
+    float fold = sin(vUV.x*14.); vec2 q = vec2(vUV.x*3., vP.y*1.5);
+    float motif = smoothstep(.3, .32, abs(fract(q.x + .5*sin(q.y*2.)) - .5)) ;
+    alb = mix(vec3(.12, .32, .2), vec3(.75, .58, .2), (1. - motif)*.7)*(.65 + .35*fold);
+    n = normalize(n + vec3(0., 0., cos(vUV.x*14.))*.6);
+  }
+  else if (m < 12.5) { float s = h2(floor(vUV*vec2(80., 60.)) + floor(uTime*24.)); emis = vec3(.25, .45, .3)*(.3 + .7*s)*uScreen + vec3(.02, .05, .03); alb = vec3(0.); }
+  else if (m < 13.5) { alb = vC.rgb; rough = .25; spec = .4; }
+  else if (m < 14.5) { int bi = int(vC.r + .5); float b = 0.; for (int k = 0; k < 9; k++) { if (k == bi) b = uBulbs[k]; } emis = vec3(1., .85, .6)*b*2.5; alb = vec3(.4); }
+  else { alb = vec3(.36, .37, .4)*(.85 + .2*step(.5, fract(vP.y*6.))); rough = .3; spec = .5; }
+
+  vec3 diff = uAmb*(.6 + .4*n.y), sp = vec3(0.);
+  for (int i = 0; i < 12; i++) {
+    vec3 l = uL[i].xyz - vP; float d2 = dot(l, l); vec3 ld = l*inversesqrt(d2);
+    float nl = max(dot(n, ld), 0.); float att = uL[i].w/(1. + d2*.55);
+    diff += uLC[i]*nl*att;
+    vec3 hv = normalize(ld + v); sp += uLC[i]*pow(max(dot(n, hv), 0.), mix(300., 10., rough))*att*spec*nl*3.;
+  }
+  vec3 col = alb*diff + sp + emis;
+  float dist = length(vP - uEye);
+  col *= exp(-dist*uFog);
+  gl_FragColor = vec4(col, 1.);
+}`;
+  var PVS = 'attribute vec2 p; void main(){ gl_Position = vec4(p, 0., 1.); }';
+  var PFS = `precision highp float;
+uniform sampler2D uTex; uniform vec2 uRes; uniform float uTime; uniform float uMode; uniform float uStatic; uniform float uExp; uniform float uFlash; uniform float uDark;
+float h2(vec2 p){ return fract(sin(dot(p, vec2(12.9898, 78.233)))*43758.5453); }
+vec3 aces(vec3 x){ return clamp((x*(2.51*x + .03))/(x*(2.43*x + .59) + .14), 0., 1.); }
+void main(){
+  vec2 uv = gl_FragCoord.xy/uRes;
+  vec2 c = uv - .5;
+  if (uMode > .5 && uMode < 1.5) {
+    float r2 = dot(c, c); vec2 u2 = .5 + c*(1. + .22*r2);
+    float jit = (h2(vec2(floor(uv.y*200.), floor(uTime*30.))) - .5)*.003*(1. + uStatic*8.);
+    u2.x += jit;
+    vec3 col = vec3(texture2D(uTex, u2 + vec2(.0015, 0.)).r, texture2D(uTex, u2).g, texture2D(uTex, u2 - vec2(.0015, 0.)).b);
+    col = aces(col*uExp);
+    float Y = dot(col, vec3(.3, .55, .15));
+    col = mix(vec3(Y)*vec3(.8, 1., .82), col, .25);
+    float n = h2(gl_FragCoord.xy*.5 + floor(uTime*24.)*13.);
+    col += (n - .5)*(.16 + uStatic*.9);
+    col = mix(col, vec3(n), clamp(uStatic, 0., 1.)*.85);
+    float bar = smoothstep(.0, .05, abs(fract(uv.y - uTime*.12) - .5) - .45);
+    col += (1. - bar)*.06;
+    col *= .88 + .12*sin(gl_FragCoord.y*1.6);
+    if (u2.x < 0. || u2.x > 1. || u2.y < 0. || u2.y > 1.) col = vec3(0.);
+    col *= 1. - r2*1.3;
+    gl_FragColor = vec4(pow(clamp(col, 0., 1.), vec3(.95)), 1.);
+    return;
+  }
+  vec2 u2 = uv;
+  if (uMode > 1.5) { u2 += vec2(h2(vec2(uTime*7., 1.)) - .5, h2(vec2(uTime*9., 2.)) - .5)*.03; }
+  vec3 col = texture2D(uTex, u2).rgb;
+  col = aces(col*uExp);
+  col = pow(col, vec3(1./2.2));
+  col += (h2(gl_FragCoord.xy + fract(uTime)*91.) - .5)*.05;
+  col *= 1. - dot(c, c)*1.4;
+  col = mix(col, vec3(1., .9, .9), uFlash);
+  col *= 1. - uDark;
+  gl_FragColor = vec4(col, 1.);
+}`;
+  /* ============================== THREE.JS RENDERER ============================== */
+  // Lighting: every lamp was baked separately in Blender Cycles (direct + bounce + soft shadows) into per-vertex layers.
+  // Each frame the layers are mixed with the game's live lamp levels, so flicker, door lights and the power cut stay real-time.
+  var cv = $('#gl'), GLOK = true, R = {};
+  var NL = 12;
+  var GLC = [
+    'float h2(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7)))*43758.5453); }',
+    'float vn(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3. - 2.*f); return mix(mix(h2(i), h2(i + vec2(1., 0.)), f.x), mix(h2(i + vec2(0., 1.)), h2(i + vec2(1., 1.)), f.x), f.y); }',
+    'float fbm(vec2 p){ float a = .5, s = 0.; for (int i = 0; i < 4; i++){ s += a*vn(p); p = p*2.03 + 17.1; a *= .5; } return s; }'].join('\n');
+  var SU = { uW: { value: new Array(NL).fill(0).map(function () { return new THREE.Vector3(); }) }, uAmb: { value: new THREE.Vector3() }, uFog: { value: .05 }, uTime: { value: 0 }, uBulbs: { value: new Array(9).fill(0) }, uScreen: { value: 0 }, uBake: { value: 1 } };
+  function bmat(params, o) {
+    o = o || {};
+    var m = new THREE.MeshStandardMaterial(params);
+    m.onBeforeCompile = function (s) {
+      Object.assign(s.uniforms, SU, o.uniforms || {});
+      var baked = !o.live;
+      s.vertexShader = s.vertexShader
+        .replace('#include <common>', '#include <common>\nattribute vec3 ac; attribute vec2 uv0; varying vec3 vAc; varying vec2 vUv0; varying vec3 vWPos; varying vec3 vLoc; varying vec3 vIrr; varying vec3 vWN;\n' +
+          (baked ? 'attribute vec4 b0; attribute vec4 b1; attribute vec4 b2; uniform vec3 uW[' + NL + ']; uniform vec3 uAmb;' : ''))
+        .replace('#include <begin_vertex>', '#include <begin_vertex>\nvAc = ac; vUv0 = uv0; vLoc = position; vWN = normalize(mat3(modelMatrix)*normal);\n' +
+          (baked ? 'vec4 q0 = b0*b0, q1 = b1*b1, q2 = b2*b2; vIrr = uW[0]*q0.x + uW[1]*q0.y + uW[2]*q0.z + uW[3]*q0.w + uW[4]*q1.x + uW[5]*q1.y + uW[6]*q1.z + uW[7]*q1.w + uW[8]*q2.x + uW[9]*q2.y + uW[10]*q2.z + uW[11]*q2.w + uAmb*(.6 + .4*vWN.y);' : 'vIrr = vec3(0.);'))
+        .replace('#include <project_vertex>', '#include <project_vertex>\nvWPos = (modelMatrix*vec4(transformed, 1.)).xyz;');
+      s.fragmentShader = s.fragmentShader
+        .replace('#include <common>', '#include <common>\nvarying vec3 vAc; varying vec2 vUv0; varying vec3 vWPos; varying vec3 vLoc; varying vec3 vIrr; varying vec3 vWN;\nuniform float uFog; uniform float uTime; uniform float uBulbs[9]; uniform float uScreen; uniform float uBake;\n' + (o.decl || '') + '\n' + GLC + '\nfloat gRough = -1.;')
+        .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\nif (gRough >= 0.) roughnessFactor = gRough;')
+        .replace('#include <fog_fragment>', '#include <fog_fragment>\ngl_FragColor.rgb *= exp(-length(vWPos - cameraPosition)*uFog);');
+      if (baked) s.fragmentShader = s.fragmentShader.replace('#include <lights_fragment_maps>', '#include <lights_fragment_maps>\nirradiance += vIrr*PI*uBake;');
+      if (o.albedo) s.fragmentShader = s.fragmentShader.replace('#include <map_fragment>', '#include <map_fragment>\n{ ' + o.albedo + ' }');
+      if (o.emis) s.fragmentShader = s.fragmentShader.replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n{ ' + o.emis + ' }');
+    };
+    m.customProgramCacheKey = function () { return o.key; };
+    return m;
+  }
+  function geoms(arr, basis, keyFn) {
+    var ST_ = 13, n = arr.length / ST_, g = {};
+    for (var t = 0; t < n; t += 3) { var k = keyFn ? keyFn(arr[t * ST_ + 8]) : 'm' + arr[t * ST_ + 8]; (g[k] = g[k] || []).push(t); }
+    var out = {};
+    for (var key in g) {
+      var list = g[key], nv = list.length * 3, P = new Float32Array(nv * 3), N = new Float32Array(nv * 3), UVa = new Float32Array(nv * 2), C = new Float32Array(nv * 3), w = 0;
+      var B = basis ? [new Uint8Array(nv * 4), new Uint8Array(nv * 4), new Uint8Array(nv * 4)] : null;
+      for (var i = 0; i < list.length; i++) for (var v = 0; v < 3; v++) {
+        var si = list[i] + v, s = si * ST_;
+        P[w * 3] = arr[s]; P[w * 3 + 1] = arr[s + 1]; P[w * 3 + 2] = arr[s + 2]; N[w * 3] = arr[s + 3]; N[w * 3 + 1] = arr[s + 4]; N[w * 3 + 2] = arr[s + 5];
+        UVa[w * 2] = arr[s + 6]; UVa[w * 2 + 1] = arr[s + 7]; C[w * 3] = arr[s + 9]; C[w * 3 + 1] = arr[s + 10]; C[w * 3 + 2] = arr[s + 11];
+        if (B) { for (var L = 0; L < 12; L++) B[L >> 2][w * 4 + (L & 3)] = basis[si * 12 + L]; }
+        w++;
+      }
+      var geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(P, 3)); geo.setAttribute('normal', new THREE.BufferAttribute(N, 3));
+      geo.setAttribute('uv0', new THREE.BufferAttribute(UVa, 2)); geo.setAttribute('uv', new THREE.BufferAttribute(UVa, 2)); geo.setAttribute('ac', new THREE.BufferAttribute(C, 3));
+      if (B) { geo.setAttribute('b0', new THREE.BufferAttribute(B[0], 4, true)); geo.setAttribute('b1', new THREE.BufferAttribute(B[1], 4, true)); geo.setAttribute('b2', new THREE.BufferAttribute(B[2], 4, true)); }
+      geo.computeBoundingSphere(); out[key] = geo;
+    }
+    return out;
+  }
+  function wuv(geo, sc) {
+    var p = geo.attributes.position.array, n = geo.attributes.normal.array, uv = new Float32Array(p.length / 3 * 2);
+    for (var i = 0; i < p.length / 3; i++) { var ax = Math.abs(n[i * 3]), ay = Math.abs(n[i * 3 + 1]), az = Math.abs(n[i * 3 + 2]), x = p[i * 3], y = p[i * 3 + 1], z = p[i * 3 + 2];
+      if (ay > ax && ay > az) { uv[i * 2] = x * sc; uv[i * 2 + 1] = z * sc; } else if (ax > az) { uv[i * 2] = z * sc; uv[i * 2 + 1] = y * sc; } else { uv[i * 2] = x * sc; uv[i * 2 + 1] = y * sc; } }
+    geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+  }
+  function loadT(url, srgb) { return new Promise(function (res) { new THREE.TextureLoader().load(url, function (t) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 8; if (srgb) t.colorSpace = THREE.SRGBColorSpace; res(t); }, undefined, function () { res(null); }); }); }
+  var b64u8 = function (s) { var bin = atob(s), u = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u; };
+  function initGL() {
+    try { R.renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: false, preserveDrawingBuffer: true, powerPreference: 'high-performance' }); }
+    catch (e) { GLOK = false; document.documentElement.classList.add('nogl'); return Promise.resolve(); }
+    var r = R.renderer; r.toneMapping = THREE.NoToneMapping; r.setPixelRatio(1); r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap; r.autoClear = false;
+    R.atlas = new THREE.CanvasTexture(AT); R.atlas.colorSpace = THREE.SRGBColorSpace; R.atlas.anisotropy = 8;
+    R.scene = new THREE.Scene(); r.setClearColor(0x000000, 1);
+    R.cam = new THREE.PerspectiveCamera(60, 1, .05, 80);
+    var T_ = {};
+    return Promise.all([
+      loadT('tex/tiles_diff.jpg', 1).then(function (t) { T_.tiles = t; }), loadT('tex/tiles_nor.jpg').then(function (t) { T_.tilesN = t; }), loadT('tex/tiles_rough.jpg').then(function (t) { T_.tilesR = t; }),
+      loadT('tex/plaster_diff.jpg', 1).then(function (t) { T_.pl = t; }), loadT('tex/plaster_nor.jpg').then(function (t) { T_.plN = t; }),
+      loadT('tex/wood_diff.jpg', 1).then(function (t) { T_.wood = t; }), loadT('tex/wood_nor.jpg').then(function (t) { T_.woodN = t; }),
+      new THREE.FileLoader().setResponseType('json').loadAsync('data/light.json').then(function (j) { R.bake = j; }).catch(function () { R.bake = null; })
+    ]).then(function () {
+      // basis decode: soup order, 12 lamps
+      var NS_ = WORLD.length / ST, basis = new Uint8Array(NS_ * 12);
+      if (R.bake) { var raw = b64u8(R.bake.b64); basis = raw; R.lmax = R.bake.max; } else { basis.fill(60); R.lmax = new Array(12).fill(1); }
+      var MAT = {
+        m0: bmat({ normalMap: T_.tilesN, roughnessMap: T_.tilesR, color: 0xffffff, roughness: 1 }, { key: 'floor', uniforms: { tT: { value: T_.tiles } }, decl: 'uniform sampler2D tT;', albedo: [
+          'vec2 uvw = vWPos.xz; vec2 t = floor(uvw/.6); float ch = mod(t.x + t.y, 2.);',
+          'vec3 a = mix(vec3(.5, .07, .05), vec3(.8, .74, .62), ch);',
+          'float dirt = dot(texture2D(tT, uvw/1.2).rgb, vec3(.33)); a *= .55 + .7*dirt;',
+          'a = mix(a, vec3(.22, .17, .12), smoothstep(.55, .8, fbm(uvw*.4 + 3.))*.55);',
+          'float grout = 1. - smoothstep(0., .02, min(min(fract(uvw.x/.6), 1. - fract(uvw.x/.6)), min(fract(uvw.y/.6), 1. - fract(uvw.y/.6))));',
+          'a = mix(a, vec3(.1), grout*.6); diffuseColor.rgb = a;'].join('\n') }),
+        m1: bmat({ normalMap: T_.plN, color: 0xffffff, roughness: .9, normalScale: new THREE.Vector2(.6, .6) }, { key: 'wall', uniforms: { tP: { value: T_.pl }, tT: { value: T_.tiles } }, decl: 'uniform sampler2D tP; uniform sampler2D tT;', albedo: [
+          'vec3 a = vAc*(.55 + .55*dot(texture2D(tP, vUv0*.5).rgb, vec3(.33)));',
+          'if (vUv0.y < 1.15) { vec2 t = fract(vec2(vUv0.x/.3, vUv0.y/.3)); float gr = 1. - smoothstep(0., .05, min(min(t.x, 1. - t.x), min(t.y, 1. - t.y))); a = mix(a, vec3(.16), gr*.55); gRough = .35; }',
+          'float st = fbm(vec2(vUv0.x*.7, vUv0.y*.5)); a *= .72 + .4*st;',
+          'float drip = smoothstep(.6, .9, vn(vec2(vUv0.x*4., 0.)))*smoothstep(3., .6, vUv0.y)*smoothstep(.3, .9, fbm(vec2(vUv0.x*6., vUv0.y*.6)));',
+          'a = mix(a, vec3(.15, .1, .06), drip*.65); diffuseColor.rgb = a;'].join('\n') }),
+        m2: bmat({ normalMap: T_.plN, color: 0xffffff, roughness: .95 }, { key: 'ceil', albedo: 'vec2 t = fract(vUv0/.6); float gr = 1. - smoothstep(0., .03, min(min(t.x, 1. - t.x), min(t.y, 1. - t.y))); diffuseColor.rgb = mix(vec3(.5, .48, .44), vec3(.16), gr)*(.65 + .45*fbm(vUv0*.8));' }),
+        m3: bmat({ map: T_.wood, normalMap: T_.woodN, color: 0xffffff, roughness: .65 }, { key: 'wood', albedo: 'diffuseColor.rgb *= vAc*2.1;' }),
+        m4: bmat({ color: 0xffffff, roughness: .4, metalness: .5 }, { key: 'metal', albedo: 'diffuseColor.rgb = vAc*(.85 + .2*vn(vWPos.xz*8. + vWPos.y*8.));' }),
+        m5: bmat({ map: R.atlas, roughness: .7 }, { key: 'poster' }),
+        m6: bmat({ color: 0x101010, roughness: .5 }, { key: 'stagelamp', emis: 'totalEmissiveRadiance = vAc*uBulbs[0]*.6;' }),
+        m7: bmat({ color: 0xffffff, roughness: .85 }, { key: 'cloth', albedo: 'vec2 q = floor(vWPos.xz*8. + vWPos.y*8.); diffuseColor.rgb = vAc*(mod(q.x + q.y, 2.) > .5 ? 1. : .82)*(.75 + .3*vn(vWPos.xz*3.));' }),
+        m8: bmat({ color: 0xffffff, roughness: .75 }, { key: 'furW', albedo: 'float fur = vn(vLoc.xy*60. + vLoc.z*40.)*.5 + vn(vLoc.yz*25.)*.5; vec3 a = vAc*(.75 + .35*fur); float dirt = fbm(vLoc.xy*4. + vLoc.z*3.); diffuseColor.rgb = mix(a, a*vec3(.55, .45, .35), smoothstep(.45, .8, dirt)*.7);' }),
+        m9: bmat({ color: 0x050505, roughness: .05 }, { key: 'eyeW' }),
+        m10: bmat({ color: new THREE.Color(.7, .7, .72), roughness: .2, metalness: .8 }, { key: 'chrome' }),
+        m11: bmat({ color: 0xffffff, roughness: .9, side: THREE.FrontSide }, { key: 'curtain', albedo: 'float fold = sin(vUv0.x*14.); vec2 q = vec2(vUv0.x*3., vWPos.y*1.5); float motif = smoothstep(.3, .32, abs(fract(q.x + .5*sin(q.y*2.)) - .5)); diffuseColor.rgb = mix(vec3(.1, .28, .17), vec3(.7, .52, .16), (1. - motif)*.7)*(.65 + .35*fold);' }),
+        m12: bmat({ color: 0x000000, roughness: .1 }, { key: 'screen', emis: 'float s = h2(floor(vUv0*vec2(80., 60.)) + floor(uTime*24.)); totalEmissiveRadiance = vec3(.25, .45, .3)*(.3 + .7*s)*uScreen + vec3(.02, .05, .03);' }),
+        m13: bmat({ color: 0xffffff, roughness: .25 }, { key: 'plastic', albedo: 'diffuseColor.rgb = vAc;' }),
+        m14: bmat({ color: 0x555555, roughness: .4 }, { key: 'bulb', emis: 'int bi = int(vAc.r + .5); float b = 0.; for (int k = 0; k < 9; k++) { if (k == bi) b = uBulbs[k]; } totalEmissiveRadiance = vec3(1., .85, .6)*b*2.5;' })
+      };
+      var g = geoms(WORLD, basis);
+      for (var k in g) { var mt = MAT[k]; if (!mt) continue; if (k === 'm2') wuv(g[k], 1 / 1.6); if (k === 'm3') wuv(g[k], 1 / 1.4); if (k === 'm1') { g[k].setAttribute('uv', new THREE.BufferAttribute(g[k].attributes.uv0.array.map(function (x) { return x / 2; }), 2)); }
+        var me = new THREE.Mesh(g[k], mt); me.matrixAutoUpdate = false; me.layers.set(1); R.scene.add(me); }
+      // live (unbaked) objects: doors, fan, animatronics — lit by real-time lamps
+      var doorMat = bmat({ color: 0xffffff, roughness: .35, metalness: .6 }, { key: 'door', live: 1, albedo: 'diffuseColor.rgb = vec3(.36, .37, .4)*(.85 + .2*step(.5, fract(vWPos.y*6.)));' });
+      var dg = geoms(DOOR, null, function () { return 'd'; }).d;
+      R.doors = [-2, 2].map(function (x) { var d = new THREE.Mesh(dg, doorMat); d.castShadow = true; d.receiveShadow = true; d.layers.set(2); R.scene.add(d); return d; });
+      var fg = geoms(FAN, null, function () { return 'f'; }).f; R.fan = new THREE.Mesh(fg, bmat({ color: 0xffffff, roughness: .5, metalness: .4 }, { key: 'fan', live: 1, albedo: 'diffuseColor.rgb = vAc;' })); R.fan.layers.set(2); R.scene.add(R.fan);
+      R.chars = {};
+      Object.keys(CHARS).forEach(function (key) {
+        var wear = key === 'kancil' ? 1 : key === 'orang' ? .5 : .25;
+        var u = { uEyeGlow: { value: 0 }, uWear: { value: wear } };
+        var fur = bmat({ color: 0xffffff, roughness: .75 }, { key: 'fur' + key, live: 1, uniforms: u, decl: 'uniform float uEyeGlow; uniform float uWear;', albedo: [
+          'vec3 a = vAc; float fur = vn(vLoc.xy*60. + vLoc.z*40.)*.5 + vn(vLoc.yz*25.)*.5; a *= .72 + .38*fur;',
+          'float dirt = fbm(vLoc.xy*4. + vLoc.z*3.); a = mix(a, a*vec3(.5, .42, .32), smoothstep(.45, .8, dirt)*.75);',
+          'float tear = smoothstep(.78, .82, fbm(vLoc.xz*6. + vLoc.y*5. + 9.))*uWear; a = mix(a, vec3(.5, .51, .54), tear); gRough = mix(.78, .28, tear);',
+          'diffuseColor.rgb = a;'].join('\n') });
+        var eye = bmat({ color: 0x050505, roughness: .05 }, { key: 'eye' + key, live: 1, uniforms: u, decl: 'uniform float uEyeGlow;', emis: 'totalEmissiveRadiance = vec3(1., .96, .9)*uEyeGlow*(.6 + .4*sin(uTime*3. + vLoc.x*20.));' });
+        var metal = bmat({ color: new THREE.Color(.62, .62, .65), roughness: .25, metalness: .9 }, { key: 'metalc', live: 1 });
+        var plastic = bmat({ color: 0xffffff, roughness: .3 }, { key: 'plasc', live: 1, albedo: 'diffuseColor.rgb = vAc;' });
+        var cg = geoms(CHARS[key].mesh, null), grp = new THREE.Group();
+        for (var k2 in cg) { var mm = k2 === 'm9' ? eye : k2 === 'm10' ? metal : k2 === 'm8' ? fur : plastic; var cm = new THREE.Mesh(cg[k2], mm); cm.castShadow = true; cm.receiveShadow = true; cm.layers.set(2); grp.add(cm); }
+        grp.visible = false; grp.userData.u = u; R.scene.add(grp); R.chars[key] = grp;
+      });
+      R.lamps = LPOS.map(function (p, i) {
+        var l = new THREE.PointLight(new THREE.Color(LCOL[i][0], LCOL[i][1], LCOL[i][2]), 0, 11, 2); l.position.set(p[0], p[1], p[2]);
+        if (i === 9 || i === 10) { l.castShadow = true; l.shadow.mapSize.set(512, 512); l.shadow.bias = -.002; l.shadow.camera.near = .1; l.shadow.camera.far = 12; l.shadow.camera.layers.enableAll(); }
+        l.layers.set(2); R.scene.add(l); return l;
+      });
+      R.rt = new THREE.WebGLRenderTarget(4, 4, { type: THREE.HalfFloatType });
+      R.post = new THREE.ShaderMaterial({ uniforms: { uTex: { value: R.rt.texture }, uRes: { value: new THREE.Vector2() }, uTime: { value: 0 }, uMode: { value: 0 }, uStatic: { value: 0 }, uExp: { value: 1 }, uFlash: { value: 0 }, uDark: { value: 0 } },
+        vertexShader: 'void main(){ gl_Position = vec4(position.xy, 0., 1.); }', fragmentShader: PFS, depthTest: false, depthWrite: false });
+      R.pq = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), R.post); R.pq.frustumCulled = false; R.ps = new THREE.Scene(); R.ps.add(R.pq); R.pcam = new THREE.Camera();
+    });
+  }
+  var LW = 1.6, LWI = [1, 1, 1, 1, 1, 1, 1, 1, .32, .8, .8, 1]; // baked lamp → irradiance scale
+  window.__R = R; window.__SU = SU; window.__THREE = THREE;
+  function renderScene(eye, target, fov, opts) {
+    if (!GLOK || !R.scene) return;
+    R.opts = opts;
+    for (var i = 0; i < NL; i++) { var k = lightI[i] * LW * LWI[i] * R.lmax[i]; SU.uW.value[i].set(LCOL[i][0] * k, LCOL[i][1] * k, LCOL[i][2] * k); R.lamps[i].intensity = lightI[i] * 7 * LWI[i]; }
+    var a = opts.amb || [.012, .012, .014]; SU.uAmb.value.set(a[0], a[1], a[2]);
+    SU.uFog.value = opts.fog == null ? .06 : opts.fog; SU.uScreen.value = opts.screen || 0; SU.uTime.value = T;
+    for (i = 0; i < 9; i++) SU.uBulbs.value[i] = bulbs[i];
+    R.doors[0].position.set(-2, (1 - G.doorAnim[0]) * 2.25, -12.5); R.doors[1].position.set(2, (1 - G.doorAnim[1]) * 2.25, -12.5);
+    var fa = T * 14 * (G.power > 0 ? 1 : 0); R.fan.position.set(1.05, 1.3, -13.6); R.fan.rotation.set(0, 0, fa);
+    for (var key in R.chars) R.chars[key].visible = false;
+    (opts.chars || []).forEach(function (ch) { var g = R.chars[ch.k]; if (!g) return; g.visible = true; g.position.set(ch.x, ch.y || 0, ch.z); g.rotation.set(0, ch.yaw, 0); g.scale.setScalar(ch.s || 1); g.userData.u.uEyeGlow.value = ch.glow; });
+    R.cam.fov = fov * 180 / Math.PI; R.cam.aspect = opts.w / opts.h; R.cam.updateProjectionMatrix();
+    R.cam.position.set(eye[0], eye[1], eye[2]); R.cam.lookAt(target[0], target[1], target[2]);
+    if (R.rt.width !== opts.w || R.rt.height !== opts.h) R.rt.setSize(opts.w, opts.h);
+    R.renderer.shadowMap.autoUpdate = lightI[9] > .05 || lightI[10] > .05;
+    R.renderer.setRenderTarget(R.rt); R.renderer.clear();
+    R.cam.layers.set(1); R.renderer.render(R.scene, R.cam);
+    R.cam.layers.set(2); R.renderer.render(R.scene, R.cam);
+    R.renderer.setRenderTarget(null);
+  }
+  function post(mode, w, h, exp, stat, flash, dark) {
+    if (!GLOK || !R.scene) return;
+    var sz = R.renderer.getSize(new THREE.Vector2());
+    if (sz.x !== w || sz.y !== h) R.renderer.setSize(w, h, false);
+    var u = R.post.uniforms; u.uRes.value.set(w, h); u.uTime.value = T; u.uMode.value = mode; u.uStatic.value = stat || 0; u.uExp.value = exp; u.uFlash.value = flash || 0; u.uDark.value = dark || 0;
+    R.renderer.clear(); R.renderer.render(R.ps, R.pcam);
+  }
+
+  /* ============================== WORLD STATE ============================== */
+  var OFFICE_EYE = [0, 1.35, -11.6];
+  var LPOS = [[-3, 2.6, 16], [3, 2.6, 16], [0, 2.6, 8], [-13, 2.6, 13], [-4, 2.6, -4], [4, 2.6, -4], [13, 2.6, 18], [-8, 2.6, -7], [0, 2.1, -12.2], [-3.6, 2.5, -12.5], [3.6, 2.5, -12.5], [9, 2.6, -2]];
+  var LCOL = [[.75, .8, 1], [1, .8, .7], [1, .85, .6], [.7, .9, .7], [1, .85, .6], [1, .85, .6], [1, .8, .6], [1, .85, .6], [1, .8, .55], [1, .97, .88], [1, .97, .88], [1, .85, .6]];
+  var NIGHTI = [.7, .7, .55, .4, .5, .5, .35, .25, .85, 0, 0, .3];
+  var lightI = NIGHTI.slice(), bulbs = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+  var CAMS = [
+    { id: '1A', name: 'Show Stage', p: [0, 2.7, 6], t: [0, 1.4, 18], room: [-10, 14, 10, 22] },
+    { id: '1B', name: 'Dining Area', p: [9.3, 2.75, 2.6], t: [-2, 1, 11], room: [-10, 2, 10, 14] },
+    { id: '1C', name: 'Kebun Kancil', p: [-6.5, 2.7, 5.5], t: [-11.5, 1.2, 13], room: [-16, 8, -10, 18] },
+    { id: '2A', name: 'West Hall', p: [-4, 2.75, 1.6], t: [-4, 1.0, -12], room: [-6, -10, -2, 2] },
+    { id: '2B', name: 'W. Hall Corner', p: [-2.4, 2.75, -9.7], t: [-4.6, 1.0, -13.6], room: [-6, -14, -2, -10] },
+    { id: '3', name: 'Supply Closet', p: [-6.4, 2.7, -5.4], t: [-9.2, 1, -8.5], room: [-10, -9, -6, -5] },
+    { id: '4A', name: 'East Hall', p: [4, 2.75, 1.6], t: [4, 1.0, -12], room: [2, -10, 6, 2] },
+    { id: '4B', name: 'E. Hall Corner', p: [2.4, 2.75, -9.7], t: [4.6, 1.0, -13.6], room: [2, -14, 6, -10] },
+    { id: '5', name: 'Backstage', p: [10.6, 2.7, 15], t: [15, 1.2, 20], room: [10, 14, 16, 22] },
+    { id: '6', name: 'Kitchen', p: [7, 2.7, 1.5], t: [10, 1, -4], room: [6, -6, 12, 2], audio: true }
+  ];
+  // locations: x,z,yaw,cam index
+  var LOC = {
+    STAGE_T: [-3.2, 18.6, Math.PI, 0], STAGE_K: [0.3, 18.9, Math.PI, 0], STAGE_O: [3.6, 18.6, Math.PI, 0],
+    DIN_T: [-5.5, 8, 2.6, 1], DIN_K: [4.5, 7, -2.6, 1], DIN_O: [-1, 12.6, 2.9, 1],
+    BACK_O: [12.6, 17.4, 2.4, 8], CLOSET_T: [-8.4, -6.6, -1.2, 5], KITCH_K: [9, -2.5, 0, 9],
+    WHALL_T: [-4, -2, Math.PI, 3], WCORN_T: [-4.3, -12.4, 1.6, 4], DOORL: [-2.75, -12.5, Math.PI / 2, -1],
+    EHALL_K: [4, -3, Math.PI, 6], ECORN_K: [4.4, -12.6, -1.6, 7], DOORR: [2.75, -12.5, -Math.PI / 2, -1],
+    EHALL_O: [4.2, -1, Math.PI, 6], ECORN_O: [4.3, -12, -1.7, 7],
+    COVE0: [-13.6, 13, Math.PI / 2, 2], COVE1: [-10.1, 13, Math.PI / 2, 2], COVE2: [-9.2, 12.6, Math.PI / 2 + .3, 2]
+  };
+  var PATHS = { tenuk: ['STAGE_T', 'DIN_T', 'WHALL_T', 'CLOSET_T', 'WCORN_T', 'DOORL'], keny: ['STAGE_K', 'DIN_K', 'KITCH_K', 'EHALL_K', 'ECORN_K', 'DOORR'], orang: ['STAGE_O', 'DIN_O', 'BACK_O', 'EHALL_O', 'ECORN_O', 'DOORR'] };
+
+  /* ============================== PROMO RENDERS (website) ============================== */
+  function snapshot(w, h) { try { return cv.toDataURL('image/jpeg', .86); } catch (e) { return ''; } }
+  var BAND = [
+    { k: 'tenuk', name: 'Pak Tenuk', role: 'Kompang & lead vocals', bio: 'The gentle tapir who started it all. Pak Tenuk knows every birthday song in four languages and has never once stopped smiling.', late: 'Pak Tenuk knows every birthday song in four languages. He would like to sing one for you, up close.' },
+    { k: 'keny', name: 'Kak Kenyalang', role: 'Gamelan & harmonies', bio: 'Sarawak\'s favourite hornbill brings the big beak and the bigger voice. Kids love her hornbill call at the end of every show.', late: 'You will hear Kak Kenyalang in the kitchen before you see her in the hall.' },
+    { k: 'orang', name: 'Mak Orang', role: 'Band leader', bio: 'The wise orangutan who keeps the band in time. Mak Orang\'s long arms give the best hugs in Perak.', late: 'Mak Orang has not been switched on since 1993. She hums anyway.' },
+    { k: 'kancil', name: 'Si Kancil', role: 'Kebun Kancil host', bio: 'Clever little Kancil runs our play garden and is famous for tricks. Currently resting behind the curtain.', late: 'Si Kancil gets restless when nobody is watching. Please keep watching.' }
+  ];
+  function promos() {
+    if (!GLOK) { return; }
+    var day = [2.6, 2.6, 2.4, 1.6, 1.4, 1.4, 1.2, 1, 1.5, 0, 0, 1.2];
+    var W = 960, H = 600; bulbs = [1, 1, 1, 1, 1, 1, 1, 1, 1];
+    lightI = day; var stageChars = [{ k: 'tenuk', x: -3.2, z: 18.6, yaw: Math.PI, glow: .1, y: .84 }, { k: 'keny', x: .3, z: 18.9, yaw: Math.PI, glow: .1, y: .84 }, { k: 'orang', x: 3.6, z: 18.6, yaw: Math.PI, glow: .1, y: .84 }, { k: 'kancil', x: -6.4, z: 17.6, yaw: Math.PI + .3, glow: .1, y: .84 }];
+    cv.width = W; cv.height = H;
+    renderScene([0, 1.7, 9.2], [0, 1.9, 18], .9, { w: W, h: H, amb: [.22, .2, .18], fog: .004, chars: stageChars, mode: 'day' });
+    post(0, W, H, 1.35, 0, 0, 0); $('#heroImg').src = snapshot(W, H);
+    lightI = NIGHTI.map(function (v, i) { return i < 2 ? .15 : 0; }); bulbs = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+    renderScene([0, 1.7, 9.2], [0, 1.9, 18], .9, { w: W, h: H, amb: [.004, .004, .005], fog: .02, chars: stageChars.map(function (c) { return Object.assign({}, c, { glow: 6, yaw: Math.PI + (c.x < 0 ? -.25 : .25) }); }), mode: 'night' });
+    post(0, W, H, 2.2, 0, 0, 0); var nightHero = snapshot(W, H); $('#heroAlt').src = nightHero;
+    var S = 420; cv.width = S; cv.height = S;
+    var grid = $('#bandGrid');
+    BAND.forEach(function (b, i) {
+      var c = CHARS[b.k].head, chs = [{ k: b.k, x: 0, z: 18.6, yaw: Math.PI, glow: .1, y: .84 }];
+      lightI = day; bulbs = [1, 1, 1, 1, 1, 1, 1, 1, 1];
+      renderScene([.35, .84 + c - .15, 15.9], [0, .84 + c - .3, 18.6], .75, { w: S, h: S, amb: [.25, .22, .2], fog: .004, chars: chs, mode: 'day' });
+      post(0, S, S, 1.1, 0, 0, 0); var d1 = snapshot(S, S);
+      lightI = NIGHTI.map(function () { return 0; }); lightI[0] = .25;
+      renderScene([.35, .84 + c - .15, 15.9], [0, .84 + c - .3, 18.6], .75, { w: S, h: S, amb: [.003, .003, .004], fog: .02, chars: [{ k: b.k, x: 0, z: 18.6, yaw: Math.PI - .2, glow: 8, y: .84 }], mode: 'night' });
+      post(0, S, S, 2.5, 0, 0, 0); var d2 = snapshot(S, S);
+      var el = document.createElement('article'); el.className = 'mem';
+      el.innerHTML = '<div class="pic"><img alt=""><img class="alt" alt=""></div><div class="tx"><small></small><h3></h3><p></p></div>';
+      el.querySelector('img').src = d1; el.querySelector('img').alt = b.name + ', ' + b.role; el.querySelector('.alt').src = d2;
+      el.querySelector('small').textContent = b.role; el.querySelector('h3').textContent = b.name; el.querySelector('p').textContent = PROG.done >= 3 ? b.late : b.bio;
+      if (PROG.done >= 1) { el.querySelector('.alt').classList.add('on'); }
+      grid.appendChild(el);
+    });
+    lightI = NIGHTI.slice();
+  }
+
+  /* ============================== GAME STATE ============================== */
+  var NIGHT_AI = [null, { tenuk: 3, keny: 1, orang: 0, kancil: 1 }, { tenuk: 5, keny: 4, orang: 0, kancil: 3 }, { tenuk: 7, keny: 6, orang: 2, kancil: 6 }, { tenuk: 10, keny: 9, orang: 5, kancil: 8 }, { tenuk: 12, keny: 11, orang: 7, kancil: 10 }, { tenuk: 18, keny: 18, orang: 16, kancil: 17 }];
+  var G = { state: 'off', night: 1, t: 0, power: 100, doors: [false, false], lights: [false, false], doorAnim: [0, 0], mon: false, monAnim: 0, cam: 0, stat: 0, pan: 0, panT: 0, A: {}, kancil: { st: 0, run: -1, bangs: 0, watchT: 0 }, kill: null, scareT: 0, pout: null, call: 0 };
+  var T = 0;
+  function newNight(n) {
+    G.night = n; G.t = 0; G.power = 100; G.doors = [false, false]; G.lights = [false, false]; G.doorAnim = [0, 0]; G.mon = false; G.monAnim = 0; G.cam = 0; G.stat = 0; G.pan = 0; G.kill = null; G.pout = null; G.scareT = 0;
+    var ai = NIGHT_AI[n];
+    G.A = { tenuk: { i: 0, ai: ai.tenuk, cd: 4.97, t: 0, at: 0 }, keny: { i: 0, ai: ai.keny, cd: 4.98, t: 2, at: 0 }, orang: { i: 0, ai: ai.orang, cd: 4.6, t: 1, at: 0 } };
+    G.kancil = { st: 0, ai: ai.kancil, t: 0, run: -1, bangs: 0, cd: 5.01 };
+    lightI = NIGHTI.slice(); bulbs = [1, 1, .9, .6, .8, .8, .6, .5, .7];
+  }
+  function locOf(k) { return PATHS[k][G.A[k].i]; }
+  function hour() { return Math.min(6, Math.floor(G.t / HOURLEN)); }
+  var HOURLEN = 60;
+  function usage() { return 1 + (G.doors[0] ? 1 : 0) + (G.doors[1] ? 1 : 0) + (G.lights[0] ? 1 : 0) + (G.lights[1] ? 1 : 0) + (G.mon ? 1 : 0); }
+  function camWatching(ci) { return G.mon && G.monAnim > .9 && G.cam === ci; }
+  function step(dt) {
+    if (G.state !== 'play') { return; }
+    G.t += dt;
+    // night clock
+    if (G.t >= HOURLEN * 6) { win(); return; }
+    var h = hour();
+    if (h !== G.lastH) { G.lastH = h; if (h === 2) { G.A.tenuk.ai++; } if (h === 3) { G.A.tenuk.ai++; G.A.keny.ai++; G.kancil.ai++; } if (h === 4) { G.A.tenuk.ai++; G.A.keny.ai++; G.kancil.ai++; } }
+    // power
+    if (G.power > 0) {
+      G.power -= dt * .084 * usage() * (1 + (G.night - 1) * .04);
+      if (G.power <= 0) { G.power = 0; powerOut(); }
+    }
+    G.doorAnim[0] += clamp((G.doors[0] ? 1 : 0) - G.doorAnim[0], -dt * 5, dt * 5); G.doorAnim[1] += clamp((G.doors[1] ? 1 : 0) - G.doorAnim[1], -dt * 5, dt * 5);
+    G.monAnim += clamp((G.mon ? 1 : 0) - G.monAnim, -dt * 4, dt * 4);
+    G.stat = Math.max(0, G.stat - dt * 1.6);
+    if (G.pout) { stepPowerOut(dt); return; }
+    // animatronics
+    ['tenuk', 'keny', 'orang'].forEach(function (k) {
+      var A = G.A[k]; A.t += dt; if (A.t < A.cd) { return; } A.t -= A.cd;
+      if (A.ai <= 0) { return; }
+      if (Math.random() * 20 + 1 > A.ai) { return; }
+      var path = PATHS[k], loc = path[A.i];
+      if (k === 'orang' && G.mon && LOC[loc][3] === G.cam) { return; } // won't move while watched
+      if (loc === 'DOORL' || loc === 'DOORR') {
+        var side = loc === 'DOORL' ? 0 : 1;
+        if (G.doors[side]) { A.i = 1; moved(k, loc, path[1]); bangDoor(side, .4); }
+        else { G.kill = { k: k, t: G.mon ? 99 : 1.2 + Math.random() }; }
+        return;
+      }
+      var next = A.i + 1;
+      if (k === 'tenuk' && loc === 'WHALL_T' && Math.random() < .5) { next = 4; }
+      if (k === 'tenuk' && loc === 'CLOSET_T') { next = 4; }
+      if (k === 'tenuk' && loc === 'DIN_T' && Math.random() < .2) { next = 3; }
+      if (k === 'keny' && loc === 'EHALL_K' && Math.random() < .3) { next = 2; }
+      var target = path[Math.min(path.length - 1, next)];
+      // don't stack two at the right door
+      if (target === 'DOORR' && ((k === 'keny' && locOf('orang') === 'DOORR') || (k === 'orang' && locOf('keny') === 'DOORR'))) { return; }
+      A.i = Math.min(path.length - 1, next); moved(k, loc, target);
+    });
+    // kancil
+    var Kc = G.kancil;
+    if (Kc.run < 0) {
+      Kc.t += dt;
+      if (Kc.t >= Kc.cd) { Kc.t -= Kc.cd; if (Kc.ai > 0 && !G.mon && Math.random() * 20 + 1 <= Kc.ai) { Kc.st++; if (Kc.st >= 3) { Kc.run = 0; Kc.runLen = camWatching(3) ? 2.4 : 9 + Math.random() * 4; } } }
+      if (camWatching(2) && Kc.st > 0 && Math.random() < dt * .05) { Kc.st--; }
+    } else {
+      if (camWatching(3) && Kc.runLen > 2.6) { Kc.runLen = Kc.run + 2.4; runSnd(); }
+      Kc.run += dt;
+      if (Kc.run >= Kc.runLen) {
+        if (G.doors[0]) { Kc.bangs++; G.power = Math.max(0, G.power - (2 + Kc.bangs * 2)); bangDoor(0, 1); Kc.run = -1; Kc.st = Math.random() < .5 ? 0 : 1; Kc.t = 0; if (G.power <= 0) { powerOut(); } }
+        else { G.kill = { k: 'kancil', t: 0 }; Kc.run = -1; }
+      }
+    }
+    if (G.kill) { G.kill.t -= dt; if (G.kill.t <= 0 || (!G.mon && G.kill.t > 50)) { if (!G.mon || G.kill.k === 'kancil') { jumpscare(G.kill.k); } } }
+    // ambience events
+    if (locOf('keny') === 'KITCH_K' && Math.random() < dt * .5) { pots(); }
+    callStep(dt);
+  }
+  function moved(k, from, to) {
+    var cf = LOC[from][3], ct = LOC[to][3];
+    if (G.mon && (G.cam === cf || G.cam === ct)) { G.stat = 1; staticBurst(); }
+    var x = LOC[to][0]; if (Math.abs(x) < 7 && LOC[to][1] < -2) { steps(x < 0 ? -1 : 1, to.indexOf('DOOR') === 0 || to.indexOf('CORN') > 0 ? .7 : .35); }
+    if (k === 'orang' && Math.random() < .5) { orangCall(); }
+  }
+  function powerOut() {
+    G.pout = { t: 0, phase: 0, next: 4 + Math.random() * 10 }; G.doors = [false, false]; G.lights = [false, false]; G.mon = false;
+    lightI = lightI.map(function () { return 0; }); bulbs = bulbs.map(function () { return 0; });
+    powerDown(); syncUI();
+  }
+  function stepPowerOut(dt) {
+    var P = G.pout; P.t += dt;
+    if (P.phase === 0 && P.t > P.next) { P.phase = 1; P.t = 0; P.next = 6 + Math.random() * 14; musicBox(true); }
+    else if (P.phase === 1 && P.t > P.next) { P.phase = 2; P.t = 0; P.next = 1.5 + Math.random() * 3; musicBox(false); }
+    else if (P.phase === 2 && P.t > P.next) { jumpscare('orang'); }
+  }
+
+  /* ============================== PHONE CALLS ============================== */
+  var CALLS = {
+    1: [[3, 'Hello? Er... hello. Assalamualaikum. Is this thing recording?'], [8, 'Okay. If you can hear this, Taman Ria Ceria hired you for the night shift. Tahniah. I sat in that chair before you.'], [15, 'The band (Pak Tenuk, Kak Kenyalang, the others) are left on free-roam at night. Management says their servos seize up if they stand still too long.'], [24, 'So yes, they walk around. Mostly they just stand in the hallways. Mostly.'], [30, 'They were programmed to greet any guest still inside after closing. Up close. Very, very up close. You do not want to be greeted.'], [39, 'If one comes to your door, close it. Wait. They lose interest and walk back.'], [45, 'But the generator is old, lah. Doors, lights, the cameras, everything eats power. If the power runs out... just try not to let it run out.'], [55, 'Use the door lights to check the corners. Check the cameras. And check Kebun Kancil, the curtain. Kancil gets restless if nobody is watching.'], [65, 'Okay. Six o\'clock, the cleaners come in and the band goes back on stage. See you tomorrow. Hopefully.']],
+    2: [[3, 'Hello, hello? Okay, you made it to night two. Bagus.'], [8, 'Kak Kenyalang likes the kitchen. The camera in there is broken, but you\'ll hear the pots. When the pots go quiet, check the east hall.'], [17, 'And Kancil. If you see him outside the curtain, he will run. He runs fast. Shut the left door before he gets there.'], [26, 'Every time he hits that door it costs you power. Don\'t let him make a habit of it.']],
+    3: [[3, 'Night three. Er, I should tell you about Mak Orang.'], [9, 'She hasn\'t been on the show schedule since 1993. Nobody switches her on. But she moves when nobody is looking at her.'], [17, 'So when you see her on a camera, keep looking for a bit. She doesn\'t like being watched.'], [25, 'I have to go. Someone is... no, it\'s probably nothing. Good luck.']],
+    4: [[3, 'Hello? [static] ...the curtain is open... [static] ...if you hear singing in the dark, it is already too late to...'], [12, '[the recording ends]']],
+    5: [[4, '[nobody calls]']]
+  };
+  var capEl = $('#cap'), voiceOn = true, callI = 0;
+  try { voiceOn = 'speechSynthesis' in window; } catch (e) { voiceOn = false; }
+  function callStep() {
+    var c = CALLS[G.night]; if (!c || callI >= c.length) { return; }
+    if (G.t >= c[callI][0]) {
+      var line = c[callI][1]; capEl.textContent = line; capEl.classList.add('on'); clearTimeout(capEl._t); capEl._t = setTimeout(function () { capEl.classList.remove('on'); }, 7000);
+      speak(line); callI++;
+    }
+  }
+  function speak(line) { if (!voiceOn || line.charAt(0) === '[') { return; } try { var u = new SpeechSynthesisUtterance(line.replace(/\[.*?\]/g, '')); u.rate = .98; u.pitch = .8; u.volume = .85; speechSynthesis.speak(u); } catch (e) {} }
+  $('#rotOk').addEventListener('click', function () { $('#rot').classList.add('dis'); });
+  $('#voiceBtn').addEventListener('click', function () { voiceOn = !voiceOn; try { if (!voiceOn) { speechSynthesis.cancel(); } } catch (e) {} $('#voiceBtn').textContent = 'Voice: ' + (voiceOn ? 'on' : 'off'); });
+
+  /* ============================== AUDIO ============================== */
+  var AC = null, master = null, hum = null;
+  function audioInit() {
+    if (AC) { if (AC.state === 'suspended') { AC.resume(); } return; }
+    try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return; }
+    master = AC.createGain(); master.gain.value = .8; master.connect(AC.destination);
+    var b = noiseBuf(3), s = AC.createBufferSource(); s.buffer = b; s.loop = true; var lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 300; var g = AC.createGain(); g.gain.value = .12; s.connect(lp); lp.connect(g); g.connect(master); s.start();
+    var o = AC.createOscillator(); o.type = 'sawtooth'; o.frequency.value = 50; var og = AC.createGain(); og.gain.value = .015; var olp = AC.createBiquadFilter(); olp.type = 'lowpass'; olp.frequency.value = 180; o.connect(olp); olp.connect(og); og.connect(master); o.start();
+    hum = { g: g, og: og };
+  }
+  function noiseBuf(sec) { var b = AC.createBuffer(1, AC.sampleRate * sec, AC.sampleRate), d = b.getChannelData(0); for (var i = 0; i < d.length; i++) { d[i] = Math.random() * 2 - 1; } return b; }
+  function nz(dur, f, vol, type, pan, q) { if (!AC) { return; } var t = AC.currentTime, s = AC.createBufferSource(); s.buffer = noiseBuf(dur + .05); var fl = AC.createBiquadFilter(); fl.type = type || 'lowpass'; fl.frequency.value = f; if (q) { fl.Q.value = q; } var g = AC.createGain(); g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.001, t + dur); var p = AC.createStereoPanner ? AC.createStereoPanner() : null; s.connect(fl); fl.connect(g); if (p) { p.pan.value = pan || 0; g.connect(p); p.connect(master); } else { g.connect(master); } s.start(t); }
+  function tone(f, t0, dur, vol, type) { if (!AC) { return; } var o = AC.createOscillator(), g = AC.createGain(); o.type = type || 'sine'; o.frequency.value = f; g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(vol, t0 + .01); g.gain.exponentialRampToValueAtTime(.001, t0 + dur); o.connect(g); g.connect(master); o.start(t0); o.stop(t0 + dur + .05); }
+  function clickS() { nz(.03, 3000, .25, 'highpass'); }
+  function staticBurst() { nz(.5, 2500, .35, 'bandpass', 0, .5); }
+  function doorS(side) { nz(.35, 400, .6, 'lowpass', side ? .7 : -.7); nz(.15, 2000, .2, 'bandpass', side ? .7 : -.7); }
+  function bangDoor(side, v) { if (!AC) { return; } for (var i = 0; i < (v > .5 ? 3 : 1); i++) { (function (i) { setTimeout(function () { nz(.25, 220, .9 * v, 'lowpass', side ? .8 : -.8); nz(.1, 1500, .3 * v, 'bandpass', side ? .8 : -.8); }, i * 260); })(i); } }
+  function steps(pan, v) { if (!AC) { return; } for (var i = 0; i < 3; i++) { (function (i) { setTimeout(function () { nz(.12, 260, v, 'lowpass', pan); }, i * 420); })(i); } }
+  function runSnd() { if (!AC) { return; } for (var i = 0; i < 8; i++) { (function (i) { setTimeout(function () { nz(.06, 600, .5, 'lowpass', -.8); }, i * 140); })(i); } }
+  function pots() { nz(.18, 2600 + Math.random() * 1500, .25, 'bandpass', .5, 6); }
+  function orangCall() { if (!AC) { return; } var t = AC.currentTime, o = AC.createOscillator(), g = AC.createGain(), f = AC.createBiquadFilter(); o.type = 'sawtooth'; o.frequency.setValueAtTime(70, t); o.frequency.linearRampToValueAtTime(110, t + 1.2); o.frequency.linearRampToValueAtTime(60, t + 2.5); f.type = 'lowpass'; f.frequency.value = 400; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.18, t + .4); g.gain.linearRampToValueAtTime(0, t + 2.6); o.connect(f); f.connect(g); g.connect(master); o.start(t); o.stop(t + 2.7); }
+  function powerDown() { if (!AC) { return; } var t = AC.currentTime, o = AC.createOscillator(), g = AC.createGain(); o.type = 'sawtooth'; o.frequency.setValueAtTime(120, t); o.frequency.exponentialRampToValueAtTime(20, t + 1.5); g.gain.setValueAtTime(.3, t); g.gain.exponentialRampToValueAtTime(.001, t + 1.6); o.connect(g); g.connect(master); o.start(t); o.stop(t + 1.7); if (hum) { hum.og.gain.setTargetAtTime(0, t, .3); hum.g.gain.setTargetAtTime(.04, t, .5); } }
+  var mbox = null;
+  function musicBox(on) {
+    if (!AC) { return; }
+    if (!on) { if (mbox) { clearInterval(mbox); mbox = null; } return; }
+    // "Rasa Sayang" (traditional Malay folk tune)
+    var mel = [[67, 1], [67, 1], [69, .5], [67, .5], [64, 1], [62, 1], [60, 2], [64, 1], [64, 1], [67, .5], [64, .5], [62, 1], [60, .5], [62, .5], [64, 2], [67, 1], [67, 1], [69, .5], [67, .5], [64, 1], [62, 1], [60, 2], [62, 1], [64, 1], [62, 1], [59, 1], [60, 3]];
+    var i = 0, beat = .36, next = AC.currentTime + .1;
+    function sched() { while (next < AC.currentTime + .5) { var n = mel[i % mel.length]; var f = 440 * Math.pow(2, (n[0] - 69) / 12); tone(f * 2, next, n[1] * beat * 1.8, .12, 'triangle'); tone(f * 4, next, n[1] * beat, .03, 'sine'); next += n[1] * beat; i++; } }
+    sched(); mbox = setInterval(sched, 200);
+  }
+  function scream() { if (!AC) { return; } var t = AC.currentTime; nz(1.4, 1800, 1.0, 'bandpass', 0, .7); var o = AC.createOscillator(), g = AC.createGain(), ws = AC.createWaveShaper(), cu = new Float32Array(256); for (var i = 0; i < 256; i++) { var x = i / 128 - 1; cu[i] = Math.tanh(x * 6); } ws.curve = cu; o.type = 'sawtooth'; o.frequency.setValueAtTime(380, t); o.frequency.linearRampToValueAtTime(260, t + 1.3); g.gain.setValueAtTime(.5, t); g.gain.exponentialRampToValueAtTime(.001, t + 1.4); o.connect(ws); ws.connect(g); g.connect(master); o.start(t); o.stop(t + 1.5); var o2 = AC.createOscillator(); o2.type = 'square'; o2.frequency.setValueAtTime(531, t); o2.connect(ws); o2.start(t); o2.stop(t + 1.3); }
+  function chime6() { if (!AC) { return; } var t = AC.currentTime; for (var i = 0; i < 6; i++) { tone(523.25, t + i * .9, 1.6, .25); tone(784, t + i * .9, 1.2, .08); } setTimeout(function () { for (var k = 0; k < 18; k++) { nz(.2 + Math.random() * .3, 1500 + Math.random() * 2500, .1, 'bandpass', Math.random() * 2 - 1, 3); } }, 5400); }
+  function ambient(dt) {
+    if (!AC || G.state !== 'play') { return; }
+    if (Math.random() < dt * .02) { nz(1.5, 120, .2, 'lowpass', Math.random() * 2 - 1); }
+    if (Math.random() < dt * .008) { tone(80 + Math.random() * 40, AC.currentTime, 2, .03, 'sine'); }
+  }
+
+  /* ============================== FLOW ============================== */
+  var gameEl = $('#game');
+  function show(id, on) { $(id).classList.toggle('on', on); }
+  function startShift(n) {
+    if (!GLOK) { gameEl.classList.add('on'); return; }
+    audioInit(); if (hum) { hum.og.gain.value = .015; hum.g.gain.value = .12; }
+    document.body.classList.add('ingame'); gameEl.classList.add('on');
+    gameEl.classList.remove('scare'); newNight(n); callI = 0; G.lastH = 0; G.state = 'intro'; G.introT = 0;
+    $('#ciT').textContent = '12:00 AM'; $('#ciS').textContent = 'Malam ' + n + ' · Night ' + n; show('#cardIntro', true);
+    ['#cardWin', '#cardDead', '#cardPause'].forEach(function (c) { show(c, false); });
+    syncUI(); buildMap(); cv.focus();
+  }
+  function endToSite() {
+    G.state = 'off'; gameEl.classList.remove('playing'); musicBox(false); try { speechSynthesis.cancel(); } catch (e) {}
+    gameEl.classList.remove('on'); document.body.classList.remove('ingame'); refreshSite();
+    if (hum) { hum.og.gain.value = 0; hum.g.gain.value = 0; }
+    location.hash = 'careers';
+  }
+  function win() {
+    G.state = 'win'; musicBox(false); try { speechSynthesis.cancel(); } catch (e) {}
+    PROG.done = Math.max(PROG.done, G.night); lsSet('rc_done', String(PROG.done));
+    $('#winP').textContent = G.night >= 5 ? 'You survived all five nights. The band is back on stage. They are all facing your office.' : 'You survived Night ' + G.night + '. Something on the website has changed.';
+    $('#winNext').style.display = G.night >= 6 ? 'none' : ''; $('#winNext').textContent = G.night === 5 ? 'Night 6 (unlocked)' : 'Next night';
+    show('#cardWin', true); var r = $('#roll'); r.classList.remove('go'); void r.offsetWidth; setTimeout(function () { r.classList.add('go'); }, 300);
+    chime6();
+  }
+  var SCARE = { k: null, t: 0 };
+  function jumpscare(k) {
+    if (G.state !== 'play') { return; }
+    G.state = 'scare'; gameEl.classList.add('scare'); SCARE.k = k; SCARE.t = 0; G.mon = false; G.monAnim = 0; musicBox(false); try { speechSynthesis.cancel(); } catch (e) {}
+    scream(); syncUI();
+  }
+  function dead() {
+    G.state = 'dead'; var nm = { tenuk: 'Pak Tenuk', keny: 'Kak Kenyalang', orang: 'Mak Orang', kancil: 'Si Kancil' }[SCARE.k];
+    $('#deadP').textContent = nm + ' greeted you. ' + (SCARE.k === 'kancil' ? 'You stopped watching the cove.' : SCARE.k === 'orang' && G.power <= 0 ? 'The generator gave out.' : 'You left the door open.');
+    show('#cardDead', true);
+  }
+  $('#winNext').addEventListener('click', function () { startShift(Math.min(6, G.night + 1)); });
+  $('#winSite').addEventListener('click', endToSite); $('#deadSite').addEventListener('click', endToSite);
+  $('#deadRetry').addEventListener('click', function () { startShift(G.night); });
+  $('#pResume').addEventListener('click', function () { show('#cardPause', false); G.state = 'play'; }); $('#pQuit').addEventListener('click', endToSite);
+
+  /* ============================== CONTROLS ============================== */
+  var mouseX = .5;
+  function toggleDoor(s) { if (G.state !== 'play' || G.pout) { return; } G.doors[s] = !G.doors[s]; doorS(s); syncUI(); }
+  function setLight(s, on) { if (G.state !== 'play' || G.pout) { return; } if (on && G.lights[1 - s]) { G.lights[1 - s] = false; } G.lights[s] = on; if (on) { clickS(); } syncUI(); }
+  function toggleMon() { if (G.state !== 'play' || G.pout) { return; } G.mon = !G.mon; G.lights = [false, false]; clickS(); if (G.mon) { G.stat = .8; nz(.3, 1800, .15, 'bandpass'); } syncUI(); }
+  $('#doorL').addEventListener('click', function () { toggleDoor(0); }); $('#doorR').addEventListener('click', function () { toggleDoor(1); });
+  $('#lightL').addEventListener('click', function () { setLight(0, !G.lights[0]); }); $('#lightR').addEventListener('click', function () { setLight(1, !G.lights[1]); });
+  $('#monBtn').addEventListener('click', toggleMon);
+  addEventListener('keydown', function (e) {
+    if (!gameEl.classList.contains('on')) { return; }
+    var k = e.key.toLowerCase();
+    if (k === 'escape') { if (G.state === 'play') { G.state = 'paused'; show('#cardPause', true); } else if (G.state === 'paused') { G.state = 'play'; show('#cardPause', false); } return; }
+    if (G.state !== 'play') { return; }
+    if (k === 'q') { toggleDoor(0); } else if (k === 'e') { toggleDoor(1); }
+    else if (k === 'z') { if (!e.repeat) { setLight(0, !G.lights[0]); } } else if (k === 'c') { if (!e.repeat) { setLight(1, !G.lights[1]); } }
+    else if (k === ' ' || k === 's' || k === 'tab') { e.preventDefault(); if (!e.repeat) { toggleMon(); } }
+    else if (k === 'a' || k === 'arrowleft') { G.panKey = -1; } else if (k === 'd' || k === 'arrowright') { G.panKey = 1; }
+    else if (/^[0-9]$/.test(k) && G.mon) { var idx = k === '0' ? 9 : parseInt(k, 10) - 1; selCam(idx); }
+  });
+  addEventListener('keyup', function (e) { var k = e.key.toLowerCase(); if (k === 'a' || k === 'd' || k === 'arrowleft' || k === 'arrowright') { G.panKey = 0; } });
+  cv.addEventListener('pointermove', function (e) { if (e.pointerType === 'mouse') { mouseX = e.clientX / innerWidth; } });
+  var tdrag = null;
+  cv.addEventListener('pointerdown', function (e) { if (e.pointerType !== 'mouse') { tdrag = { x: e.clientX, p: G.panT }; } });
+  cv.addEventListener('pointermove', function (e) { if (tdrag && e.pointerType !== 'mouse') { G.panT = clamp(tdrag.p + (e.clientX - tdrag.x) / innerWidth * 2.6, -1.25, 1.25); } });
+  cv.addEventListener('pointerup', function () { tdrag = null; });
+  addEventListener('resize', function () { if (G.mon) { buildMap(); syncUI(); } });
+  function selCam(i) { if (!G.mon) { return; } G.cam = i; G.stat = .9; clickS(); nz(.25, 2200, .15, 'bandpass'); syncUI(); }
+  var mapEl = $('#map');
+  function buildMap() {
+    mapEl.innerHTML = ''; var W = mapEl.clientWidth || 300, H = mapEl.clientHeight || 330; mapEl.dataset.w = mapEl.clientWidth + 'x' + mapEl.clientHeight;
+    var X = function (x) { return (x + 17) / 34 * W; }, Z = function (z) { return (23 - z) / 38 * H; };
+    [[-10, 2, 10, 22], [-16, 8, -10, 18], [10, 14, 16, 22], [-6, -14, -2, 2], [2, -14, 6, 2], [-2, -14, 2, -10], [-10, -9, -6, -5], [6, -6, 12, 2]].forEach(function (r) { var d = document.createElement('div'); d.className = 'rm'; d.style.left = X(r[0]) + 'px'; d.style.top = Z(r[3]) + 'px'; d.style.width = (X(r[2]) - X(r[0])) + 'px'; d.style.height = (Z(r[1]) - Z(r[3])) + 'px'; mapEl.appendChild(d); });
+    var y = document.createElement('div'); y.className = 'you'; y.textContent = 'YOU'; y.style.left = X(0) + 'px'; y.style.top = Z(-12) + 'px'; mapEl.appendChild(y);
+    var spots = [[0, 17], [0, 8], [-13, 13], [-4, -3], [-4, -12], [-8, -7], [4, -3], [4, -12], [13, 18], [9, -2]];
+    CAMS.forEach(function (c, i) { var b = document.createElement('button'); b.type = 'button'; b.className = 'cb'; b.textContent = c.id; b.style.left = X(spots[i][0]) + 'px'; b.style.top = Z(spots[i][1]) + 'px'; b.addEventListener('click', function () { selCam(i); }); b.dataset.i = i; mapEl.appendChild(b); });
+  }
+  function syncUI() {
+    $('#doorL').classList.toggle('on', G.doors[0]); $('#doorR').classList.toggle('on', G.doors[1]);
+    $('#lightL').classList.toggle('on', G.lights[0]); $('#lightR').classList.toggle('on', G.lights[1]);
+    $('#camui').classList.toggle('on', G.mon);
+    if (G.mon && mapEl.dataset.w !== String(mapEl.clientWidth) + 'x' + mapEl.clientHeight) { buildMap(); }
+    $('#monBtn').textContent = G.mon ? '▼ CLOSE CAMERAS ▼' : '▲ CAMERAS ▲';
+    $('#camName').textContent = 'CAM ' + CAMS[G.cam].id; $('#camSub').textContent = CAMS[G.cam].name;
+    $('#audioOnly').classList.toggle('on', !!CAMS[G.cam].audio && G.mon);
+    mapEl.querySelectorAll('.cb').forEach(function (b) { b.classList.toggle('sel', +b.dataset.i === G.cam); });
+    var hide = G.mon || !!G.pout; $('#sideL').style.opacity = hide ? 0 : 1; $('#sideR').style.opacity = hide ? 0 : 1; $('#sideL').style.pointerEvents = hide ? 'none' : 'auto'; $('#sideR').style.pointerEvents = hide ? 'none' : 'auto';
+    $('#monBtn').style.display = G.pout ? 'none' : '';
+  }
+  var useEl = $('#use');
+  function hudTick() {
+    var h = hour(); $('#hour').textContent = (h === 0 ? 12 : h) + ' AM'; $('#nightL').textContent = 'Night ' + G.night;
+    $('#pwr').textContent = Math.max(0, Math.floor(G.power)) + '%';
+    var u = G.pout ? 0 : usage(); if (useEl.childElementCount !== u) { useEl.innerHTML = ''; for (var i = 0; i < u; i++) { var b = document.createElement('i'); if (i >= 2) { b.className = i >= 3 ? 'r' : 'y'; } useEl.appendChild(b); } }
+  }
+
+  /* ============================== FRAME ============================== */
+  var COARSE = matchMedia('(pointer:coarse)').matches, RS = { max: COARSE ? .6 : .75, v: COARSE ? .55 : .75, acc: 0, n: 0 };
+  var last = performance.now();
+  function charList(viewCam) {
+    var list = [];
+    ['tenuk', 'keny', 'orang'].forEach(function (k) {
+      var L = LOC[locOf(k)], yaw = L[2];
+      var onStage = locOf(k).indexOf('STAGE') === 0;
+      if (viewCam != null && !onStage && L[3] === viewCam) { var c = CAMS[viewCam].p; yaw = Math.atan2(c[0] - L[0], c[2] - L[1]); }
+      if (G.pout && k === 'orang') { return; }
+      list.push({ k: k, x: L[0], z: L[1], y: onStage ? .84 : 0, yaw: yaw, glow: viewCam == null ? 2.5 : 1.2 });
+    });
+    var Kc = G.kancil;
+    if (Kc.run >= 0) { var f = clamp(Kc.run / Kc.runLen, 0, 1), runZ = mix(1.5, -12, Math.pow(f, 1.3)); if (f > .02) { list.push({ k: 'kancil', x: -4 + Math.sin(f * 20) * .15, z: runZ, yaw: Math.PI, glow: 1.5 }); } }
+    else { var key = ['COVE0', 'COVE1', 'COVE2', 'COVE2'][Kc.st], L2 = LOC[key]; list.push({ k: 'kancil', x: L2[0], z: L2[1], yaw: L2[2], glow: Kc.st > 0 ? 1.5 : .5 }); }
+    if (G.pout && G.pout.phase === 1) { list.push({ k: 'orang', x: -2.9, z: -12.5, yaw: Math.PI / 2, glow: Math.random() < .5 ? 6 : 0 }); }
+    return list;
+  }
+  function frame(now) {
+    var dt = Math.max(0, Math.min(.05, (now - last) / 1000)); last = Math.max(last, now); T += dt;
+    if (gameEl.classList.contains('on') && GLOK) {
+      if (G.state === 'intro') { G.introT += dt; if (G.introT > 2.6) { show('#cardIntro', false); G.state = 'play'; gameEl.classList.add('playing'); } }
+      step(dt); ambient(dt);
+      // flicker
+      if (!G.pout) {
+        for (var i = 0; i < 9; i++) { if (i !== 8 && Math.random() < dt * (i === 4 || i === 2 ? 1.2 : .25)) { bulbs[i] = Math.random() < .5 ? .1 : 1; } }
+        var base = NIGHTI.slice(); for (i = 0; i < 9; i++) { lightI[i] = base[i] * (i < 9 ? bulbs[i] || .9 : 1); } lightI[8] = NIGHTI[8] * (.9 + .1 * Math.sin(T * 30)) * (Math.random() < dt * .3 ? .3 : 1); lightI[11] = base[11];
+        lightI[9] = G.lights[0] ? 2.6 * (Math.random() < .04 ? .2 : 1) : 0; lightI[10] = G.lights[1] ? 2.6 * (Math.random() < .04 ? .2 : 1) : 0;
+      }
+      var dpr = Math.min(window.devicePixelRatio || 1, 1.25), w = Math.round(innerWidth * dpr), h = Math.round(innerHeight * dpr);
+      if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
+      var rs = RS.v; var rw = Math.max(64, Math.round(w * rs)), rh = Math.max(64, Math.round(h * rs));
+      RS.acc += dt; RS.n++; if (RS.acc > 2) { var fps = RS.n / RS.acc; if (fps < 26 && RS.v > .4) { RS.v = Math.max(.4, RS.v - .1); } else if (fps > 50 && RS.v < RS.max) { RS.v = Math.min(RS.max, RS.v + .05); } RS.acc = 0; RS.n = 0; }
+      if (G.state === 'scare' || G.state === 'dead') {
+        SCARE.t += dt;
+        var e = OFFICE_EYE, fwd = [Math.sin(G.pan), 0, -Math.cos(G.pan)], dist = mix(1.8, .85, clamp(SCARE.t / .22, 0, 1)), sh = SCARE.t < 1.2 ? (Math.random() - .5) * .06 : 0;
+        var hd = CHARS[SCARE.k].head, sc = SCARE.k === 'kancil' ? 1.45 : 1;
+        var cx = e[0] + fwd[0] * dist + sh, cz = e[2] + fwd[2] * dist;
+        lightI = lightI.map(function () { return 0; }); lightI[8] = Math.random() < .7 ? 1.1 : .1;
+        renderScene([e[0], e[1], e[2]], [e[0] + fwd[0], e[1], e[2] + fwd[2]], 1.15, { w: rw, h: rh, amb: [.01, .01, .01], fog: .05, chars: [{ k: SCARE.k, x: cx, z: cz, y: e[1] - hd * sc + sh, yaw: -G.pan, s: sc, glow: 8 }], mode: 'night' });
+        post(2, w, h, 1.3, 0, SCARE.t < .1 ? .45 : 0, SCARE.t > 1.25 ? 1 : 0);
+        if (SCARE.t > 1.3 && G.state === 'scare') { dead(); }
+      } else if (G.state !== 'off') {
+        // office pan
+        var target = G.panKey ? clamp(G.panT + G.panKey * dt * 1.8, -1.25, 1.25) : null;
+        if (target != null) { G.panT = target; } else if (matchMedia('(pointer:fine)').matches && !G.mon) { var mx = (mouseX - .5) * 2; G.panT = clamp(G.panT + (Math.abs(mx) > .35 ? (mx - Math.sign(mx) * .35) * dt * 3.2 : 0), -1.25, 1.25); }
+        G.pan += (G.panT - G.pan) * Math.min(1, dt * 8);
+        if (G.mon && G.monAnim > .85) {
+          var C = CAMS[G.cam];
+          if (C.audio) { renderScene(C.p, C.t, 1.2, { w: rw, h: rh, amb: [0, 0, 0], fog: 2, chars: [], mode: 'night' }); post(1, w, h, 2.6, Math.max(G.stat, .9)); }
+          else {
+            var sway = Math.sin(T * .3) * .8;
+            var tgt = [C.t[0] + (G.cam === 3 || G.cam === 6 ? 0 : sway * (G.cam === 0 || G.cam === 1 ? 2 : .6)), C.t[1], C.t[2]];
+            renderScene(C.p, tgt, 1.25, { w: rw, h: rh, amb: [.02, .022, .02], fog: .025, chars: charList(G.cam), mode: 'night' });
+            post(1, w, h, 5.5, G.stat + (G.pout ? 1 : 0));
+          }
+        } else {
+          var eye = OFFICE_EYE, fw = [Math.sin(G.pan), -.05, -Math.cos(G.pan)];
+          var chs = charList(null).filter(function (c) { return c.z < -10.5 && Math.abs(c.x) < 4; });
+          renderScene(eye, [eye[0] + fw[0], eye[1] + fw[1], eye[2] + fw[2]], 1.2, { w: rw, h: rh, amb: G.pout ? [.0, .0, .0] : [.01, .01, .012], fog: .05, chars: chs, mode: 'night', screen: G.pout ? 0 : 1 });
+          post(0, w, h, G.pout ? 1.2 : 1.6, 0, 0, G.monAnim * .9);
+        }
+      }
+      if (G.state === 'play' || G.state === 'intro') { hudTick(); }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  /* ============================== WEBSITE ============================== */
+  var nightsEl = $('#nights'), selN = 1;
+  function refreshSite() {
+    nightsEl.innerHTML = '';
+    for (var n = 1; n <= 6; n++) {
+      var b = document.createElement('button'); b.type = 'button'; b.textContent = n === 6 ? 'Night 6' : 'Night ' + n;
+      var unlocked = n <= PROG.done + 1 && (n < 6 || PROG.done >= 5);
+      b.disabled = !unlocked; if (n <= PROG.done) { b.classList.add('done'); b.textContent += ' ✓'; }
+      (function (n) { b.addEventListener('click', function () { selN = n; nightsEl.querySelectorAll('button').forEach(function (x, i) { x.classList.toggle('sel', i + 1 === n); }); }); })(n);
+      nightsEl.appendChild(b);
+    }
+    selN = Math.min(PROG.done + 1, PROG.done >= 5 ? 6 : 5); nightsEl.children[selN - 1].classList.add('sel');
+    if (PROG.done >= 1) { $('#n2').classList.remove('locked'); var l = $('#n2 .lock'); if (l) { l.remove(); } }
+    if (PROG.done >= 3) { $('#n3').classList.remove('locked'); var l3 = $('#n3 .lock'); if (l3) { l3.remove(); } document.querySelectorAll('[data-r]').forEach(function (r) { r.classList.add('open'); }); }
+    if (PROG.done >= 5) { $('#memo').classList.add('on'); document.body.classList.add('late'); $('#heroP').textContent = 'Nasi lemak, pizza kampung and a live animatronic band that sings your name. They remember every guest. They would like you to stay.'; }
+    $('#visits').textContent = 'Pengunjung: ' + String(231 + PROG.done * 17).padStart(6, '0');
+  }
+  $('#startShift').addEventListener('click', function () { startShift(selN); });
+  $('#book').addEventListener('submit', function (e) { e.preventDefault(); var k = ($('#kid').value || 'your child').trim().slice(0, 30); var ok = $('#bookOk'); ok.style.display = 'block'; ok.textContent = 'Terima kasih! The band can\'t wait to meet ' + k + '. They will remember ' + k + ' forever.'; });
+  // hero glitch
+  setInterval(function () { if (G.state !== 'off' || document.hidden) { return; } var p = $('#heroPhoto'); if (Math.random() < (PROG.done >= 1 ? .35 : .12)) { p.classList.add('glitch'); setTimeout(function () { p.classList.remove('glitch'); }, 70 + Math.random() * 90); } }, 2600);
+  if (PROG.done >= 5) { setTimeout(function () { $('#heroPhoto').classList.add('glitch'); }, 4000); }
+
+  /* ============================== BOOT ============================== */
+  function boot() {
+    RC.build();
+    initGL().then(function () {
+      if (GLOK) { newNight(1); G.state = 'off'; promos(); }
+      refreshSite(); var ld = $('#rcLoad'); if (ld) ld.classList.add('done');
+      requestAnimationFrame(frame);
+    });
+  }
+  var fl = document.fonts && document.fonts.load ? Promise.all(['800 40px "Baloo 2"', '20px "Special Elite"', '20px VT323'].map(function (f) { return document.fonts.load(f).catch(function () {}); })) : Promise.resolve();
+  Promise.race([fl, new Promise(function (r) { setTimeout(r, 1800); })]).then(boot);
+  window.__rc = { G: G, start: startShift, step: function (n, d) { for (var i = 0; i < n; i++) { step(d); } }, toggleMon: toggleMon, selCam: selCam, door: toggleDoor, light: setLight, jumpscare: jumpscare, LOC: LOC };
+})();
+</script>
+</body>
+</html>
