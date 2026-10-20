@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Kopi O</title>
+<meta name="description" content="Kedai Kopi Sinar Pagi, an old kopitiam. Scroll from the five-foot way through the roast, the sock and the pour to your own cup.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Work+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@900&text=%E6%99%A8%E5%85%89%E8%8C%B6%E5%AE%A4%E5%92%96%E5%95%A1%E7%83%8F&display=swap">
+<style>
+:root{--paper:#f4ead8;--ink:#2a1a10;--kopi:#3b2416;--dim:rgba(42,26,16,.72);--faint:rgba(42,26,16,.5);--line:rgba(42,26,16,.16);--green:#2f6b5a;--red:#b8392b;--card:rgba(244,234,216,.9);color-scheme:light}
+*{box-sizing:border-box}
+html{background:#1a110b}
+body{margin:0;background:#1a110b;color:var(--ink);font:16px/1.65 "Work Sans",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-text-size-adjust:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:#1a110b;z-index:20}
+#view{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0}
+.top{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:10;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px max(16px,env(safe-area-inset-right,0px)) 14px max(16px,env(safe-area-inset-left,0px));pointer-events:none}
+.top>*{pointer-events:auto}
+.back{font:700 12px "Space Mono",monospace;letter-spacing:.06em;color:var(--paper);text-decoration:none;background:rgba(26,17,11,.55);border:1px solid rgba(244,234,216,.2);padding:7px 12px;border-radius:999px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.brand{font:400 15px "Young Serif",Georgia,serif;color:var(--paper);text-shadow:0 1px 8px rgba(0,0,0,.6)}
+main{position:relative;z-index:2}
+section{min-height:100svh;display:flex;align-items:center;padding-block:14vh;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
+section.r{justify-content:flex-end}
+.card{max-width:440px;min-width:0;background:var(--card);border-radius:4px;padding:26px 28px 24px;box-shadow:0 18px 50px rgba(0,0,0,.35);opacity:0;transform:translateY(24px) rotate(-.4deg);transition:opacity .8s,transform .8s;position:relative}
+.card::after{content:"";position:absolute;inset:6px;border:1px solid var(--line);border-radius:2px;pointer-events:none}
+.card.in{opacity:1;transform:rotate(-.4deg)}
+section.r .card.in{transform:rotate(.5deg)}
+.k{font:700 11px "Space Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--red)}
+h1,h2{font-family:"Young Serif",Georgia,serif;font-weight:400;line-height:1.04;letter-spacing:-.01em;margin:10px 0 12px;text-wrap:balance;color:var(--kopi)}
+h1{font-size:clamp(46px,7.4vw,96px)}
+h2{font-size:clamp(30px,3.8vw,44px)}
+p{margin:0 0 12px;color:var(--dim)}
+p:last-child{margin-bottom:0}
+.hero{align-items:flex-end;padding-bottom:11vh}
+.hero .card{background:none;box-shadow:none;padding:0;max-width:680px;transform:none}
+.hero .card::after{display:none}
+.hero h1,.hero p{color:var(--paper);text-shadow:0 2px 20px rgba(0,0,0,.6)}
+.hero p{font-size:18px;max-width:520px;color:rgba(244,234,216,.88)}
+.hero .k{color:#f0b35a}
+.cue{margin-top:20px;font:700 11px "Space Mono",monospace;letter-spacing:.16em;color:rgba(244,234,216,.6);text-transform:uppercase}
+.roast{display:flex;justify-content:space-between;margin-top:14px;font:700 10.5px "Space Mono",monospace;letter-spacing:.08em;color:var(--faint);text-transform:uppercase}
+.roast i{flex:1;height:8px;margin:4px 8px 0;border-radius:4px;background:linear-gradient(90deg,#7c8a4a,#a9783e,#5b351c,#1d0f08)}
+.roast b{color:var(--kopi)}
+.terms{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin-top:12px;font-size:14px}
+.terms dt{font:700 13px "Space Mono",monospace;color:var(--kopi)}
+.terms dd{margin:0;color:var(--dim)}
+.order .card{max-width:470px}
+.grp{margin-top:12px}
+.grp small{display:block;font:700 10.5px "Space Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{font:600 13.5px "Work Sans",sans-serif;padding:7px 12px;border-radius:999px;border:1.5px solid var(--kopi);background:transparent;color:var(--kopi);cursor:pointer;transition:background .2s,color .2s}
+.chips button[aria-pressed="true"]{background:var(--kopi);color:var(--paper)}
+.say{margin-top:16px;padding:14px 16px;background:var(--kopi);color:var(--paper);border-radius:3px;display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.say span{font:700 10.5px "Space Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(244,234,216,.6);width:100%}
+.say b{font:400 26px "Young Serif",serif;line-height:1.1}
+.say em{font:700 15px "Space Mono",monospace;font-style:normal;color:#f0b35a}
+.desc{margin-top:10px;font-size:14px;color:var(--dim);min-height:2.6em}
+.visit .card{max-width:520px}
+.hours{display:grid;grid-template-columns:1fr auto;gap:6px 18px;margin:14px 0;font-size:15px}
+.hours span:nth-child(even){font:700 14px "Space Mono",monospace;color:var(--kopi)}
+.hours .shut{color:var(--red)!important}
+footer{position:relative;z-index:2;padding:28px max(18px,env(safe-area-inset-right,0px)) calc(28px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));font-size:12.5px;color:rgba(244,234,216,.55);text-align:center;background:linear-gradient(0deg,rgba(26,17,11,.95),rgba(26,17,11,0))}
+.loader{position:fixed;inset:0;z-index:30;display:grid;place-items:center;background:#1a110b;color:var(--paper);transition:opacity 1s}
+.loader.done{opacity:0;pointer-events:none}
+.loader div{text-align:center;width:min(300px,78vw)}
+.loader b{font:400 26px "Young Serif",serif}
+.loader .bar{height:2px;background:rgba(244,234,216,.15);margin-top:16px;overflow:hidden}
+.loader .bar i{display:block;height:100%;width:0;background:#f0b35a;transition:width .3s}
+.loader small{display:block;margin-top:10px;font:700 11px "Space Mono",monospace;letter-spacing:.14em;color:rgba(244,234,216,.5);text-transform:uppercase}
+@media (max-width:760px){
+  section,section.r{align-items:flex-end;justify-content:flex-start;padding-bottom:6vh;padding-top:40vh}
+  .card{padding:20px 20px 18px;max-width:100%}
+  .order{padding-top:30vh}
+}
+</style>
+<script type="importmap">{"imports":{"three":"./lib/three/build/three.module.js","three/addons/":"./lib/three/examples/jsm/"}}</script>
+</head>
+<body>
+<canvas id="view" aria-label="3D view inside an old kopitiam"></canvas>
+<div class="loader" id="loader"><div><b>Kopi O</b><div class="bar"><i id="lbar"></i></div><small id="lmsg">Lifting the shutters…</small></div></div>
+<div class="top"><a class="back" href="../">← Z Lab</a><span class="brand">Kedai Kopi Sinar Pagi</span></div>
+
+<main>
+  <section class="hero" data-cam="0"><div class="card">
+    <div class="k">Kedai Kopi Sinar Pagi · est. 1958</div>
+    <h1>Kopi O. Black, strong, a little sweet.</h1>
+    <p>Same shophouse, same marble tables, same sock since 1958. Third generation at the counter. Scroll in and we'll show you how a cup gets made.</p>
+    <div class="cue">↓ Come in</div>
+  </div></section>
+
+  <section class="r" data-cam="1"><div class="card">
+    <div class="k">06:30 · the shutters go up</div>
+    <h2>The uncles are already waiting.</h2>
+    <p>By the time the shutters go up, the same four men are outside on the five-foot way with their newspapers. Their cups are poured before they sit down. Nobody has to order.</p>
+    <p>Pull up a plastic chair. The fans are on, and the first pot is nearly ready.</p>
+  </div></section>
+
+  <section data-cam="2"><div class="card">
+    <div class="k">Every Tuesday · the back kitchen</div>
+    <h2>Roasted in a wok, with sugar and margarine.</h2>
+    <p>We buy green Liberica and Robusta from Johor and roast them ourselves in a cast-iron wok over charcoal. Near the end goes a spoon of sugar and a knob of margarine. That's where the dark gloss comes from, and the caramel smell that reaches the street.</p>
+    <div class="roast"><span>Green</span><i></i><b id="roastLbl">Kopitiam dark</b></div>
+  </div></section>
+
+  <section class="r" data-cam="3"><div class="card">
+    <div class="k">The sock · <span style="text-transform:none;letter-spacing:.02em">kain kopi</span></div>
+    <h2>Brewed through cloth, pulled from height.</h2>
+    <p>The ground coffee goes into a cotton sock on a wire ring, and boiling water goes over it from a long-spouted kettle. Then it's poured back and forth between pots to cool it and stir it. A new sock tastes of cloth. Ours has been dark brown for years.</p>
+  </div></section>
+
+  <section class="order" data-cam="4"><div class="card">
+    <div class="k">Order like a regular</div>
+    <h2>Build your cup.</h2>
+    <div class="grp"><small>Milk</small><div class="chips" data-g="milk"><button data-v="">Kopi</button><button data-v="O" aria-pressed="true">O</button><button data-v="C">C</button></div></div>
+    <div class="grp"><small>Strength</small><div class="chips" data-g="str"><button data-v="Po">Po</button><button data-v="" aria-pressed="true">Normal</button><button data-v="Gao">Gao</button></div></div>
+    <div class="grp"><small>Sugar</small><div class="chips" data-g="sug"><button data-v="Kosong">Kosong</button><button data-v="Siew Dai">Siew Dai</button><button data-v="" aria-pressed="true">Normal</button><button data-v="Gah Dai">Gah Dai</button></div></div>
+    <div class="grp"><small>Temperature</small><div class="chips" data-g="ice"><button data-v="" aria-pressed="true">Hot</button><button data-v="Peng">Peng</button></div></div>
+    <div class="say"><span>Tell the uncle</span><b id="orderName">Kopi O</b><em id="orderPrice">RM 1.80</em></div>
+    <div class="desc" id="orderDesc">Black coffee with sugar. No milk.</div>
+  </div></section>
+
+  <section class="r" data-cam="5"><div class="card">
+    <div class="k">Sit anywhere</div>
+    <h2>Share a table. That's how it works.</h2>
+    <p>Marble tops, plastic chairs, a fan that clicks every turn. If every table is full, sit with someone. Order kaya toast and two half-boiled eggs, crack them into the saucer and add a dash of soy sauce and white pepper.</p>
+    <dl class="terms"><dt>Roti bakar</dt><dd>charcoal toast, kaya and a slab of cold butter</dd><dt>Telur separuh masak</dt><dd>half-boiled eggs, three minutes, no more</dd></dl>
+  </div></section>
+
+  <section class="visit" data-cam="6"><div class="card">
+    <div class="k">Visit</div>
+    <h2>Come early. We close when the kopi runs out.</h2>
+    <div class="hours"><span>Monday – Saturday</span><span>06:30 – 14:00</span><span>Sunday</span><span>07:00 – 12:00</span><span>Wednesday</span><span class="shut">Closed</span></div>
+    <p>Cash only. Kopi O from RM 1.80. Please don't move the uncles' table.</p>
+  </div></section>
+</main>
+<footer>Kedai Kopi Sinar Pagi is fictional, made with love for Malaysia's old kopitiams. Models and materials from Poly Haven (CC0). Lighting baked in Blender, rendered with Three.js.</footer>
+
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+const $ = (s) => document.querySelector(s);
+const COARSE = matchMedia('(pointer:coarse)').matches;
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v)), sstep = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); }, mix = (a, b, t) => a + (b - a) * t;
+
+/* ---------------- UI ---------------- */
+const sections = [...document.querySelectorAll('[data-cam]')];
+const io = new IntersectionObserver((es) => es.forEach((e) => e.target.querySelector('.card').classList.toggle('in', e.isIntersecting)), { threshold: .3 });
+sections.forEach((s) => io.observe(s));
+
+const ORDER = { milk: 'O', str: '', sug: '', ice: '' };
+const DESC = {
+  milk: { '': 'Coffee with sweetened condensed milk.', O: 'Black coffee with sugar. No milk.', C: 'Coffee with evaporated milk and sugar.' },
+  str: { Po: 'Made weaker, with more water.', '': '', Gao: 'Extra strong, less water.' },
+  sug: { Kosong: 'No sugar at all.', 'Siew Dai': 'Less sweet.', '': '', 'Gah Dai': 'Extra sweet.' },
+  ice: { '': '', Peng: 'Over ice, in a tall glass.' }
+};
+function orderName() { return ['Kopi', ORDER.milk, ORDER.str, ORDER.sug, ORDER.ice].filter(Boolean).join(' '); }
+function updateOrder() {
+  $('#orderName').textContent = orderName();
+  const p = 1.8 + (ORDER.milk === 'C' ? .2 : ORDER.milk === '' ? .2 : 0) + (ORDER.ice ? .6 : 0) + (ORDER.str === 'Gao' ? .3 : 0);
+  $('#orderPrice').textContent = 'RM ' + p.toFixed(2);
+  let d = DESC.milk[ORDER.milk]; if (ORDER.milk === 'O' && ORDER.sug === 'Kosong') d = 'Black coffee. No milk.';
+  $('#orderDesc').textContent = [d, ORDER.milk === 'O' && ORDER.sug === 'Kosong' ? '' : DESC.sug[ORDER.sug], DESC.str[ORDER.str], DESC.ice[ORDER.ice]].filter(Boolean).join(' ');
+  drawBoard(); setDrink();
+}
+document.querySelectorAll('.chips').forEach((c) => c.addEventListener('click', (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  c.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+  ORDER[c.dataset.g] = b.dataset.v; updateOrder();
+}));
+
+/* ---------------- renderer ---------------- */
+const canvas = $('#view');
+let renderer;
+try { renderer = new THREE.WebGLRenderer({ canvas, antialias: !COARSE, powerPreference: 'high-performance' }); } catch (e) { $('#lmsg').textContent = 'WebGL is not available on this device.'; throw e; }
+renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.0;
+let pr = COARSE ? Math.min(devicePixelRatio, 1.5) * .8 : Math.min(devicePixelRatio, 1.5);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, .02, 400);
+
+const manager = new THREE.LoadingManager();
+manager.onProgress = (u, a, b) => { $('#lbar').style.width = Math.round(a / b * 100) + '%'; };
+let loadedRes; const allLoaded = new Promise((r) => { loadedRes = r; }); manager.onLoad = () => loadedRes();
+const tl = new THREE.TextureLoader(manager), fl = new THREE.FileLoader(manager); fl.setResponseType('json');
+const gltf = new GLTFLoader();
+const b64 = (s) => { const bin = atob(s), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u.buffer; };
+const loadModel = async (n) => gltf.parseAsync(b64((await fl.loadAsync('models/' + n + '.json')).b64), './');
+const maxA = renderer.capabilities.getMaxAnisotropy();
+const texCache = {};
+const texClones = {};
+function tex(n, srgb) { if (texCache[n]) return texCache[n]; texClones[n] = []; const t = tl.load('tex/' + n + '.jpg', () => texClones[n].forEach((c) => { c.needsUpdate = true; })); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = Math.min(8, maxA); if (srgb) t.colorSpace = THREE.SRGBColorSpace; t.userData.name = n; return (texCache[n] = t); }
+
+/* ---------------- sky ---------------- */
+const SKY_SC = 4;
+const skyTex = tl.load('tex/sky.jpg', (t) => { t.mapping = THREE.EquirectangularReflectionMapping; t.colorSpace = THREE.SRGBColorSpace; });
+scene.background = skyTex; scene.backgroundIntensity = SKY_SC; scene.backgroundRotation.y = 0;
+
+/* ---------------- baked materials ---------------- */
+const LM = tl.load('tex/lightmap.webp'); LM.channel = 1; LM.flipY = false; LM.colorSpace = THREE.NoColorSpace;
+const LMCHUNK = THREE.ShaderChunk.lights_fragment_maps
+  .replace('vec3 lightMapIrradiance = lightMapTexel.rgb * lightMapIntensity;', 'vec3 e2 = lightMapTexel.rgb*lightMapTexel.rgb; vec3 lightMapIrradiance = e2/max(vec3(1.0)-e2, vec3(.004))*lightMapIntensity*PI;')
+  .replace('iblIrradiance += getIBLIrradiance( geometryNormal );', '');
+const VCHUNK = THREE.ShaderChunk.lights_fragment_maps
+  .replace('iblIrradiance += getIBLIrradiance( geometryNormal );', 'vec3 v2 = vIrr*vIrr; irradiance += v2/max(vec3(1.0)-v2, vec3(.004))*PI*uIrrK;');
+function baked(m, spec) {
+  m.lightMap = LM; m.lightMapIntensity = 1; m.envMapIntensity = spec == null ? .25 : spec;
+  m.onBeforeCompile = (s) => { s.fragmentShader = s.fragmentShader.replace('#include <lights_fragment_maps>', LMCHUNK); };
+  m.customProgramCacheKey = () => 'baked';
+  return m;
+}
+const IRRK = { value: 1 };
+function bakedV(m, spec) {
+  m.envMapIntensity = spec == null ? .4 : spec;
+  m.onBeforeCompile = (s) => {
+    s.uniforms.uIrrK = IRRK;
+    s.vertexShader = s.vertexShader.replace('#include <common>', '#include <common>\nattribute vec4 color; varying vec3 vIrr;').replace('#include <begin_vertex>', '#include <begin_vertex>\nvIrr = color.rgb;');
+    s.fragmentShader = s.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec3 vIrr; uniform float uIrrK;').replace('#include <lights_fragment_maps>', VCHUNK);
+  };
+  m.customProgramCacheKey = () => 'bakedV';
+  return m;
+}
+const ARCH = {
+  terrazzo: { map: 'terrazzo_tiles_diff', nor: 'terrazzo_tiles_nor_gl', rough: 'terrazzo_tiles_rough', s: 1 / 1.2, c: [1.05, 1.02, .98], spec: .45 },
+  walltile: { map: 'walltile_diff', nor: 'walltile_nor', rough: 'walltile_rough', s: 1, c: [1, 1, 1], spec: .7 },
+  plaster: { map: 'painted_plaster_wall_diff', nor: 'painted_plaster_wall_nor_gl', s: 1 / 2.2, c: [.62, .9, .78], r: .9 },
+  ceiling: { map: 'wood_planks_diff', nor: 'wood_planks_nor_gl', s: 1 / 2.4, c: [.95, .9, .82], r: .8 },
+  beam: { map: 'wood_planks_diff', s: 1 / 2.4, c: [.55, .42, .32], r: .8 },
+  fivefoot: { map: 'worn_tile_floor_diff', nor: 'worn_tile_floor_nor_gl', s: 1 / 1.4, r: .7, spec: .35 },
+  shutter: { map: 'painted_metal_shutter_diff', nor: 'painted_metal_shutter_nor_gl', s: 1 / 2.2, r: .6 },
+  facade: { map: 'yellow_plaster_02_diff', nor: 'yellow_plaster_02_nor_gl', s: 1 / 2.6, c: [1.05, 1, .92], r: .92 },
+  opp: { map: 'yellow_plaster_02_diff', s: 1 / 3, c: [.9, .95, 1], r: .95 },
+  oppshop: { map: 'painted_metal_shutter_diff', s: 1 / 2.5, c: [.35, .38, .4], r: .7 },
+  road: { map: 'concrete_floor_worn_001_diff', nor: 'concrete_floor_worn_001_nor_gl', s: 1 / 3, c: [.45, .45, .47], r: .9 },
+  kerb: { map: 'concrete_floor_worn_001_diff', s: 1 / 1.5, c: [.95, .95, .92], r: .9 },
+  lane: { map: 'concrete_floor_worn_001_diff', s: 1 / 2.5, r: .95 },
+  kfloor: { map: 'concrete_floor_worn_001_diff', nor: 'concrete_floor_worn_001_nor_gl', s: 1 / 2, c: [.8, .76, .7], r: .85 },
+  kwall: { map: 'walltile_diff', nor: 'walltile_nor', s: 1, c: [.9, .88, .82], r: .4 },
+  counter: { map: 'wood_peeling_paint_weathered_diff', nor: 'wood_peeling_paint_weathered_nor_gl', s: 1 / 1.6, c: [.75, 1, .92], r: .8 },
+  door: { map: 'wood_planks_diff', nor: 'wood_planks_nor_gl', s: 1 / 2, c: [.6, .42, .3], r: .75 },
+  brick: { map: 'red_brick_03_diff', nor: 'red_brick_03_nor_gl', s: 1 / 1.4, r: .9 },
+  marble: { map: 'marble_01_diff', rough: 'marble_01_rough', s: 1 / .9, c: [1.0, 1.04, 1.12], r: .2, spec: .9 },
+  steel: { c: [.72, .73, .74], r: .3, metal: .85, spec: 1 },
+  iron: { c: [.06, .06, .065], r: .45, metal: .5 },
+  fluoro: { emissive: true }
+};
+function archMat(name) {
+  const d = ARCH[name]; if (!d) return null;
+  if (d.emissive) return new THREE.MeshBasicMaterial({ color: new THREE.Color(1, .98, .93).multiplyScalar(3) });
+  const m = new THREE.MeshStandardMaterial({ color: d.c ? new THREE.Color(...d.c) : 0xffffff, roughness: d.r == null ? 1 : d.r, metalness: d.metal || 0 });
+  const s = d.s || 1, rep = (t) => { const c = t.clone(); c.repeat.set(s, s); c.needsUpdate = false; texClones[t.userData.name].push(c); if (t.image) c.needsUpdate = true; return c; };
+  if (d.map) { m.map = rep(tex(d.map, true)); }
+  if (d.nor) { m.normalMap = rep(tex(d.nor)); m.normalScale.set(.8, .8); }
+  if (d.rough) { m.roughnessMap = rep(tex(d.rough)); }
+  return baked(m, d.spec);
+}
+
+/* ---------------- canvases: signboard + menu board ---------------- */
+function signTex() {
+  const c = document.createElement('canvas'); c.width = 2048; c.height = 384; const x = c.getContext('2d');
+  x.fillStyle = '#f3ecdc'; x.fillRect(0, 0, 2048, 384);
+  x.strokeStyle = '#b8392b'; x.lineWidth = 14; x.strokeRect(22, 22, 2004, 340);
+  x.fillStyle = '#b8392b'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.font = '900 190px "Noto Serif TC", "Songti SC", "PMingLiU", serif'; x.fillText('晨光茶室', 1024, 150);
+  x.fillStyle = '#1c2a24'; x.font = '400 92px "Young Serif", Georgia, serif'; x.fillText('KEDAI KOPI SINAR PAGI', 1024, 300);
+  x.font = '700 40px "Space Mono", monospace'; x.textAlign = 'left'; x.fillText('1958', 70, 300); x.textAlign = 'right'; x.fillText('T. 05-241 8806', 1978, 300);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t;
+}
+const boardC = document.createElement('canvas'); boardC.width = 2048; boardC.height = 512;
+const boardT = new THREE.CanvasTexture(boardC); boardT.colorSpace = THREE.SRGBColorSpace; boardT.anisotropy = 8;
+const BOARD = [['Kopi', '1.80', 'milk', ''], ['Kopi O', '1.80', 'milk', 'O'], ['Kopi C', '2.00', 'milk', 'C'], ['Peng', '+0.60', 'ice', 'Peng'], ['Gao', '+0.30', 'str', 'Gao'], ['Po', '—', 'str', 'Po'], ['Kosong', '—', 'sug', 'Kosong'], ['Siew Dai', '—', 'sug', 'Siew Dai'], ['Gah Dai', '—', 'sug', 'Gah Dai']];
+function drawBoard() {
+  const x = boardC.getContext('2d');
+  x.fillStyle = '#1e2b25'; x.fillRect(0, 0, 2048, 512);
+  x.strokeStyle = '#c9a36a'; x.lineWidth = 10; x.strokeRect(14, 14, 2020, 484);
+  x.fillStyle = '#f3ecdc'; x.font = '400 64px "Young Serif", Georgia, serif'; x.textAlign = 'left'; x.textBaseline = 'middle';
+  x.fillText('MINUMAN · 飲料', 60, 80);
+  x.font = '700 30px "Space Mono", monospace'; x.fillStyle = 'rgba(243,236,220,.55)'; x.textAlign = 'right'; x.fillText('RM', 1988, 80);
+  BOARD.forEach((b, i) => {
+    const col = i < 5 ? 0 : 1, row = i < 5 ? i : i - 5, X = 60 + col * 1000, Y = 170 + row * 72;
+    const on = ORDER[b[2]] === b[3];
+    if (on) { x.fillStyle = '#f0b35a'; x.fillRect(X - 20, Y - 32, 920, 64); }
+    x.fillStyle = on ? '#1e2b25' : '#f3ecdc'; x.textAlign = 'left'; x.font = '400 48px "Young Serif", Georgia, serif'; x.fillText(b[0], X, Y + 2);
+    x.textAlign = 'right'; x.font = '700 40px "Space Mono", monospace'; x.fillText(b[1], X + 880, Y + 2);
+  });
+  boardT.needsUpdate = true;
+}
+
+/* ---------------- dynamic props ---------------- */
+const envProbe = { front: null, kitchen: null };
+function lathe(pts, seg, mat) { return new THREE.Mesh(new THREE.LatheGeometry(pts.map((p) => new THREE.Vector2(p[0], p[1])), seg || 48), mat); }
+// cup + saucer + coffee
+const porcelain = new THREE.MeshPhysicalMaterial({ color: 0xf6f3ea, roughness: .18, clearcoat: .6, clearcoatRoughness: .1, side: THREE.DoubleSide });
+const greenRim = new THREE.MeshStandardMaterial({ color: 0x2f7a5a, roughness: .3 });
+const coffeeMat = new THREE.MeshPhysicalMaterial({ color: 0x0c0603, roughness: .08, clearcoat: 1, clearcoatRoughness: .04 });
+const glassMat = new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: .05, transmission: 1, thickness: .004, ior: 1.5, transparent: true, opacity: 1 });
+const iceMat = new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: .15, transmission: .9, thickness: .02, ior: 1.31 });
+const cupG = new THREE.Group(), glassG = new THREE.Group(), drink = new THREE.Group();
+(function buildCup() {
+  const cup = lathe([[0, .002], [.024, .002], [.026, 0], [.03, .004], [.038, .03], [.043, .062], [.044, .068], [.041, .068], [.039, .06], [.033, .03], [.022, .008], [0, .008]], 48, porcelain);
+  const rim = new THREE.Mesh(new THREE.TorusGeometry(.0425, .0016, 8, 48), greenRim); rim.rotation.x = Math.PI / 2; rim.position.y = .0675;
+  const handle = new THREE.Mesh(new THREE.TorusGeometry(.016, .005, 10, 24, Math.PI * 1.2), porcelain); handle.position.set(.046, .04, 0); handle.rotation.z = -Math.PI * .6;
+  const sauc = lathe([[0, 0], [.05, 0], [.07, .004], [.078, .012], [.076, .013], [.066, .007], [.03, .005], [0, .005]], 64, porcelain); sauc.position.y = -.005;
+  const srim = new THREE.Mesh(new THREE.TorusGeometry(.077, .0013, 6, 64), greenRim); srim.rotation.x = Math.PI / 2; srim.position.y = .0075;
+  const liquid = new THREE.Mesh(new THREE.CircleGeometry(.0405, 48), coffeeMat); liquid.rotation.x = -Math.PI / 2; liquid.position.y = .056; liquid.name = 'liquid';
+  const spoon = new THREE.Mesh(new THREE.CapsuleGeometry(.0022, .085, 4, 8), new THREE.MeshStandardMaterial({ color: 0xcfd3d6, metalness: 1, roughness: .2 })); spoon.rotation.set(Math.PI / 2, 0, .9); spoon.position.set(-.055, .0045, .03);
+  [cup, rim, handle, sauc, srim, liquid, spoon].forEach((m) => cupG.add(m));
+  cupG.position.y = .005;
+  // tall glass for Peng
+  const gl = lathe([[0, 0], [.03, 0], [.033, .002], [.036, .14], [.0345, .14], [.0315, .004], [0, .004]], 40, glassMat);
+  const fill = lathe([[0, .005], [.031, .005], [.034, .11], [0, .11]], 40, coffeeMat); fill.name = 'fill';
+  const ice = new THREE.Group(); for (let i = 0; i < 4; i++) { const c = new THREE.Mesh(new THREE.BoxGeometry(.022, .02, .022), iceMat); c.position.set(Math.cos(i * 2.1) * .01, .095 + i * .009, Math.sin(i * 2.1) * .01); c.rotation.set(i, i * 1.3, i * .7); ice.add(c); }
+  const straw = new THREE.Mesh(new THREE.CylinderGeometry(.0035, .0035, .2, 10), new THREE.MeshStandardMaterial({ color: 0xd9412e, roughness: .4 })); straw.position.set(.012, .12, 0); straw.rotation.z = -.18;
+  const coaster = lathe([[0, 0], [.045, 0], [.045, .003], [0, .003]], 32, new THREE.MeshStandardMaterial({ color: 0xe8e0cf, roughness: .9 }));
+  [gl, fill, ice, straw, coaster].forEach((m) => glassG.add(m));
+  drink.add(cupG, glassG);
+})();
+function setDrink() {
+  const milk = ORDER.milk === 'O' ? 0 : ORDER.milk === 'C' ? .9 : 1;
+  let c = new THREE.Color(.012, .006, .003).lerp(new THREE.Color(.32, .19, .1), milk * .9);
+  if (ORDER.str === 'Gao') c.multiplyScalar(.6); if (ORDER.str === 'Po') c.lerp(new THREE.Color(.25, .14, .07), .5);
+  coffeeMat.color.copy(c);
+  cupG.visible = !ORDER.ice; glassG.visible = !!ORDER.ice;
+}
+// toast plate
+const toastG = new THREE.Group();
+(function () {
+  const plate = lathe([[0, 0], [.07, 0], [.095, .006], [.1, .014], [.097, .015], [.085, .008], [0, .006]], 64, porcelain); toastG.add(plate);
+  const crust = new THREE.MeshStandardMaterial({ color: 0x6b3a1a, roughness: .85 }), crumb = new THREE.MeshStandardMaterial({ color: 0xd9b07a, roughness: .9 }), kaya = new THREE.MeshStandardMaterial({ color: 0x5f6b22, roughness: .5 }), butter = new THREE.MeshStandardMaterial({ color: 0xf2e1a0, roughness: .4 });
+  for (let i = 0; i < 2; i++) {
+    const g = new THREE.Group();
+    const b1 = new THREE.Mesh(new THREE.BoxGeometry(.075, .008, .045), [crust, crust, crumb, crust, crust, crust]); b1.position.y = .012;
+    const k = new THREE.Mesh(new THREE.BoxGeometry(.07, .004, .04), kaya); k.position.y = .018;
+    const bu = new THREE.Mesh(new THREE.BoxGeometry(.05, .006, .025), butter); bu.position.y = .023;
+    const b2 = b1.clone(); b2.position.y = .029;
+    g.add(b1, k, bu, b2); g.position.set(i ? .012 : -.01, i * .028, i ? .018 : -.02); g.rotation.y = i ? .5 : -.2; g.rotation.z = i ? .08 : 0; toastG.add(g);
+  }
+  const eggCup = lathe([[0, 0], [.03, 0], [.045, .03], [.048, .045], [.045, .045], [.042, .03], [.028, .004], [0, .004]], 40, porcelain); eggCup.position.set(.16, 0, -.05); toastG.add(eggCup);
+  const yolk = new THREE.Mesh(new THREE.SphereGeometry(.012, 20, 12), new THREE.MeshPhysicalMaterial({ color: 0xf0a020, roughness: .2, clearcoat: 1 })); yolk.scale.y = .6; yolk.position.set(.16, .028, -.05); toastG.add(yolk);
+  const white = new THREE.Mesh(new THREE.CircleGeometry(.038, 32), new THREE.MeshPhysicalMaterial({ color: 0xf2f0e6, roughness: .1, transmission: .5, thickness: .01, clearcoat: 1 })); white.rotation.x = -Math.PI / 2; white.position.set(.16, .025, -.05); toastG.add(white);
+})();
+// steam
+function steamSystem(n, spread, height) {
+  const g = new THREE.BufferGeometry(); const p = new Float32Array(n * 3), s = new Float32Array(n);
+  for (let i = 0; i < n; i++) { p[i * 3] = (Math.random() - .5) * spread; p[i * 3 + 2] = (Math.random() - .5) * spread; s[i] = Math.random(); }
+  g.setAttribute('position', new THREE.BufferAttribute(p, 3)); g.setAttribute('seed', new THREE.BufferAttribute(s, 1));
+  const m = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, uniforms: { uT: { value: 0 }, uH: { value: height }, uS: { value: 1 }, uA: { value: .5 } },
+    vertexShader: 'attribute float seed; uniform float uT; uniform float uH; uniform float uS; varying float vA; void main(){ float t = fract(uT*.18 + seed); vec3 p = position*(1.+t*2.) + vec3(sin(t*6.+seed*20.)*.012*(1.+t*3.), t*uH, cos(t*5.+seed*13.)*.012*(1.+t*3.)); vA = sin(t*3.14159)*(1.-t); vec4 mv = modelViewMatrix*vec4(p,1.); gl_PointSize = uS*(14.+t*60.)/-mv.z; gl_Position = projectionMatrix*mv; }',
+    fragmentShader: 'uniform float uA; varying float vA; void main(){ float d = length(gl_PointCoord-.5); float a = smoothstep(.5,0.,d); gl_FragColor = vec4(vec3(1.), a*a*vA*uA*.22); }' });
+  const pts = new THREE.Points(g, m); pts.frustumCulled = false; return pts;
+}
+const cupSteam = steamSystem(40, .05, .22);
+// wok + beans
+const wokG = new THREE.Group(); let beans, beanData, paddle, fireLight, wokSmoke;
+(function () {
+  const iron = new THREE.MeshStandardMaterial({ color: 0x1b1a19, roughness: .55, metalness: .7 });
+  const pts = []; for (let i = 0; i <= 24; i++) { const a = i / 24 * 1.05; pts.push([Math.sin(a) * .42, (1 - Math.cos(a)) * .42]); }
+  const outer = lathe(pts, 64, iron); outer.material.side = THREE.DoubleSide; wokG.add(outer);
+  for (const s of [-1, 1]) { const h = new THREE.Mesh(new THREE.TorusGeometry(.05, .009, 8, 16, Math.PI), iron); h.position.set(s * .38, .2, 0); h.rotation.set(0, s > 0 ? 0 : Math.PI, Math.PI / 2 * 0); h.rotation.y = s > 0 ? -Math.PI / 2 : Math.PI / 2; wokG.add(h); }
+  const N = 900; const bg = new THREE.SphereGeometry(1, 10, 7);
+  const bm = new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: .35, clearcoat: .4 });
+  beans = new THREE.InstancedMesh(bg, bm, N); beanData = [];
+  for (let i = 0; i < N; i++) { beanData.push({ r: Math.sqrt(Math.random()) * .2, a: Math.random() * 6.283, sp: .3 + Math.random() * .6, h: Math.random() * .012, rot: Math.random() * 6 }); beans.setColorAt(i, new THREE.Color(1, 1, 1)); }
+  wokG.add(beans);
+  paddle = new THREE.Group(); const wood = new THREE.MeshStandardMaterial({ color: 0x8a5a32, roughness: .8 });
+  const blade = new THREE.Mesh(new THREE.BoxGeometry(.13, .01, .09), wood); blade.position.set(0, .03, 0); const shaft = new THREE.Mesh(new THREE.CylinderGeometry(.012, .014, .7, 10), wood); shaft.position.set(0, .38, .0); shaft.rotation.z = .5; shaft.position.x = -.17;
+  paddle.add(blade, shaft); wokG.add(paddle);
+  const coals = new THREE.Mesh(new THREE.CircleGeometry(.22, 24), new THREE.MeshBasicMaterial({ color: new THREE.Color(2.4, .6, .12) })); coals.rotation.x = -Math.PI / 2; coals.position.y = -.12; wokG.add(coals);
+  fireLight = new THREE.PointLight(0xff7a2a, 3, 3.2, 2); fireLight.position.set(0, -.05, 0); wokG.add(fireLight);
+  wokSmoke = steamSystem(60, .3, .9); wokSmoke.material.uniforms.uA.value = .7; wokSmoke.position.y = .12; wokG.add(wokSmoke);
+})();
+const BEAN = [[.47, .52, .3], [.62, .45, .22], [.42, .24, .11], [.16, .08, .04], [.05, .025, .015]];
+function beanColor(t, out) { const f = clamp(t, 0, 1) * (BEAN.length - 1), i = Math.min(Math.floor(f), BEAN.length - 2), r = f - i; out.setRGB(mix(BEAN[i][0], BEAN[i + 1][0], r), mix(BEAN[i][1], BEAN[i + 1][1], r), mix(BEAN[i][2], BEAN[i + 1][2], r)); return out; }
+// pour rig: kettle, stream, sock, mug
+const pourG = new THREE.Group(); let stream, sock;
+(function () {
+  const steel = new THREE.MeshStandardMaterial({ color: 0xc9ccd0, roughness: .25, metalness: 1 });
+  const kettle = new THREE.Group();
+  const body = lathe([[0, 0], [.08, 0], [.09, .01], [.095, .16], [.07, .2], [.03, .215], [0, .22]], 40, steel); kettle.add(body);
+  const spoutPath = new THREE.CatmullRomCurve3([new THREE.Vector3(.08, .03, 0), new THREE.Vector3(.16, .1, 0), new THREE.Vector3(.24, .22, 0), new THREE.Vector3(.29, .3, 0)]);
+  kettle.add(new THREE.Mesh(new THREE.TubeGeometry(spoutPath, 20, .009, 10), steel));
+  const handle = new THREE.Mesh(new THREE.TorusGeometry(.07, .008, 8, 24, Math.PI), new THREE.MeshStandardMaterial({ color: 0x1c1c1c, roughness: .6 })); handle.position.set(-.09, .12, 0); handle.rotation.z = Math.PI / 2; kettle.add(handle);
+  kettle.position.set(-.34, .62, 0); kettle.rotation.z = -.55; pourG.add(kettle);
+  // sock on ring
+  const cloth = new THREE.MeshStandardMaterial({ color: 0x4a2a17, roughness: 1, side: THREE.DoubleSide });
+  const sp = []; for (let i = 0; i <= 16; i++) { const t = i / 16; sp.push([.06 * Math.sin(Math.PI * .5 * (1 - t * .1)) * (1 - t * t * .85) + .005, -t * .26]); }
+  sock = lathe(sp.reverse().map((p) => [p[0], p[1]]), 32, cloth); sock.position.set(0, .34, 0);
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(.065, .004, 8, 32), steel); ring.rotation.x = Math.PI / 2; ring.position.y = .34;
+  const rod = new THREE.Mesh(new THREE.CylinderGeometry(.005, .005, .22, 8), new THREE.MeshStandardMaterial({ color: 0x5b3a22, roughness: .7 })); rod.rotation.z = Math.PI / 2; rod.position.set(.17, .34, 0);
+  pourG.add(sock, ring, rod);
+  // enamel pot below
+  const enamel = new THREE.MeshPhysicalMaterial({ color: 0xf3f1ea, roughness: .25, clearcoat: .7, side: THREE.DoubleSide });
+  const pot = lathe([[0, 0], [.085, 0], [.09, .01], [.09, .15], [.094, .155], [.086, .155], [.084, .15], [0, .15]], 40, enamel); pourG.add(pot);
+  const prim = new THREE.Mesh(new THREE.TorusGeometry(.091, .003, 6, 40), new THREE.MeshStandardMaterial({ color: 0x1f3d8a, roughness: .3 })); prim.rotation.x = Math.PI / 2; prim.position.y = .155; pourG.add(prim);
+  const lq = new THREE.Mesh(new THREE.CircleGeometry(.084, 32), coffeeMat); lq.rotation.x = -Math.PI / 2; lq.position.y = .12; pourG.add(lq);
+  // water stream from spout into the sock
+  const kw = new THREE.Vector3(.29, .3, 0).applyEuler(kettle.rotation).add(kettle.position);
+  const sPath = new THREE.CatmullRomCurve3([kw, kw.clone().add(new THREE.Vector3(.05, -.02, 0)), new THREE.Vector3(.0, .45, 0), new THREE.Vector3(0, .3, 0)]);
+  const drip = new THREE.CatmullRomCurve3([new THREE.Vector3(0, .08, 0), new THREE.Vector3(0, .12, 0)]);
+  const sm = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, uniforms: { uT: { value: 0 }, uC: { value: new THREE.Color(.9, .95, 1) }, uA: { value: .55 } },
+    vertexShader: 'varying vec2 vU; uniform float uT; void main(){ vU = uv; vec3 p = position + normal*sin(uv.x*60. - uT*30.)*.0012; gl_Position = projectionMatrix*modelViewMatrix*vec4(p,1.); }',
+    fragmentShader: 'varying vec2 vU; uniform float uT; uniform vec3 uC; uniform float uA; void main(){ float n = .6 + .4*sin(vU.x*90. - uT*40. + sin(vU.y*6.28)*2.); float edge = pow(abs(sin(vU.y*3.14159)), .6); gl_FragColor = vec4(uC*(.6+.6*n*edge), uA*(.35+.65*edge)); }' });
+  stream = new THREE.Mesh(new THREE.TubeGeometry(sPath, 40, .0045, 8), sm); pourG.add(stream);
+  const dm = sm.clone(); dm.uniforms.uC.value = new THREE.Color(.12, .06, .02); dm.uniforms.uA.value = .9;
+  const dr = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(0, .085, 0), new THREE.Vector3(0, .1, 0), new THREE.Vector3(.001, .125, 0)]), 8, .003, 6), dm); pourG.add(dr);
+  pourG.userData.mats = [sm, dm];
+  const ps = steamSystem(40, .1, .3); ps.position.y = .18; pourG.add(ps); pourG.userData.steam = ps;
+})();
+
+/* ---------------- build ---------------- */
+let fanBlades = [], refreshProbes = () => {};
+async function build() {
+  const [stat, props, fan] = await Promise.all(['arch', 'props', 'fan'].map(loadModel));
+  stat.scene.traverse((o) => {
+    if (!o.isMesh) return;
+    const name = (o.material.name || '').replace(/\.\d+$/, '');
+    o.material = archMat(name) || baked(new THREE.MeshStandardMaterial({ color: 0xcccccc, roughness: .8 }));
+  });
+  props.scene.traverse((o) => {
+    if (!o.isMesh) return;
+    const m = o.material;
+    o.material = bakedV(new THREE.MeshStandardMaterial({ map: m.map, normalMap: m.normalMap, roughnessMap: m.roughnessMap, metalnessMap: m.metalnessMap, color: m.color, roughness: m.roughness, metalness: m.metalness }), .5);
+  });
+  scene.add(props.scene);
+  scene.add(stat.scene);
+  // fans: one from Blender, one cloned further back
+  fan.scene.traverse((o) => { if (o.isMesh) { o.material.envMapIntensity = .6; } });
+  const fan2 = fan.scene.clone(true); fan2.position.z += 5.4; fan2.position.x += .2;
+  scene.add(fan.scene, fan2);
+  [fan.scene, fan2].forEach((f) => f.traverse((o) => { if (/blades/i.test(o.name)) fanBlades.push(o); }));
+  // signboard over the five-foot way
+  const sign = new THREE.Mesh(new THREE.PlaneGeometry(5.6, 1.05), (() => { const t = signTex(); return new THREE.MeshStandardMaterial({ map: t, roughness: .6, emissive: 0xffffff, emissiveMap: t, emissiveIntensity: .9 }); })());
+  sign.position.set(0, 4.25, -2.77); sign.rotation.y = Math.PI; scene.add(sign);
+  // drinks board on the wall above the counter
+  drawBoard();
+  const board = new THREE.Mesh(new THREE.PlaneGeometry(4.0, 1.0), new THREE.MeshStandardMaterial({ map: boardT, roughness: .5, emissive: 0xffffff, emissiveMap: boardT, emissiveIntensity: .12 }));
+  board.position.set(-2.975, 3.15, 3.5); board.rotation.y = Math.PI / 2; scene.add(board);
+  // table set
+  drink.position.set(-.12, .755, 2.32); scene.add(drink);
+  toastG.position.set(-.33, .755, 2.5); toastG.rotation.y = .7; scene.add(toastG);
+  cupSteam.position.set(-.12, .82, 2.32); scene.add(cupSteam);
+  // wok on the charcoal stove
+  wokG.position.set(2.3, .92, 14.65); scene.add(wokG);
+  // pour rig on the counter
+  pourG.position.set(-2.3, 1.05, 5.25); pourG.rotation.y = Math.PI / 2 + .25; scene.add(pourG);
+  // reflection probes: render the baked room into cube maps once every texture has arrived
+  const texReady = () => Object.values(texCache).every((t) => t.image) && LM.image && skyTex.image;
+  for (let k = 0; k < 200 && !texReady(); k++) await new Promise((r) => setTimeout(r, 100));
+  function makeProbe(pos) { const rt = new THREE.WebGLCubeRenderTarget(256, { type: THREE.HalfFloatType }); const cc = new THREE.CubeCamera(.05, 200, rt); cc.position.copy(pos); scene.add(cc); return { rt, cc }; }
+  const PF = makeProbe(new THREE.Vector3(0, 1.4, 3.5)), PK = makeProbe(new THREE.Vector3(1, 1.4, 14.2));
+  refreshProbes = () => {
+    const hid = [drink, toastG, wokG, pourG, cupSteam], env = scene.environment; scene.environment = null;
+    hid.forEach((g) => g.visible = false);
+    [PF, PK].forEach((p) => { p.cc.update(renderer, scene); p.rt.texture.needsPMREMUpdate = true; });
+    hid.forEach((g) => g.visible = true); setDrink(); scene.environment = env;
+  };
+  refreshProbes();
+  envProbe.front = PF.rt.texture; envProbe.kitchen = PK.rt.texture;
+  scene.environment = envProbe.front; scene.environmentIntensity = 2.6;
+  [1500, 5000, 12000].forEach((ms) => setTimeout(() => refreshProbes(), ms));
+  wokG.traverse((o) => { if (o.isMesh && o.material.isMeshStandardMaterial) { o.material.envMap = envProbe.kitchen; } });
+}
+
+/* ---------------- camera path (three coords: x, up, into the shop) ---------------- */
+const KEYS = [
+  { p: [1.4, 1.65, -9.5], t: [0, 2.3, 2] },
+  { p: [-.6, 1.5, -1.2], t: [.4, 1.25, 7] },
+  { p: [.95, 1.75, 13.35], t: [2.3, .95, 14.65] },
+  { p: [-1.35, 1.48, 4.8], t: [-2.3, 1.45, 5.25] },
+  { p: [.6, 2.25, 1.6], t: [-2.95, 3.0, 3.4] },
+  { p: [.42, 1.12, 1.82], t: [-.2, .79, 2.45] },
+  { p: [1.7, 2.2, 11.3], t: [-.2, 1.4, 0] }
+];
+const V = (a) => new THREE.Vector3(...a);
+const curveP = new THREE.CatmullRomCurve3(KEYS.map((k) => V(k.p)), false, 'centripetal', .5);
+const curveT = new THREE.CatmullRomCurve3(KEYS.map((k) => V(k.t)), false, 'centripetal', .5);
+let target = 0, cur = 0;
+function scrollProgress() {
+  const mid = innerHeight / 2, cs = sections.map((s) => { const r = s.getBoundingClientRect(); return r.top + r.height / 2; });
+  for (let i = 0; i < cs.length - 1; i++) { if (mid >= cs[i] && mid <= cs[i + 1]) { const f = (mid - cs[i]) / (cs[i + 1] - cs[i]); return (i + sstep(.15, .85, f)) / (KEYS.length - 1); } }
+  return mid < cs[0] ? 0 : 1;
+}
+addEventListener('scroll', () => { target = scrollProgress(); }, { passive: true });
+let mx = 0, my = 0; addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse') { mx = e.clientX / innerWidth - .5; my = e.clientY / innerHeight - .5; } });
+
+/* ---------------- post ---------------- */
+const composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType }));
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(new THREE.Vector2(256, 256), .35, .6, 1.6); composer.addPass(bloom);
+composer.addPass(new OutputPass());
+function resize() { renderer.setPixelRatio(pr); renderer.setSize(innerWidth, innerHeight, false); composer.setPixelRatio(pr); composer.setSize(innerWidth, innerHeight); camera.aspect = innerWidth / innerHeight; camera.fov = innerWidth < innerHeight ? 66 : 50; camera.updateProjectionMatrix(); }
+addEventListener('resize', resize); resize();
+
+/* ---------------- loop ---------------- */
+const clock = new THREE.Clock(); let fpsA = 0, fpsN = 0, ready = false;
+const pP = new THREE.Vector3(), pT = new THREE.Vector3(), tmpM = new THREE.Matrix4(), tmpQ = new THREE.Quaternion(), tmpE = new THREE.Euler(), tmpC = new THREE.Color(), tmpV = new THREE.Vector3(), tmpS = new THREE.Vector3();
+const ROAST = ['Green', 'Cinnamon', 'Medium', 'Dark', 'Kopitiam dark'];
+let lastRoast = -1;
+function frame() {
+  requestAnimationFrame(frame);
+  if (!ready || document.hidden) return;
+  const dt = Math.min(.05, clock.getDelta()), T = clock.elapsedTime;
+  cur += (target - cur) * Math.min(1, dt * 3);
+  const u = clamp(cur, 0, 1), seg = u * (KEYS.length - 1);
+  curveP.getPoint(u, pP); curveT.getPoint(u, pT);
+  camera.position.copy(pP); camera.position.x += mx * .08; camera.position.y -= my * .05; camera.lookAt(pT);
+  // exposure: bright street → room → kitchen
+  const outside = 1 - sstep(.2, 1, seg);
+  renderer.toneMappingExposure = mix(1.4, .85, outside) * (seg > 1.5 && seg < 2.5 ? 1.15 : 1);
+  scene.environment = seg > 1.4 && seg < 2.6 ? envProbe.kitchen : envProbe.front;
+  // fans
+  fanBlades.forEach((b, i) => { b.rotation.y -= dt * (3.2 + i * .3); });
+  // roast: beans tumble and darken as you scroll through the kitchen
+  if (Math.abs(seg - 2) < 1.2) {
+    const roast = clamp((seg - 1.55) / .9, 0, 1);
+    const ri = Math.round(roast * (ROAST.length - 1)); if (ri !== lastRoast) { lastRoast = ri; $('#roastLbl').textContent = ROAST[ri]; }
+    const pa = T * 1.1; paddle.position.set(Math.cos(pa) * .1, .03 + Math.max(0, Math.sin(pa * 2)) * .005, Math.sin(pa) * .1); paddle.rotation.y = -pa + 1.2;
+    for (let i = 0; i < beanData.length; i++) {
+      const b = beanData[i]; const a = b.a + T * b.sp * .6 + Math.sin(T * 1.7 + i) * .05;
+      const r = b.r * (1 + .08 * Math.sin(T * 2 + i * .3)), x = Math.cos(a) * r, z = Math.sin(a) * r;
+      const y = .42 - Math.sqrt(Math.max(0, .42 * .42 - r * r)) + .006 + b.h;
+      tmpE.set(b.rot + T * b.sp, b.rot * 2, a); tmpQ.setFromEuler(tmpE);
+      const sw = 1 + roast * .25; tmpS.set(.0062 * sw, .0042 * sw, .0047 * sw);
+      tmpM.compose(tmpV.set(x, y, z), tmpQ, tmpS); beans.setMatrixAt(i, tmpM);
+      beanColor(roast + (i % 7) * .015 - .045, tmpC); beans.setColorAt(i, tmpC);
+    }
+    beans.instanceMatrix.needsUpdate = true; beans.instanceColor.needsUpdate = true;
+    beans.material.roughness = mix(.6, .18, roast); beans.material.clearcoat = roast;
+    fireLight.intensity = 2.4 + Math.sin(T * 13) * .3 + Math.sin(T * 7.3) * .4;
+    wokSmoke.material.uniforms.uT.value = T; wokSmoke.material.uniforms.uA.value = .3 + roast * .9;
+  }
+  pourG.userData.mats.forEach((m) => m.uniforms.uT.value = T);
+  pourG.userData.steam.material.uniforms.uT.value = T;
+  sock.rotation.z = Math.sin(T * 1.3) * .03;
+  cupSteam.material.uniforms.uT.value = T; cupSteam.material.uniforms.uS.value = pr; cupSteam.visible = !ORDER.ice;
+  composer.render();
+  fpsA += dt; fpsN++;
+  if (fpsA > 2) { const f = fpsN / fpsA; if (f < 34 && pr > .55) { pr = Math.max(.55, pr - .15); resize(); } else if (f > 57 && pr < Math.min(devicePixelRatio, 1.5)) { pr = Math.min(pr + .1, Math.min(devicePixelRatio, 1.5)); resize(); } fpsA = 0; fpsN = 0; }
+}
+document.fonts.load('900 80px "Noto Serif TC"', '晨光茶室').catch(() => {}).finally(() => {
+  build().then(() => { updateOrder(); ready = true; target = cur = scrollProgress(); $('#loader').classList.add('done'); frame(); })
+    .catch((e) => { console.error(e); $('#lmsg').textContent = 'The shutters are stuck. Try reloading.'; });
+});
+window.__kp = { setT: (v) => { target = cur = v; }, get ready() { return ready; } };
+</script>
+</body>
+</html>
