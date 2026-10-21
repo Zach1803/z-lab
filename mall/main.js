@@ -411,6 +411,19 @@ function buildEscalators() {
       const cv = new THREE.Mesh(new THREE.PlaneGeometry(.11, z1 - z0), coveM); cv.rotation.x = Math.PI / 2; cv.position.set(xt + d * .056, yt - .815, (z0 + z1) / 2); scene.add(cv);
     });
   });
+  // close the open slab edge beside each escalator mouth on the upper floors (old balustrade stopped 0.7 m short)
+  const ends = new Map();
+  ESC.forEach((e) => { [[e.xt, e.yt, Math.sign(e.xb - e.xt)], [e.xb, e.yb, Math.sign(e.xt - e.xb)]].forEach(([x, y, d]) => { if (y < .1) return; const k = x + ':' + y; const r = ends.get(k) || { x, y, d, z0: 9, z1: -9 }; r.z0 = Math.min(r.z0, e.z0); r.z1 = Math.max(r.z1, e.z1); ends.set(k, r); }); });
+  const postM = baked({ color: 0xc9cdd2, metalness: .85, roughness: .3 }, { constIrr: 1 });
+  ends.forEach(({ x, y, d, z0, z1 }) => {
+    const bx = x + d * .14;
+    [[-3, z0 - .02], [z1 + .02, 3]].forEach(([a, b]) => {
+      if (b - a < .05) return;
+      const gl = new THREE.Mesh(new THREE.PlaneGeometry(b - a, 1.03), glassM); gl.rotation.y = Math.PI / 2; gl.position.set(bx, y + .565, (a + b) / 2); gl.renderOrder = 2; scene.add(gl);
+      const top = new THREE.Mesh(new THREE.BoxGeometry(.06, .06, b - a + .06), postM); top.position.set(bx, y + 1.11, (a + b) / 2); scene.add(top);
+      [a, b].forEach((zp) => { const po = new THREE.Mesh(new THREE.BoxGeometry(.05, 1.1, .05), postM); po.position.set(bx, y + .55, zp); scene.add(po); });
+    });
+  });
   // stainless centre deck between each side-by-side pair
   const seen = new Set();
   ESC.forEach((a) => ESC.forEach((b) => {
