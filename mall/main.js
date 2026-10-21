@@ -279,20 +279,30 @@ async function loadCharacters() {
   // realistic cast (MakeHuman); phones load a smaller random subset
   let idx = CAST.map((_, i) => i); if (COARSE) idx = idx.sort(() => Math.random() - .5).slice(0, 6);
   if (window.__wantKind && /^mph\d+$/.test(window.__wantKind)) { const w = +window.__wantKind.slice(3); if (!idx.includes(w)) idx.push(w); }
-  const MPH = idx.map((i) => 'mph_' + i);
-  const [clips, ...mph] = await Promise.all([parse('clips'), ...MPH.map((n) => parse(n).catch(() => null))]);
+  // the visitor's own pick loads first, then the rest one at a time so the mall never waits on them
+  if (window.__wantKind) { const w = +String(window.__wantKind).slice(3); idx = [w, ...idx.filter((i) => i !== w)]; }
+  const clips = await parse('clips');
   const get = (n) => clips.animations.find((a) => a.name === n);
   CHAR.clips.mix = { walk: get('Walk'), idle: get('Idle') };
-  mph.forEach((g, i) => {
-    if (!g) return;
+  for (const ci of idx) {
+    let g = null; try { g = await parse('mph_' + ci); } catch (e) { continue; }
     g.scene.traverse((o) => { if (o.isMesh && /Icosphere/.test(o.name)) o.visible = false; });
     const cl = { walk: retarget(clips.scene, get('Walk'), g.scene), idle: retarget(clips.scene, get('Idle'), g.scene) };
     const mx = new THREE.AnimationMixer(g.scene); mx.clipAction(cl.idle).play(); mx.update(0.01); g.scene.updateMatrixWorld(true);
     const box = new THREE.Box3(); g.scene.traverse((o) => { if (o.isSkinnedMesh) { o.skeleton.update(); o.computeBoundingBox(); box.union(o.boundingBox.clone().applyMatrix4(o.matrixWorld)); } });
     mx.stopAllAction(); mx.uncacheRoot(g.scene);
-    const ci = idx[i], meta = CAST[ci] || {}, h = meta.h || 1.7, ht = box.max.y - box.min.y;
+    const meta = CAST[ci] || {}, h = meta.h || 1.7, ht = box.max.y - box.min.y;
     CHAR.tpl.push({ scene: g.scene, kind: 'mph' + ci, scale: ht > .01 ? h / ht : 1, footY: box.min.y, clips: cl, flip: false, name: meta.n, g: meta.g });
-  });
+    onCharLoaded(idx.length);
+    await new Promise((r) => setTimeout(r, 30));
+  }
+}
+let PEOPLE_TARGET = 22;
+function onCharLoaded(total) {
+  initPeople.bag = null; // reshuffle so the newcomer joins the rotation
+  const want = Math.round(PEOPLE_TARGET * CHAR.tpl.length / total) - PEOPLE.length;
+  if (want > 0) initPeople(want, CHAR.tpl[CHAR.tpl.length - 1].kind);
+  if (window.MP) MP.flushPending();
 }
 function makeAvatar(kind, shirt, pants, name) {
   const want = CAST[+String(kind).replace('mph', '')], t = CHAR.tpl.find((x) => x.kind === kind) || (want && CHAR.tpl.find((x) => x.g === want.g)) || CHAR.tpl[0];
@@ -301,7 +311,7 @@ function makeAvatar(kind, shirt, pants, name) {
   body.traverse((o) => {
     if (!o.isMesh) return; o.frustumCulled = false;
     const mn = o.material.name || '';
-    o.material = o.material.clone(); o.material.envMapIntensity = 2.1; if (o.material.map) { o.material.emissiveMap = o.material.map; o.material.emissive = new THREE.Color(.16, .15, .14); }
+    o.material = o.material.clone(); if (probeTex) o.material.envMap = probeTex; o.material.envMapIntensity = 2.1; if (o.material.map) { o.material.emissiveMap = o.material.map; o.material.emissive = new THREE.Color(.16, .15, .14); }
     if (kind === 'rpm' && /Outfit_Top/.test(mn) && shirt) o.material.color = lin(shirt).multiplyScalar(1.6);
     if (kind === 'rpm' && /Outfit_Bottom/.test(mn) && pants) o.material.color = lin(pants).multiplyScalar(1.8);
     if (kind === 'mix' && shirt) o.material.color = new THREE.Color(1, 1, 1).lerp(lin(shirt).multiplyScalar(1.3), .18);
@@ -338,11 +348,11 @@ function randSpot(L) {
   return null;
 }
 function lineClear(L, a, b) { const d = Math.hypot(b[0] - a[0], b[1] - a[1]), n = Math.ceil(d / .4); for (let i = 1; i <= n; i++) { const t = i / n, x = a[0] + (b[0] - a[0]) * t, z = a[1] + (b[1] - a[1]) * t; if (!walkAt(L, x, z) || !walkAt(L, x + .3, z) || !walkAt(L, x - .3, z) || !walkAt(L, x, z + .3) || !walkAt(L, x, z - .3)) return false; } return true; }
-function initPeople(n) {
+function initPeople(n, fresh) {
   for (let i = 0; i < n; i++) {
-    const L = i % 3, s = randSpot(L); if (!s) continue;
+    const L = (PEOPLE.length + i) % 3, s = randSpot(L); if (!s) continue;
     if (!initPeople.bag || !initPeople.bag.length) initPeople.bag = CHAR.tpl.map((x) => x.kind).sort(() => Math.random() - .5);
-    const kind = window.__forceKind || initPeople.bag.pop();
+    const kind = window.__forceKind || (fresh && i < 1 ? fresh : initPeople.bag.pop());
     const av = makeAvatar(kind, rndC(CLOTH), rndC(PANTS));
     const sc = .95 + Math.random() * .1; av.root.scale.setScalar(sc); scene.add(av.root);
     PEOPLE.push({ L, x: s[0], z: s[1], tx: s[0], tz: s[1], yaw: Math.random() * TAU, sp: 1.0 + Math.random() * .4, wait: Math.random() * 3, mesh: av.root, av });
@@ -789,7 +799,7 @@ const MP = window.MP = {
       const [sendChat, getChat] = this.room.makeAction('ch');
       Object.assign(this, { sendState, sendProf, sendChat, on: true, selfId: mod.selfId });
       this.room.onPeerJoin((id) => { if (this.peers.size >= 16) return; sendProf(this.profile(), id); });
-      this.room.onPeerLeave((id) => { const p = this.peers.get(id); if (p) { scene.remove(p.av.root); this.peers.delete(id); toast((p.name || 'A visitor') + ' left'); this.setCount(); } });
+      this.room.onPeerLeave((id) => { this.pending.delete(id); const p = this.peers.get(id); if (p) { scene.remove(p.av.root); this.peers.delete(id); toast((p.name || 'A visitor') + ' left'); this.setCount(); } });
       getProf((d, id) => this.upsert(id, d));
       getState((d, id) => { const p = this.peers.get(id); if (!p || !Array.isArray(d) || d.length < 5) return; const [x, y, z, yaw, mv] = d.map(Number); if ([x, y, z, yaw].some((v) => !isFinite(v))) return; p.t = { x, y, z, yaw, mv: !!mv }; p.seen = performance.now(); });
       getChat((d, id) => { const p = this.peers.get(id); if (typeof d !== 'string') return; chatLine(p ? p.name : 'Visitor', d.slice(0, 140), p ? p.col : '#ccc'); if (p) bubble(p, d.slice(0, 60)); chime(); });
@@ -798,8 +808,11 @@ const MP = window.MP = {
   },
   solo(t) { $('#mpTxt').textContent = t; this.on = false; },
   profile() { return { n: ME.name.slice(0, 18), k: ME.kind, s: ME.shirt | 0 }; },
+  pending: new Map(),
+  flushPending() { const q = [...this.pending]; this.pending.clear(); q.forEach(([id, d]) => this.upsert(id, d)); },
   upsert(id, d) {
     if (!d || typeof d !== 'object') return;
+    if (!CHAR.tpl.length) { this.pending.set(id, d); return; }
     const name = String(d.n || 'Visitor').replace(/[\u0000-\u001f]/g, '').slice(0, 18) || 'Visitor', kind = (/^mph\d+$/.test(d.k) && CAST[+String(d.k).slice(3)]) ? d.k : 'mph0', s = Math.abs(d.s | 0) % CLOTH.length;
     let p = this.peers.get(id);
     if (p && p.name === name && p.kind === kind && p.s === s) return;
@@ -988,14 +1001,14 @@ async function boot() {
   makeMaterials();
   buildScene(irrJ ? b64(irrJ.b64) : 'flat');
   buildPOIs(); renderBag(); buildEscalators(); buildBulbs();
-  $('#lmsg').textContent = 'Opening the doors…';
-  try { await loadCharacters(); initPeople(COARSE ? 12 : 22); } catch (e) { console.warn('shoppers', e); }
+    PEOPLE_TARGET = COARSE ? 12 : 22;
   resize();
   P.x = 48; P.z = 0; P.y = 7.7; P.yaw = Math.PI; P.pitch = -.12;
   renderProbe();
   ready = true;
   $('#lbar').style.width = '100%'; $('#loader').classList.add('done'); $('#enter').disabled = false;
   requestAnimationFrame(frame);
+  loadCharacters().catch((e) => console.warn('shoppers', e)); // streams in after the doors open
 }
 boot().catch((e) => { console.error(e); $('#lmsg').textContent = 'Could not open the mall.'; });
 window.__mall = { PEOPLE, ESCS, MP, P, get ready() { return ready; }, start: () => startWalking(), teleport: (L, g) => teleport(L, g), mirror, renderer };
