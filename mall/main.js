@@ -4,6 +4,8 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js';
 
 const $ = (s) => document.querySelector(s);
 const TAU = Math.PI * 2;
@@ -39,6 +41,7 @@ function tex(name, srgb) {
   return t;
 }
 const TX = {};
+TX.floor = { map: tex('floor_diff', true), roughnessMap: tex('floor_rough') };
 for (const k of ['marble', 'terrazzo', 'wood', 'plaster', 'parquet']) TX[k] = { map: tex(k + '_diff', true), normalMap: tex(k + '_nor'), roughnessMap: tex(k + '_rough') };
 
 /* =========================== BAKED-LIGHT MATERIALS =========================== */
@@ -58,7 +61,7 @@ function baked(params, opt = {}) {
     const hasIrr = !opt.constIrr;
     s.vertexShader = s.vertexShader
       .replace('#include <common>', '#include <common>\n' + (hasIrr ? 'attribute vec3 irr;\n' : '') + (opt.steps ? 'attribute float sdir; varying float vSdir;\n' : '') + 'varying vec3 vIrr; varying vec3 vWPos;')
-      .replace('#include <begin_vertex>', '#include <begin_vertex>\n' + (hasIrr ? 'vIrr = irr*irr*8.0; vIrr -= max(vIrr - 3.0, 0.0)*0.62;' : 'vIrr = vec3(1.0);') + (opt.steps ? ' vSdir = sdir;' : ''))
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\n' + (hasIrr ? 'vIrr = irr*irr*8.0; { vec3 ex = max(vIrr - 2.4, 0.0); vIrr = min(vIrr, 2.4) + ex/(1.0 + ex*1.6); }' : 'vIrr = vec3(1.0);') + (opt.steps ? ' vSdir = sdir;' : ''))
       .replace('#include <project_vertex>', '#include <project_vertex>\nvWPos = (modelMatrix*vec4(transformed,1.0)).xyz;');
     let planar = '';
     if (opt.planar) planar = `
@@ -98,7 +101,7 @@ function makeMaterials() {
   atlasA = new THREE.CanvasTexture(MALL.A); atlasA.colorSpace = THREE.SRGBColorSpace; atlasA.anisotropy = Math.min(8, maxAniso); atlasA.flipY = false;
   atlasB = new THREE.CanvasTexture(MALL.B); atlasB.colorSpace = THREE.SRGBColorSpace; atlasB.anisotropy = Math.min(8, maxAniso); atlasB.flipY = false;
   const T = TX;
-  MAT.m0 = baked({ ...T.marble, color: new THREE.Color(1.5, 1.56, 1.66), roughness: 0.5, envMapIntensity: 1 }, { planar: 0.92 });
+  MAT.m0 = baked({ ...T.floor, color: new THREE.Color(1.42, 1.42, 1.4), roughness: 0.42, envMapIntensity: 1 }, { planar: 0.92 });
   MAT.m1 = baked({ ...T.plaster, color: 0xffffff, vertexColors: true, roughness: 1, normalScale: new THREE.Vector2(.35, .35) });
   MAT.m2 = baked({ ...T.plaster, color: new THREE.Color(1.95, 1.97, 2.05), roughness: 1, normalScale: new THREE.Vector2(.2, .2) }, { ceiling: 1 });
   MAT.m4 = baked({ color: 0xffffff, vertexColors: true, metalness: 1, roughness: .28 });
@@ -111,16 +114,17 @@ function makeMaterials() {
   MAT.m10f = baked({ ...T.parquet, color: new THREE.Color(1.15, 1.1, 1.05), roughness: .5 }, { planar: .45 });
   MAT.m11 = baked({ color: 0xffffff, vertexColors: true, roughness: .55 });
   MAT.m12 = baked({ color: 0xffffff, vertexColors: true, roughness: .6 });
-  MAT.m12f = baked({ ...T.marble, color: new THREE.Color(1.5, 1.52, 1.55), roughness: .45 }, { planar: .8 });
+  MAT.m12f = baked({ ...T.floor, color: new THREE.Color(1.5, 1.5, 1.48), roughness: .4 }, { planar: .8 });
   MAT.m13 = baked({ ...T.terrazzo, color: new THREE.Color(1.45, 1.45, 1.45), roughness: .4 }, { planar: .7 });
   MAT.m15 = baked({ map: atlasB, roughness: .7 });
   MAT.m3 = new THREE.MeshStandardMaterial({ color: 0xcfe6e3, vertexColors: false, metalness: 0, roughness: .04, transparent: true, opacity: .07, depthWrite: false, side: THREE.DoubleSide, envMapIntensity: .7 });
   MAT.m14 = baked({ map: atlasB, transparent: true, depthWrite: false, roughness: .9, polygonOffset: true, polygonOffsetFactor: -2 }, { constIrr: 1 });
 }
-const UVSCALE = { m0: 1 / 2, m1: 1 / 2, m2: 1 / 2.4, m10: 1 / 1.2, m10f: 1 / 3.4, m12f: 1 / 2, m13: 1 / 2 };
+const UVSCALE = { m0: 1 / 3.2, m1: 1 / 2, m2: 1 / 2.4, m10: 1 / 1.2, m10f: 1 / 3.4, m12f: 1 / 3.2, m13: 1 / 2 };
 
 /* =========================== GEOMETRY =========================== */
 const meshes = [];
+const FASCIA_CUT = new Set();
 function buildScene(irr) {
   const r = MALL.build(), OP = r.OP, TR = r.TR, ST = MALL.ST;
   const N = OP.length / ST;
@@ -132,7 +136,38 @@ function buildScene(irr) {
     if ((m === 10 || m === 12) && arr[o + 4] > .9) { const y = arr[o + 1]; for (let L = 0; L < 3; L++) if (Math.abs(y - LV[L]) < .01) return 'm' + m + 'f'; }
     return 'm' + m;
   };
-  for (let t = 0; t < N; t += 3) { const k = keyT(OP, t); (groups[k] = groups[k] || []).push(t); }
+  const skipT = (t, k) => {
+    if (k === 'm9') return true; // flat escalator slab -> replaced by moving steps
+    if (k === 'm6') { const o = t * ST, x = OP[o], y = OP[o + 1], z = OP[o + 2]; if (y > 8.7 && y < 10.5 && x > 19.4 && x < 78.6 && Math.abs(z) < 5.8) return true; } // atrium fairy-light boxes -> glowing bulbs
+    if (k === 'm4' || k === 'm1' || k === 'm6') {
+      const o = t * ST; let cx = 0, cy = 0, cz = 0, zmin = 1e9, zmax = -1e9, xmin = 1e9, xmax = -1e9, ymin = 1e9, ymax = -1e9;
+      for (let v = 0; v < 3; v++) { const x = OP[o + v * ST], y = OP[o + v * ST + 1], z = OP[o + v * ST + 2]; cx += x / 3; cy += y / 3; cz += z / 3; zmin = Math.min(zmin, z); zmax = Math.max(zmax, z); xmin = Math.min(xmin, x); xmax = Math.max(xmax, x); ymin = Math.min(ymin, y); ymax = Math.max(ymax, y); }
+      for (const e of ESC) {
+        const sg = Math.sign(e.xt - e.xb);
+        if (k === 'm4') { // old truss + skirts follow a different slope than the steps -> rebuilt in buildEscalators
+          const xa = e.xb - sg * .6, xb = e.xt + sg * .6, ly = e.yb + (e.yt - e.yb) * (cx - xa) / (xb - xa);
+          if (cx >= Math.min(xa, xb) - .01 && cx <= Math.max(xa, xb) + .01 && cz >= e.z0 - .005 && cz <= e.z1 + .005 && cy >= ly - 1.01 && cy <= ly + .19) return true;
+        } else { // slab-edge fascia + cove light running straight across the top of an escalator
+          if (xmin >= e.xt - .31 && xmax <= e.xt + .31 && ymin >= e.yt - .83 && ymax <= e.yt + .03 && zmin < e.z1 && zmax > e.z0) { FASCIA_CUT.add(e.xt + ':' + e.yt); return true; }
+        }
+      }
+    }
+    if (k === 'm4') {
+      const o = t * ST; let cx = 0, cy = 0, cz = 0; for (let v = 0; v < 3; v++) { cx += OP[o + v * ST] / 3; cy += OP[o + v * ST + 1] / 3; cz += OP[o + v * ST + 2] / 3; }
+      for (const e of ESC) {
+        const sg = Math.sign(e.xt - e.xb);
+        for (const zz of [e.z0 + .1, e.z1 - .1]) {
+          if (Math.abs(cz - zz) > .061) continue;
+          for (const [xe, ye, d] of [[e.xb - sg * .9, e.yb, -sg], [e.xt + sg * .9, e.yt, sg]]) {
+            const lo = Math.min(xe, xe + d * .25) - .011, hi = Math.max(xe, xe + d * .25) + .011;
+            if (cx >= lo && cx <= hi && cy >= ye - .011 && cy <= ye + 1.011) return true; // old square newel box -> curved handrail end
+          }
+        }
+      }
+    }
+    return false;
+  };
+  for (let t = 0; t < N; t += 3) { const k = keyT(OP, t); if (skipT(t, k)) continue; (groups[k] = groups[k] || []).push(t); }
   const make = (arr, list, k, irrArr) => {
     const nv = list.length * 3, P = new Float32Array(nv * 3), Nn = new Float32Array(nv * 3), U = new Float32Array(nv * 2), C = new Float32Array(nv * 3);
     const I = irrArr ? new Uint8Array(nv * 3) : null, D = k === 'm9' ? new Float32Array(nv) : null; const flat = irrArr === 'flat';
@@ -175,66 +210,78 @@ function buildScene(irr) {
   }
 }
 
-/* =========================== SHOPPERS =========================== */
-function personGeometry(hijab) {
-  const P = [], N = [], PART = [];
-  const push = (g, part, m) => {
-    g = g.toNonIndexed(); if (m) g.applyMatrix4(m); g.computeVertexNormals();
-    const p = g.attributes.position.array, n = g.attributes.normal.array;
-    for (let i = 0; i < p.length; i++) { P.push(p[i]); N.push(n[i]); }
-    for (let i = 0; i < p.length / 3; i++) PART.push(part);
-  };
-  const M4 = (x, y, z, sx = 1, sy = 1, sz = 1) => new THREE.Matrix4().compose(new THREE.Vector3(x, y, z), new THREE.Quaternion(), new THREE.Vector3(sx, sy, sz));
-  const lathe = (pts, seg) => new THREE.LatheGeometry(pts.map((p) => new THREE.Vector2(p[0], p[1])), seg || 18);
-  // legs
-  for (const sd of [-1, 1]) {
-    push(lathe([[0, .07], [.062, .08], [.07, .3], [.058, .48], [.07, .62], [.085, .9], [0, .92]], 12), 1, M4(sd * .088, 0, 0));
-    push(new THREE.SphereGeometry(1, 10, 8), 4, M4(sd * .088, .045, .035, .06, .045, .12));
-  }
-  // hips + torso (lathe profile, slightly flattened front-to-back)
-  push(lathe([[0, .84], [.15, .86], [.165, .95], [.15, 1.06], [.16, 1.2], [.18, 1.32], [.16, 1.4], [.07, 1.45], [0, 1.46]], 20), 0, M4(0, 0, 0, 1, 1, .72));
-  push(lathe([[.152, .84], [.168, .9], [.168, .99], [.15, 1.0]], 20), 1, M4(0, 0, 0, 1, 1, .74));
-  // arms
-  for (const sd of [-1, 1]) {
-    push(lathe([[0, .82], [.04, .84], [.042, 1.0], [.05, 1.18], [.058, 1.36], [0, 1.42]], 10), 0, M4(sd * .215, 0, 0));
-    push(new THREE.SphereGeometry(1, 10, 8), 2, M4(sd * .215, .8, .0, .042, .055, .036));
-  }
-  // neck + head
-  push(new THREE.CylinderGeometry(.048, .052, .12, 12), 2, M4(0, 1.47, 0));
-  push(new THREE.SphereGeometry(1, 20, 16), 2, M4(0, 1.6, .005, .095, .118, .108));
-  push(new THREE.SphereGeometry(1, 8, 6), 2, M4(0, 1.585, .105, .018, .026, .02)); // nose
-  if (hijab) {
-    push(new THREE.SphereGeometry(1, 20, 16, 0, TAU, 0, Math.PI * .62), 3, M4(0, 1.6, -.012, .118, .135, .124));
-    push(lathe([[.075, 1.52], [.11, 1.47], [.2, 1.37], [.235, 1.3], [.22, 1.27], [.0, 1.27]], 20), 3, M4(0, 0, 0, 1, 1, .8));
-  } else {
-    push(new THREE.SphereGeometry(1, 20, 14, 0, TAU, 0, Math.PI * .55), 3, M4(0, 1.615, -.012, .104, .118, .116));
-  }
-  const g = new THREE.BufferGeometry();
-  g.setAttribute('position', new THREE.Float32BufferAttribute(P, 3)); g.setAttribute('normal', new THREE.Float32BufferAttribute(N, 3));
-  g.setAttribute('part', new THREE.Float32BufferAttribute(PART, 1));
-  return g;
-}
+/* =========================== SHOPPERS (skinned, animated) =========================== */
 const PEOPLE = [];
-const SKIN = [[.78, .58, .44], [.62, .42, .3], [.45, .3, .2], [.85, .68, .55], [.55, .38, .26]];
-const CLOTH = [[.8, .15, .15], [.12, .3, .6], [.95, .95, .92], [.1, .1, .12], [.2, .5, .35], [.85, .7, .2], [.55, .3, .55], [.3, .55, .7], [.9, .55, .6], [.45, .45, .48]];
-const PANTS = [[.12, .15, .25], [.18, .18, .2], [.35, .3, .25], [.7, .65, .55], [.1, .1, .1]];
-const HAIR = [[.05, .04, .04], [.08, .06, .05], [.15, .1, .07]];
+const gltfLoader = new GLTFLoader();
+const CHAR = { tpl: [], clips: {} };
+const CLOTH = [[.8, .15, .15], [.12, .3, .6], [.95, .95, .92], [.1, .1, .12], [.2, .5, .35], [.85, .7, .2], [.55, .3, .55], [.3, .55, .7], [.9, .55, .6], [.45, .45, .48], [.95, .45, .2], [.15, .45, .45]];
+const PANTS = [[.12, .15, .25], [.18, .18, .2], [.35, .3, .25], [.7, .65, .55], [.1, .1, .1], [.25, .3, .45]];
 const rndC = (a) => a[Math.floor(Math.random() * a.length)];
-function personMaterial() {
-  const m = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .8, envMapIntensity: 1 });
-  const u = { uWalk: { value: 0 } };
-  m.onBeforeCompile = (s) => {
-    s.uniforms.uWalk = u.uWalk;
-    s.vertexShader = s.vertexShader.replace('#include <common>', '#include <common>\nattribute float part; uniform float uWalk;')
-      .replace('#include <begin_vertex>', `#include <begin_vertex>
-        float side = transformed.x < 0. ? -1. : 1.; float sw = sin(uWalk);
-        if (part > .5 && part < 1.5 && transformed.y < .9) transformed.z += (.9 - transformed.y)*sw*side*.42;
-        if (part < .5 && abs(transformed.x) > .19 && transformed.y < 1.4) transformed.z -= (1.4 - transformed.y)*sw*side*.3;
-        if (part > 1.5 && part < 2.5 && abs(transformed.x) > .19 && transformed.y < .9) transformed.z -= (1.4 - transformed.y)*sw*side*.3;
-        if (part > 3.5 && transformed.y < .12) transformed.z += .9*sw*side*.42*.5;`);
-  };
-  m.userData.u = u;
-  return m;
+const lin = (c) => new THREE.Color(c[0], c[1], c[2]);
+let shadowTex = null;
+function blobShadow() {
+  if (!shadowTex) { const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d'); const g = x.createRadialGradient(32, 32, 2, 32, 32, 31); g.addColorStop(0, 'rgba(0,0,0,.55)'); g.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = g; x.fillRect(0, 0, 64, 64); shadowTex = new THREE.CanvasTexture(c); }
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(.9, .9), new THREE.MeshBasicMaterial({ map: shadowTex, transparent: true, depthWrite: false, toneMapped: false }));
+  m.rotation.x = -Math.PI / 2; m.position.y = .015; m.renderOrder = 3; return m;
+}
+async function loadCharacters() {
+  const parse = async (n) => gltfLoader.parseAsync(b64((await fileLoader.loadAsync('chars/' + n + '.json')).b64).buffer, './');
+  const [clips, mich, rpm] = await Promise.all([parse('clips'), parse('michelle'), parse('rpm')]);
+  const get = (n) => clips.animations.find((a) => a.name === n);
+  const strip = (clip) => { const c = clip.clone(); c.tracks.forEach((t) => { t.name = t.name.replace(/^mixamorig/, ''); }); return c; };
+  CHAR.clips.mix = { walk: get('Walk'), idle: get('Idle') };
+  CHAR.clips.rpm = { walk: strip(get('Walk')), idle: strip(get('Idle')) };
+  // The clips were authored on a rig whose Hips parent is rotated -90° about X. Re-parent-orient each rig to match.
+  const QS = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), -Math.PI / 2);
+  [[mich, 'mix', 1.66], [rpm, 'rpm', 1.76]].forEach(([g, kind, h]) => {
+    let hips = null; g.scene.traverse((o) => { if (o.isBone && /Hips$/.test(o.name) && !hips) hips = o; });
+    if (hips && hips.parent) {
+      const par = hips.parent, qOld = par.quaternion.clone();
+      hips.position.applyQuaternion(qOld).applyQuaternion(QS.clone().invert());
+      par.quaternion.copy(QS);
+    }
+    const mx = new THREE.AnimationMixer(g.scene); mx.clipAction(CHAR.clips[kind].idle).play(); mx.update(0.01);
+    g.scene.updateMatrixWorld(true);
+    const box = new THREE.Box3(); g.scene.traverse((o) => { if (o.isSkinnedMesh) { o.skeleton.update(); o.computeBoundingBox(); box.union(o.boundingBox.clone().applyMatrix4(o.matrixWorld)); } });
+    mx.stopAllAction(); mx.uncacheRoot(g.scene);
+    const ht = box.max.y - box.min.y;
+    CHAR.tpl.push({ scene: g.scene, kind, scale: ht > .01 ? h / ht : 1, footY: box.min.y });
+  });
+}
+function makeAvatar(kind, shirt, pants, name) {
+  const t = CHAR.tpl.find((x) => x.kind === kind) || CHAR.tpl[0];
+  const root = new THREE.Group(), body = SkeletonUtils.clone(t.scene);
+  body.scale.multiplyScalar(t.scale); body.position.y = -t.footY * t.scale;
+  body.traverse((o) => {
+    if (!o.isMesh) return; o.frustumCulled = false;
+    const mn = o.material.name || '';
+    o.material = o.material.clone(); o.material.envMapIntensity = 2.1; if (o.material.map) { o.material.emissiveMap = o.material.map; o.material.emissive = new THREE.Color(.16, .15, .14); }
+    if (kind === 'rpm' && /Outfit_Top/.test(mn) && shirt) o.material.color = lin(shirt).multiplyScalar(1.6);
+    if (kind === 'rpm' && /Outfit_Bottom/.test(mn) && pants) o.material.color = lin(pants).multiplyScalar(1.8);
+    if (kind === 'mix' && shirt) o.material.color = new THREE.Color(1, 1, 1).lerp(lin(shirt).multiplyScalar(1.3), .18);
+  });
+  root.add(body); root.add(blobShadow());
+  const mixer = new THREE.AnimationMixer(body), cl = CHAR.clips[t.kind];
+  const walk = mixer.clipAction(cl.walk), idle = mixer.clipAction(cl.idle);
+  walk.play(); idle.play(); walk.setEffectiveWeight(0); idle.setEffectiveWeight(1); idle.time = Math.random() * 3; walk.time = Math.random();
+  if (name) { const tag = nameTag(name); tag.position.y = 2.05; root.add(tag); root.userData.tag = tag; }
+  return { root, mixer, walk, idle, w: 0 };
+}
+function animAvatar(a, moving, speed, dt) {
+  a.w += ((moving ? 1 : 0) - a.w) * Math.min(1, dt * 6);
+  a.walk.setEffectiveWeight(a.w); a.idle.setEffectiveWeight(1 - a.w);
+  a.walk.timeScale = Math.max(.6, speed / 1.25);
+  a.mixer.update(dt);
+}
+function nameTag(text, color) {
+  const c = document.createElement('canvas'); c.width = 512; c.height = 128; const x = c.getContext('2d');
+  x.font = '700 54px "Plus Jakarta Sans", Arial, sans-serif'; const w = Math.min(500, x.measureText(text).width + 60);
+  x.fillStyle = 'rgba(14,30,29,.82)'; const r = 40, x0 = 256 - w / 2; x.beginPath(); x.roundRect(x0, 24, w, 80, r); x.fill();
+  x.fillStyle = color || '#f5c766'; x.beginPath(); x.arc(x0 + 34, 64, 10, 0, TAU); x.fill();
+  x.fillStyle = '#fff'; x.textAlign = 'left'; x.textBaseline = 'middle'; x.fillText(text, x0 + 54, 66);
+  const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace;
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: tx, depthTest: true, transparent: true, toneMapped: false }));
+  s.scale.set(1.1, .275, 1); s.renderOrder = 5; return s;
 }
 function randSpot(L) {
   for (let k = 0; k < 40; k++) {
@@ -246,21 +293,17 @@ function randSpot(L) {
 }
 function lineClear(L, a, b) { const d = Math.hypot(b[0] - a[0], b[1] - a[1]), n = Math.ceil(d / .4); for (let i = 1; i <= n; i++) { const t = i / n, x = a[0] + (b[0] - a[0]) * t, z = a[1] + (b[1] - a[1]) * t; if (!walkAt(L, x, z) || !walkAt(L, x + .3, z) || !walkAt(L, x - .3, z) || !walkAt(L, x, z + .3) || !walkAt(L, x, z - .3)) return false; } return true; }
 function initPeople(n) {
-  const base = [personGeometry(false), personGeometry(true)];
   for (let i = 0; i < n; i++) {
     const L = i % 3, s = randSpot(L); if (!s) continue;
-    const hijab = Math.random() < .35, shirt = rndC(CLOTH);
-    const pal = [shirt, hijab && Math.random() < .6 ? shirt : rndC(PANTS), rndC(SKIN), hijab ? rndC(CLOTH) : rndC(HAIR), [.12, .1, .1]];
-    const g = base[hijab ? 1 : 0].clone(), part = g.attributes.part.array, col = new Float32Array(part.length * 3);
-    for (let v = 0; v < part.length; v++) { const c = pal[part[v] | 0]; const lin = (x) => Math.pow(x, 2.2); col[v * 3] = lin(c[0]); col[v * 3 + 1] = lin(c[1]); col[v * 3 + 2] = lin(c[2]); }
-    g.setAttribute('color', new THREE.BufferAttribute(col, 3));
-    const mat = personMaterial(), mesh = new THREE.Mesh(g, mat), sc = .93 + Math.random() * .14;
-    mesh.scale.setScalar(sc); scene.add(mesh);
-    PEOPLE.push({ L, x: s[0], z: s[1], tx: s[0], tz: s[1], yaw: Math.random() * TAU, sp: .9 + Math.random() * .45, wait: Math.random() * 3, ph: Math.random() * TAU, mesh });
+    const kind = Math.random() < .5 ? 'mix' : 'rpm';
+    const av = makeAvatar(kind, rndC(CLOTH), rndC(PANTS));
+    const sc = .95 + Math.random() * .1; av.root.scale.setScalar(sc); scene.add(av.root);
+    PEOPLE.push({ L, x: s[0], z: s[1], tx: s[0], tz: s[1], yaw: Math.random() * TAU, sp: 1.0 + Math.random() * .4, wait: Math.random() * 3, mesh: av.root, av });
   }
 }
 function stepPeople(dt) {
   for (const q of PEOPLE) {
+    let moving = false;
     if (q.wait > 0) { q.wait -= dt; }
     else {
       const dx = q.tx - q.x, dz = q.tz - q.z, d = Math.hypot(dx, dz);
@@ -271,16 +314,155 @@ function stepPeople(dt) {
         const pdx = q.x - P.x, pdz = q.z - P.z, pd = Math.hypot(pdx, pdz), L = Math.round(P.y / 5.5);
         if (walking && L === q.L && pd < 1.1 && !P.onEsc) { q.wait = .6; }
         else {
-          const ty = Math.atan2(dz, dx); let dy = ty - q.yaw; while (dy > Math.PI) dy -= TAU; while (dy < -Math.PI) dy += TAU; q.yaw += dy * Math.min(1, dt * 6);
-          const st = Math.min(d, q.sp * dt); q.x += Math.cos(q.yaw) * st; q.z += Math.sin(q.yaw) * st; q.ph += st * 5.2;
+          const ty = Math.atan2(dz, dx); let dy = ty - q.yaw; while (dy > Math.PI) dy -= TAU; while (dy < -Math.PI) dy += TAU; q.yaw += dy * Math.min(1, dt * 5);
+          const st = Math.min(d, q.sp * dt); q.x += Math.cos(q.yaw) * st; q.z += Math.sin(q.yaw) * st; moving = true;
         }
       }
     }
-    const moving = q.wait <= 0;
-    q.mesh.position.set(q.x, LV[q.L] + (moving ? Math.abs(Math.sin(q.ph)) * .025 : 0), q.z);
+    q.mesh.position.set(q.x, LV[q.L], q.z);
     q.mesh.rotation.y = Math.PI / 2 - q.yaw;
-    q.mesh.material.userData.u.uWalk.value = moving ? q.ph : 0;
+    const far = Math.hypot(q.x - P.x, q.z - P.z) > 40;
+    q.skip = (q.skip || 0) + dt;
+    if (!far || q.skip > .1) { animAvatar(q.av, moving, q.sp, far ? q.skip : dt); q.skip = 0; }
   }
+}
+
+/* =========================== ESCALATORS (moving steps) + FAIRY LIGHTS =========================== */
+const ESCS = [];
+function treadTexture() {
+  const c = document.createElement('canvas'); c.width = 256; c.height = 256; const x = c.getContext('2d');
+  x.fillStyle = '#5a5e64'; x.fillRect(0, 0, 256, 256);
+  for (let v = 0; v < 256; v += 8) { x.fillStyle = '#9aa0a8'; x.fillRect(0, v, 256, 3); x.fillStyle = '#2a2c30'; x.fillRect(0, v + 4, 256, 2); }
+  x.fillStyle = '#f2b617'; x.fillRect(0, 0, 256, 16); x.fillRect(0, 240, 256, 16); x.fillRect(236, 0, 20, 256);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = Math.min(8, maxAniso); return t;
+}
+function plateTexture() {
+  const c = document.createElement('canvas'); c.width = 256; c.height = 256; const x = c.getContext('2d');
+  x.fillStyle = '#8d9096'; x.fillRect(0, 0, 256, 256);
+  for (let i = 0; i < 16; i++) for (let j = 0; j < 16; j++) { x.fillStyle = (i + j) % 2 ? '#a3a6ac' : '#7a7d83'; x.save(); x.translate(i * 16 + 8, j * 16 + 8); x.rotate((i + j) % 2 ? .7 : -.7); x.fillRect(-5, -1.5, 10, 3); x.restore(); }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+function riserTexture() {
+  const c = document.createElement('canvas'); c.width = 64; c.height = 256; const x = c.getContext('2d');
+  x.fillStyle = '#26282b'; x.fillRect(0, 0, 64, 256);
+  for (let v = 0; v < 256; v += 8) { x.fillStyle = '#4a4e54'; x.fillRect(0, v, 64, 3); }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+function buildEscalators() {
+  const treadM = baked({ map: treadTexture(), metalness: .55, roughness: .38, envMapIntensity: 1 }, { constIrr: 1 });
+  const riserM = baked({ map: riserTexture(), metalness: .5, roughness: .45 }, { constIrr: 1 });
+  const combM = baked({ color: 0xf2b617, metalness: .3, roughness: .4 }, { constIrr: 1 });
+  const plateM = baked({ map: plateTexture(), metalness: .7, roughness: .35 }, { constIrr: 1 });
+  const trussM = baked({ color: 0xb4b7bc, metalness: .85, roughness: .32 }, { constIrr: 1 });
+  const steelM = baked({ color: 0xc9cdd2, metalness: .85, roughness: .3 }, { constIrr: 1 });
+  const deckM = baked({ color: 0xd4d7db, metalness: .8, roughness: .32 }, { constIrr: 1 });
+  const glassM = new THREE.MeshStandardMaterial({ color: 0x9fd4cd, metalness: 0, roughness: .06, transparent: true, opacity: .4, depthWrite: false, side: THREE.DoubleSide, envMapIntensity: 1.6 });
+  const railM = baked({ color: 0x0c0c0d, roughness: .35, metalness: 0 }, { constIrr: 1 });
+  ESC.forEach((e) => {
+    const sgn = Math.sign(e.xt - e.xb), Lh = Math.abs(e.xt - e.xb), H = e.yt - e.yb, w = (e.z1 - e.z0) - .4, zc = (e.z0 + e.z1) / 2;
+    const hAt = (t) => H * Math.max(0, Math.min(1, t / Lh));
+    const n = Math.ceil(Lh / .4) + 1;
+    const tg = new THREE.BoxGeometry(.38, .045, w), rg = new THREE.BoxGeometry(.025, 1, w);
+    const treads = new THREE.InstancedMesh(tg, treadM, n), risers = new THREE.InstancedMesh(rg, riserM, n);
+    treads.frustumCulled = risers.frustumCulled = false; scene.add(treads, risers);
+    // yellow comb plates at both landings
+    [[e.xb, e.yb, -sgn], [e.xt, e.yt, sgn]].forEach(([cx, cy, d]) => { const lp = new THREE.Mesh(new THREE.BoxGeometry(1.1, .02, w + .2), plateM); lp.position.set(cx + d * .55, cy + .016, zc); scene.add(lp); });
+    [[e.xb, e.yb], [e.xt, e.yt]].forEach(([cx, cy]) => { const cb = new THREE.Mesh(new THREE.BoxGeometry(.12, .03, w + .1), combM); cb.position.set(cx, cy + .02, zc); scene.add(cb); });
+    // moving rubber handrails (slightly proud of the old flat rail)
+    [e.z0 + .1, e.z1 - .1].forEach((zz) => {
+      const xa = e.xb - sgn * .9, xb = e.xt + sgn * .9, len = Math.hypot(xb - xa, H), mid = new THREE.Vector3((xa + xb) / 2, (e.yb + e.yt) / 2 + 1.0, zz);
+      const hr = new THREE.Mesh(new THREE.CapsuleGeometry(.045, len, 4, 10), railM); hr.position.copy(mid); hr.rotation.z = Math.atan2(H, (xb - xa)) - Math.PI / 2; scene.add(hr);
+    });
+    // escalator body (truss) and skirts, following the step line exactly
+    const L0 = Math.hypot(Lh, H), ang = sgn * Math.atan2(H, Lh), nUp = new THREE.Vector3(-Math.sin(ang), Math.cos(ang), 0);
+    const lineMid = new THREE.Vector3((e.xb + e.xt) / 2, (e.yb + e.yt) / 2, zc);
+    const truss = new THREE.Mesh(new THREE.BoxGeometry(L0 + .02, 1.0, e.z1 - e.z0), trussM); truss.rotation.z = ang; truss.position.copy(lineMid).addScaledVector(nUp, -.53); scene.add(truss);
+    [[e.z0 + .1, -1], [e.z1 - .1, 1]].forEach(([zs]) => {
+      const sk = new THREE.Mesh(new THREE.BoxGeometry(L0, .5, .2), steelM); sk.rotation.z = ang; sk.position.copy(lineMid).setZ(zs).addScaledVector(nUp, -.05); scene.add(sk);
+      [[e.xb, e.yb, -sgn], [e.xt, e.yt, sgn]].forEach(([xe, ye, d]) => { const f = new THREE.Mesh(new THREE.BoxGeometry(.95, .2, .2), steelM); f.position.set(xe + d * .45, ye + .1, zs); scene.add(f); });
+      // tinted glass guardrail between skirt and handrail
+      const xa = e.xb - sgn * .9, xb2 = e.xt + sgn * .9, rl = (x) => e.yb + (e.yt - e.yb) * (x - xa) / (xb2 - xa) + .955;
+      const X = [xa, e.xb, e.xt, xb2], Yb = [e.yb + .2, e.yb + .2, e.yt + .2, e.yt + .2], pos = [];
+      for (let i = 0; i < 3; i++) { const x0 = X[i], x1 = X[i + 1]; pos.push(x0, Yb[i], zs, x1, Yb[i + 1], zs, x1, rl(x1), zs, x0, Yb[i], zs, x1, rl(x1), zs, x0, rl(x0), zs); }
+      const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.computeVertexNormals();
+      const gl = new THREE.Mesh(g, glassM); gl.renderOrder = 2; scene.add(gl);
+    });
+    // curved handrail ends (newels) with glass infill and steel plinth
+    [e.z0 + .1, e.z1 - .1].forEach((zz) => {
+      [[e.xb - sgn * .9, e.yb, -sgn], [e.xt + sgn * .9, e.yt, sgn]].forEach(([xe, ye, d]) => {
+        const R = .42, cy = ye + 1.0 - R;
+        const loop = new THREE.Mesh(new THREE.TorusGeometry(R, .045, 8, 28, Math.PI), railM); loop.position.set(xe, cy, zz); loop.rotation.z = d > 0 ? -Math.PI / 2 : Math.PI / 2; scene.add(loop);
+        const disc = new THREE.Mesh(new THREE.CircleGeometry(R - .03, 24, d > 0 ? -Math.PI / 2 : Math.PI / 2, Math.PI), glassM); disc.position.set(xe, cy, zz); disc.renderOrder = 2; scene.add(disc);
+        const pl = new THREE.Mesh(new THREE.BoxGeometry(R + .25, .16, .14), steelM); pl.position.set(xe + d * (R + .25) / 2 - d * .2, ye + .08, zz); scene.add(pl);
+      });
+    });
+    ESCS.push({ e, sgn, Lh, hAt, n, treads, risers, zc });
+  });
+  // slab-edge fascia rebuilt with openings where escalators arrive
+  const fasM = baked({ ...TX.plaster, color: new THREE.Color(.96, .95, .93), roughness: 1, normalScale: new THREE.Vector2(.2, .2) }, { constIrr: 1 });
+  const coveM = new THREE.MeshBasicMaterial({ color: new THREE.Color(3.2 * .55, 3.0 * .55, 2.6 * .55) });
+  FASCIA_CUT.forEach((key) => {
+    const [xt, yt] = key.split(':').map(Number), here = ESC.filter((e) => e.xt === xt && e.yt === yt), d = Math.sign(here[0].xb - xt);
+    const cuts = here.map((e) => [e.z0, e.z1]).sort((p, q) => p[0] - q[0]); let z = -6; const spans = [];
+    cuts.forEach(([a0, a1]) => { if (a0 > z) spans.push([z, a0]); z = Math.max(z, a1); }); if (z < 6) spans.push([z, 6]);
+    spans.forEach(([z0, z1]) => {
+      if (z1 - z0 < .01) return;
+      const bx = new THREE.Mesh(new THREE.BoxGeometry(.28, .82, z1 - z0), fasM); bx.position.set(xt + d * .14, yt - .39, (z0 + z1) / 2); scene.add(bx);
+      const cv = new THREE.Mesh(new THREE.PlaneGeometry(.11, z1 - z0), coveM); cv.rotation.x = Math.PI / 2; cv.position.set(xt + d * .056, yt - .815, (z0 + z1) / 2); scene.add(cv);
+    });
+  });
+  // stainless centre deck between each side-by-side pair
+  const seen = new Set();
+  ESC.forEach((a) => ESC.forEach((b) => {
+    if (a === b || a.xb !== b.xb || a.xt !== b.xt || a.z1 > b.z0) return;
+    const key = a.xb + ':' + a.xt; if (seen.has(key)) return; seen.add(key);
+    const sgn = Math.sign(a.xt - a.xb), xa = a.xb - sgn * .9, xb = a.xt + sgn * .9, H = a.yt - a.yb;
+    const gz0 = a.z1 - .02, gz1 = b.z0 + .02, len = Math.hypot(xb - xa, H), ang = sgn * Math.atan2(H, Math.abs(xb - xa));
+    const deck = new THREE.Mesh(new THREE.BoxGeometry(len, 2.0, gz1 - gz0), deckM);
+    deck.rotation.z = ang; const mid = new THREE.Vector3((xa + xb) / 2, (a.yb + a.yt) / 2 + .97, (gz0 + gz1) / 2);
+    deck.position.copy(mid).add(new THREE.Vector3(Math.sin(ang), -Math.cos(ang), 0).multiplyScalar(1.0)); scene.add(deck);
+    // brushed top strip with a thin gold inlay
+    const inl = new THREE.Mesh(new THREE.BoxGeometry(len, .012, .05), combM); inl.rotation.z = ang; inl.position.copy(mid).add(new THREE.Vector3(-Math.sin(ang), Math.cos(ang), 0).multiplyScalar(.006)); scene.add(inl);
+  }));
+}
+const _m4 = new THREE.Matrix4(), _p3 = new THREE.Vector3(), _s3 = new THREE.Vector3(), _q4 = new THREE.Quaternion();
+function updateEscalators(t) {
+  for (const E of ESCS) {
+    const { e, sgn, Lh, hAt, n, treads, risers, zc } = E, dir = e.dir > 0 ? 1 : -1, off = ((t * .5 * dir) % .4 + .4) % .4;
+    for (let i = 0; i < n; i++) {
+      const s = i * .4 + off, vis = s > -.01 && s < Lh - .38;
+      const yT = hAt(s + .4), yL = hAt(s), rise = Math.max(0, yT - yL);
+      _p3.set(e.xb + sgn * (s + .2), e.yb + yT - .0225, zc); _s3.set(1, vis ? 1 : 0, 1); _m4.compose(_p3, _q4, _s3); treads.setMatrixAt(i, _m4);
+      _p3.set(e.xb + sgn * (s + .012), e.yb + (yT + yL) / 2 - .03, zc); _s3.set(1, vis && rise > .01 ? rise : 0, 1); _m4.compose(_p3, _q4, _s3); risers.setMatrixAt(i, _m4);
+    }
+    treads.instanceMatrix.needsUpdate = true; risers.instanceMatrix.needsUpdate = true;
+  }
+}
+let BULBS = null;
+function buildBulbs() {
+  const pts = [], cols = [], wire = [];
+  const PAL = [[6, 4.6, 2.6], [6, 3.2, 1], [5, 1.6, 3.4], [1.8, 4.2, 4.6], [5.5, 4.8, 3.2]];
+  for (let hx = 20; hx <= 78; hx += 4) {
+    if ((hx >= 31 && hx <= 37.5) || (hx >= 65 && hx <= 71.5)) continue;
+    let prev = null;
+    for (let t = 0; t <= 24; t++) {
+      const zz = -5.6 + t * 11.2 / 24, sag = 1.3 * (1 - Math.pow(zz / 5.6, 2)), yy = 10.3 - sag - .04;
+      pts.push([hx, yy - .06, zz]); cols.push(PAL[(t + hx) % PAL.length]);
+      if (prev) wire.push(prev[0], prev[1], prev[2], hx, yy, zz); prev = [hx, yy, zz];
+    }
+  }
+  const g = new THREE.SphereGeometry(.05, 10, 8), m = new THREE.MeshBasicMaterial({ color: 0xffffff });
+  const im = new THREE.InstancedMesh(g, m, pts.length); const c = new THREE.Color();
+  pts.forEach((p, i) => { _m4.makeTranslation(p[0], p[1], p[2]); im.setMatrixAt(i, _m4); c.setRGB(...cols[i]); im.setColorAt(i, c); });
+  im.frustumCulled = false; im.userData.noEnv = true; scene.add(im);
+  const wg = new THREE.BufferGeometry(); wg.setAttribute('position', new THREE.Float32BufferAttribute(wire, 3));
+  scene.add(new THREE.LineSegments(wg, new THREE.LineBasicMaterial({ color: 0x1a1a1a })));
+  BULBS = { im, cols, n: pts.length };
+}
+function updateBulbs(t) {
+  if (!BULBS) return; const c = new THREE.Color();
+  for (let i = 0; i < BULBS.n; i++) { const k = .72 + .28 * Math.sin(t * 2.2 + i * .7) * Math.sin(t * .9 + i * 1.3); const b = BULBS.cols[i]; c.setRGB(b[0] * k, b[1] * k, b[2] * k); BULBS.im.setColorAt(i, c); }
+  BULBS.im.instanceColor.needsUpdate = true;
 }
 
 /* =========================== PROBE + MIRROR =========================== */
@@ -294,7 +476,7 @@ function renderProbe() {
   const pm = new THREE.PMREMGenerator(renderer);
   probeTex = pm.fromCubemap(rt.texture).texture;
   rt.dispose(); scene.remove(cc);
-  scene.traverse((o) => { if (o.isMesh && o.material && 'envMap' in o.material) { o.material.envMap = probeTex; o.material.needsUpdate = true; } });
+  scene.traverse((o) => { if (o.isMesh && !o.userData.noEnv && o.material && 'envMap' in o.material) { o.material.envMap = probeTex; o.material.needsUpdate = true; } });
 }
 const mirror = { rt: null, cam: new THREE.PerspectiveCamera(), on: true };
 const DUMMY = new THREE.DataTexture(new Uint8Array([0, 0, 0, 255]), 1, 1); DUMMY.needsUpdate = true;
@@ -517,8 +699,108 @@ function startWalking() {
   walking = true; $('#intro').classList.add('off'); $('#hud').classList.add('on'); document.body.classList.add('walking');
   P.x = 90; P.z = 0; P.y = 0; P.yaw = Math.PI; P.pitch = -.04; cv.focus();
   announce('Selamat datang ke Swapp City · Welcome to Swapp City'); dingdong();
+  if (!MP.room && !MP.joining) { MP.joining = true; beginMP(); }
 }
 $('#enter').addEventListener('click', startWalking);
+
+/* =========================== MULTIPLAYER (peer-to-peer presence) =========================== */
+// Browser-to-browser via WebRTC; public WebTorrent trackers only introduce peers. No server, no accounts.
+const ME = { name: '', kind: 'mix', shirt: 0 };
+try { const s = JSON.parse(localStorage.getItem('swapp.me') || 'null'); if (s) Object.assign(ME, s); } catch (e) {}
+const PCOL = ['#f5c766', '#7fd1c7', '#f28b82', '#a7c7ff', '#c9a7ff', '#9be29b', '#ffb37a', '#ff9ed2'];
+const hashCol = (id) => { let h = 0; for (const c of id) h = (h * 31 + c.charCodeAt(0)) | 0; return PCOL[Math.abs(h) % PCOL.length]; };
+const MP = window.MP = {
+  room: null, peers: new Map(), on: false, sendT: 0, last: '',
+  async join() {
+    const chip = $('#mpChip'); chip.hidden = false; this.setCount();
+    let mod;
+    try { mod = await import('./lib/trystero/torrent.js'); } catch (e) { return this.solo('Solo mode'); }
+    try {
+      this.room = mod.joinRoom({ appId: 'zlab-swappcity-v1' }, 'mall-lobby');
+      const [sendState, getState] = this.room.makeAction('st');
+      const [sendProf, getProf] = this.room.makeAction('pf');
+      const [sendChat, getChat] = this.room.makeAction('ch');
+      Object.assign(this, { sendState, sendProf, sendChat, on: true, selfId: mod.selfId });
+      this.room.onPeerJoin((id) => { if (this.peers.size >= 16) return; sendProf(this.profile(), id); });
+      this.room.onPeerLeave((id) => { const p = this.peers.get(id); if (p) { scene.remove(p.av.root); this.peers.delete(id); toast((p.name || 'A visitor') + ' left'); this.setCount(); } });
+      getProf((d, id) => this.upsert(id, d));
+      getState((d, id) => { const p = this.peers.get(id); if (!p || !Array.isArray(d) || d.length < 5) return; const [x, y, z, yaw, mv] = d.map(Number); if ([x, y, z, yaw].some((v) => !isFinite(v))) return; p.t = { x, y, z, yaw, mv: !!mv }; p.seen = performance.now(); });
+      getChat((d, id) => { const p = this.peers.get(id); if (typeof d !== 'string') return; chatLine(p ? p.name : 'Visitor', d.slice(0, 140), p ? p.col : '#ccc'); if (p) bubble(p, d.slice(0, 60)); chime(); });
+      setTimeout(() => { if (!this.peers.size) $('#mpTxt').textContent = 'Just you · invite a friend'; }, 6000);
+    } catch (e) { console.warn('mp', e); this.solo('Solo mode'); }
+  },
+  solo(t) { $('#mpTxt').textContent = t; this.on = false; },
+  profile() { return { n: ME.name.slice(0, 18), k: ME.kind, s: ME.shirt | 0 }; },
+  upsert(id, d) {
+    if (!d || typeof d !== 'object') return;
+    const name = String(d.n || 'Visitor').replace(/[\u0000-\u001f]/g, '').slice(0, 18) || 'Visitor', kind = d.k === 'rpm' ? 'rpm' : 'mix', s = Math.abs(d.s | 0) % CLOTH.length;
+    let p = this.peers.get(id);
+    if (p && p.name === name && p.kind === kind && p.s === s) return;
+    const isNew = !p;
+    if (p) scene.remove(p.av.root);
+    const col = hashCol(id), av = makeAvatar(kind, CLOTH[s], PANTS[s % PANTS.length], null);
+    const tag = nameTag(name, col); tag.position.y = 2.0; av.root.add(tag);
+    scene.add(av.root);
+    p = Object.assign(p || { t: null, c: null }, { name, kind, s, col, av, tag });
+    this.peers.set(id, p);
+    if (isNew) { toast(name + ' joined the mall'); this.sendProf(this.profile(), id); }
+    this.setCount();
+  },
+  setCount() { const n = this.peers.size + 1; $('#mpN').textContent = n; $('#mpTxt').textContent = n === 1 ? 'Just you · invite a friend' : n + ' people here'; },
+  step(dt) {
+    if (!this.on) return;
+    this.sendT += dt;
+    if (walking && this.sendT > .1) {
+      const mv = Math.hypot(P.vx, P.vz) > .2 || !!P.onEsc;
+      const st = [+P.x.toFixed(2), +P.y.toFixed(2), +P.z.toFixed(2), +P.yaw.toFixed(2), mv ? 1 : 0], key = st.join();
+      if (key !== this.last || this.sendT > 1) { this.sendState(st); this.last = key; this.sendT = 0; }
+    }
+    const now = performance.now();
+    for (const p of this.peers.values()) {
+      if (!p.t) { p.av.root.visible = false; continue; }
+      p.av.root.visible = now - p.seen < 15000;
+      if (!p.c) p.c = { ...p.t };
+      const k = Math.min(1, dt * 10); p.c.x += (p.t.x - p.c.x) * k; p.c.y += (p.t.y - p.c.y) * k; p.c.z += (p.t.z - p.c.z) * k;
+      let dy = p.t.yaw - p.c.yaw; while (dy > Math.PI) dy -= TAU; while (dy < -Math.PI) dy += TAU; p.c.yaw += dy * k;
+      p.av.root.position.set(p.c.x, p.c.y, p.c.z); p.av.root.rotation.y = Math.PI / 2 - p.c.yaw;
+      animAvatar(p.av, p.t.mv, 1.6, dt);
+      if (p.bub && now > p.bubT) { p.av.root.remove(p.bub); p.bub = null; p.tag.visible = true; }
+    }
+  },
+  chat(t) { t = t.trim().slice(0, 140); if (!t) return; chatLine(ME.name || 'You', t, '#fff'); if (this.on) this.sendChat(t); }
+};
+function toast(t) { const el = document.createElement('div'); el.className = 'mpt'; el.textContent = t; $('#mpToasts').appendChild(el); setTimeout(() => el.classList.add('off'), 3800); setTimeout(() => el.remove(), 4400); }
+function chatLine(who, t, col) {
+  const box = $('#chatLog'), el = document.createElement('div'), b = document.createElement('b'), s = document.createElement('span');
+  b.textContent = who; b.style.color = col; s.textContent = ' ' + t; el.append(b, s); box.appendChild(el);
+  while (box.children.length > 6) box.firstChild.remove();
+  setTimeout(() => el.classList.add('old'), 12000);
+}
+function bubble(p, t) { if (p.bub) p.av.root.remove(p.bub); p.bub = nameTag('“' + t + '”', p.col); p.bub.scale.set(1.6, .4, 1); p.bub.position.y = 2.05; p.av.root.add(p.bub); p.tag.visible = false; p.bubT = performance.now() + 6000; }
+// intro: name + avatar picker
+(function () {
+  const nm = $('#meName'); if (!nm) return;
+  nm.value = ME.name;
+  const sync = () => { document.querySelectorAll('.av button').forEach((b) => b.classList.toggle('on', b.dataset.k === ME.kind)); document.querySelectorAll('.sw button').forEach((b) => b.classList.toggle('on', +b.dataset.s === ME.shirt)); };
+  document.querySelectorAll('.av button').forEach((b) => b.addEventListener('click', () => { ME.kind = b.dataset.k; sync(); }));
+  const sw = $('.sw'); CLOTH.slice(0, 8).forEach((c, i) => { const b = document.createElement('button'); b.type = 'button'; b.dataset.s = i; b.setAttribute('aria-label', 'Outfit colour ' + (i + 1)); b.style.background = 'rgb(' + c.map((v) => Math.round(Math.pow(v, 1 / 2.2) * 255)).join(',') + ')'; b.addEventListener('click', () => { ME.shirt = i; sync(); }); sw.appendChild(b); });
+  sync();
+  nm.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); $('#enter').click(); } });
+})();
+function beginMP() {
+  ME.name = ($('#meName') && $('#meName').value.trim().slice(0, 18)) || ('Visitor ' + Math.floor(100 + Math.random() * 900));
+  try { localStorage.setItem('swapp.me', JSON.stringify(ME)); } catch (e) {}
+  MP.join();
+}
+// chat input (T)
+addEventListener('keydown', (e) => {
+  const tg = e.target && e.target.tagName; if (tg === 'INPUT' || tg === 'TEXTAREA' || !walking || anyOpen()) return;
+  if (e.key === 't' || e.key === 'T' || e.key === '/') { e.preventDefault(); e.stopImmediatePropagation(); openChat(); }
+}, true);
+function openChat() { const w = $('#chatIn'); w.hidden = false; K = {}; releaseMouse(); setTimeout(() => $('#chatTxt').focus(), 10); }
+$('#chatTxt').addEventListener('keydown', (e) => { e.stopPropagation(); if (e.key === 'Enter') { MP.chat(e.target.value); e.target.value = ''; $('#chatIn').hidden = true; cv.focus(); } else if (e.key === 'Escape') { e.target.value = ''; $('#chatIn').hidden = true; cv.focus(); } });
+$('#chatBtn').addEventListener('click', openChat);
+
 
 /* =========================== AUDIO =========================== */
 var AC = null, master = null, soundOn = false;
@@ -596,7 +878,7 @@ function frame(now) {
   requestAnimationFrame(frame);
   const dt = Math.max(0, Math.min(.05, (now - last) / 1000)); last = Math.max(last, now); time += dt;
   if (!ready || document.hidden) return;
-  stepPeople(dt);
+  stepPeople(dt); updateEscalators(time); updateBulbs(time); if (window.MP) MP.step(dt);
   if (walking && !anyOpen()) { stepPlayer(dt); }
   else if (!walking) { introT += dt; P.x = 48 + Math.cos(introT * .05) * 26; P.z = Math.sin(introT * .05) * 3; P.y = 5.5 + 2.2; P.yaw = Math.PI * .5 + introT * .05 + Math.PI * .5 + .6; P.pitch = -.12; }
   if (walking) {
@@ -638,7 +920,9 @@ async function boot() {
   await new Promise((r) => setTimeout(r, 30));
   makeMaterials();
   buildScene(irrJ ? b64(irrJ.b64) : 'flat');
-  buildPOIs(); renderBag(); initPeople(COARSE ? 22 : 36);
+  buildPOIs(); renderBag(); buildEscalators(); buildBulbs();
+  $('#lmsg').textContent = 'Opening the doors…';
+  try { await loadCharacters(); initPeople(COARSE ? 12 : 22); } catch (e) { console.warn('shoppers', e); }
   resize();
   P.x = 48; P.z = 0; P.y = 7.7; P.yaw = Math.PI; P.pitch = -.12;
   renderProbe();
@@ -647,4 +931,4 @@ async function boot() {
   requestAnimationFrame(frame);
 }
 boot().catch((e) => { console.error(e); $('#lmsg').textContent = 'Could not open the mall.'; });
-window.__mall = { P, get ready() { return ready; }, start: () => startWalking(), teleport: (L, g) => teleport(L, g), mirror, renderer };
+window.__mall = { PEOPLE, ESCS, MP, P, get ready() { return ready; }, start: () => startWalking(), teleport: (L, g) => teleport(L, g), mirror, renderer };

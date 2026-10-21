@@ -123,6 +123,32 @@ kbd{font:700 12px/1 "Plus Jakarta Sans",sans-serif;background:rgba(255,255,255,.
 .loader{position:fixed;inset:0;z-index:40;display:grid;place-items:center;background:#0e2a29;color:#fff;transition:opacity .8s}.loader.done{opacity:0;pointer-events:none}.loader .in{text-align:center;width:min(320px,80vw)}.loader .bar{height:3px;border-radius:3px;background:rgba(255,255,255,.18);margin-top:18px;overflow:hidden}.loader .bar i{display:block;height:100%;width:0;background:var(--gold);transition:width .3s}.loader p{font-size:12px;letter-spacing:.18em;text-transform:uppercase;opacity:.7;margin:12px 0 0}
 .fallback{position:fixed;inset:0;display:none;place-items:center;text-align:center;padding:24px;background:#0e2a29;color:#fff;z-index:30}
 .nogl .fallback{display:grid}
+
+/* multiplayer */
+.me{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;margin:20px 0 4px;padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);max-width:560px}
+.me label{font-size:11px;letter-spacing:.2em;text-transform:uppercase;opacity:.75;width:100%}
+.me input{flex:1 1 180px;min-width:0;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.3);border-radius:12px;padding:10px 12px;color:#fff;font:600 15px "Plus Jakarta Sans",sans-serif}
+.me input::placeholder{color:rgba(255,255,255,.55)}
+.av{display:flex;gap:6px}.av button{cursor:pointer;border:1px solid rgba(255,255,255,.3);background:transparent;color:#fff;border-radius:999px;padding:8px 14px;font-size:13px;font-weight:700}
+.av button.on{background:#fff;color:var(--teal2)}
+.sw{display:flex;gap:6px;flex-wrap:wrap}.sw button{width:24px;height:24px;border-radius:50%;border:2px solid rgba(255,255,255,.35);cursor:pointer;padding:0}
+.sw button.on{border-color:#fff;box-shadow:0 0 0 2px var(--gold2)}
+.me .live{width:100%;font-size:12px;opacity:.75;display:flex;align-items:center;gap:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#5fe08f;box-shadow:0 0 0 0 rgba(95,224,143,.6);animation:pulse 2s infinite;flex:none}
+@keyframes pulse{70%{box-shadow:0 0 0 8px rgba(95,224,143,0)}100%{box-shadow:0 0 0 0 rgba(95,224,143,0)}}
+.mpchip{display:flex;align-items:center;gap:10px;pointer-events:auto}
+.mpchip b{font-size:20px;line-height:1}.mpchip small{display:block;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}.mpchip span{font-size:13px;font-weight:700;white-space:nowrap}
+.mpts{position:absolute;right:max(16px,env(safe-area-inset-right,0px));top:calc(76px + env(safe-area-inset-top,0px));display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.mpt{background:rgba(14,30,29,.85);color:#fff;border-radius:999px;padding:7px 14px;font-size:13px;transition:opacity .5s,transform .5s}
+.mpt.off{opacity:0;transform:translateY(-6px)}
+.chatlog{position:absolute;left:max(16px,env(safe-area-inset-left,0px));bottom:calc(48px + env(safe-area-inset-bottom,0px));width:min(380px,calc(100vw - 32px));display:flex;flex-direction:column;gap:4px;font-size:13px;color:#fff}
+.chatlog div{background:rgba(14,30,29,.72);border-radius:12px;padding:6px 10px;transition:opacity 1s;overflow-wrap:anywhere}
+.chatlog div.old{opacity:0}
+.chatin{position:fixed;z-index:12;left:50%;bottom:calc(80px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);width:min(520px,calc(100vw - 32px))}
+.chatin input{width:100%;padding:13px 16px;border-radius:999px;border:2px solid var(--gold);background:rgba(14,30,29,.92);color:#fff;font:600 15px "Plus Jakarta Sans",sans-serif;outline:none}
+.chatbtn{pointer-events:auto}
+@media (pointer:coarse){.chatlog{bottom:calc(170px + env(safe-area-inset-bottom,0px))}}
+@media (max-width:560px){.mpchip small{display:none}.mpchip span{display:none}}
 </style>
 </head>
 <body>
@@ -143,6 +169,13 @@ kbd{font:700 12px/1 "Plus Jakarta Sans",sans-serif;background:rgba(255,255,255,.
       <span><kbd>E</kbd> view more</span>
       <span><kbd>M</kbd> directory</span>
     </div>
+    <div class="me">
+      <label for="meName">Live with other visitors</label>
+      <input id="meName" maxlength="18" placeholder="Your name" autocomplete="nickname">
+      <div class="av" role="group" aria-label="Character"><button type="button" data-k="mix">Aisyah</button><button type="button" data-k="rpm">Daniel</button></div>
+      <div class="sw" role="group" aria-label="Outfit colour"></div>
+      <div class="live"><span class="dot"></span>Everyone with this link walks the same mall, in real time. Press <kbd>T</kbd> to chat.</div>
+    </div>
     <button class="btn" id="enter" type="button" disabled>Masuk · Enter the mall</button>
     <div class="hours">Open daily 10:00 AM – 10:00 PM · Free Wi-Fi “SwappCity_Free”</div>
   </div>
@@ -152,18 +185,23 @@ kbd{font:700 12px/1 "Plus Jakarta Sans",sans-serif;background:rgba(255,255,255,.
   <div class="tl">
     <div class="chip lvl"><b id="lvl">G</b><div><small>Level</small><span id="lvlname">Ground · Concourse</span></div></div>
     <div class="chip lvl where"><div><small>Near</small><span id="near">Main Entrance</span></div></div>
+    <div class="chip mpchip" id="mpChip" hidden><span class="dot"></span><b id="mpN">1</b><div><small>Live</small><span id="mpTxt">Connecting…</span></div></div>
   </div>
   <div class="tr">
     <button class="ib" id="dirBtn" type="button" aria-label="Directory"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span class="lbl">Directory</span> <kbd>M</kbd></button>
     <button class="ib" id="bagBtn" type="button" aria-label="Shopping bag"><svg viewBox="0 0 24 24"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8a3 3 0 0 1 6 0"/></svg><span class="lbl">Bag</span> <span class="n" id="bagN">0</span></button>
+    <button class="ib chatbtn" id="chatBtn" type="button" aria-label="Chat"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg><span class="lbl">Chat</span> <kbd>T</kbd></button>
     <button class="ib" id="sndBtn" type="button" aria-pressed="false" aria-label="Sound"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M17 9a4 4 0 0 1 0 6"/></svg><span class="lbl">Sound</span> <span id="sndS">off</span></button>
   </div>
   <div class="xh" aria-hidden="true"></div>
   <div class="ann" id="ann"></div>
+  <div class="mpts" id="mpToasts" aria-live="polite"></div>
+  <div class="chatlog" id="chatLog" aria-live="polite"></div>
   <div class="prompt" id="prompt"><kbd>E</kbd><div><b id="pT">View more</b><small id="pS">Shop</small></div></div>
   <div class="help"><span><kbd>Click</kbd> to look</span><span><kbd>Esc</kbd> free mouse</span><span><kbd>E</kbd> view more</span></div>
   <div class="chip mm"><canvas id="mm" width="480" height="180" aria-label="Floor map"></canvas></div>
 </div>
+<div class="chatin" id="chatIn" hidden><input id="chatTxt" maxlength="140" placeholder="Say something… (Enter to send, Esc to cancel)" autocomplete="off"></div>
 <div class="joy" id="joy" aria-hidden="true"><i></i></div>
 <button class="ebtn" id="ebtn" type="button" aria-label="View more">E</button>
 
