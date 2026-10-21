@@ -789,24 +789,34 @@ const hashCol = (id) => { let h = 0; for (const c of id) h = (h * 31 + c.charCod
 const MP = window.MP = {
   room: null, peers: new Map(), on: false, sendT: 0, last: '',
   async join() {
-    const chip = $('#mpChip'); chip.hidden = false; this.setCount();
+    const chip = $('#mpChip'); chip.hidden = false; $('#mpTxt').textContent = 'Connecting…';
     let mod;
-    try { mod = await import('./lib/trystero/torrent.js'); } catch (e) { return this.solo('Solo mode'); }
-    try {
-      this.room = mod.joinRoom({ appId: 'zlab-swappcity-v1' }, 'mall-lobby');
-      const [sendState, getState] = this.room.makeAction('st');
-      const [sendProf, getProf] = this.room.makeAction('pf');
-      const [sendChat, getChat] = this.room.makeAction('ch');
-      Object.assign(this, { sendState, sendProf, sendChat, on: true, selfId: mod.selfId });
-      this.room.onPeerJoin((id) => { if (this.peers.size >= 16) return; sendProf(this.profile(), id); });
-      this.room.onPeerLeave((id) => { this.pending.delete(id); const p = this.peers.get(id); if (p) { scene.remove(p.av.root); this.peers.delete(id); toast((p.name || 'A visitor') + ' left'); this.setCount(); } });
-      getProf((d, id) => this.upsert(id, d));
-      getState((d, id) => { const p = this.peers.get(id); if (!p || !Array.isArray(d) || d.length < 5) return; const [x, y, z, yaw, mv] = d.map(Number); if ([x, y, z, yaw].some((v) => !isFinite(v))) return; p.t = { x, y, z, yaw, mv: !!mv }; p.seen = performance.now(); });
-      getChat((d, id) => { const p = this.peers.get(id); if (typeof d !== 'string') return; chatLine(p ? p.name : 'Visitor', d.slice(0, 140), p ? p.col : '#ccc'); if (p) bubble(p, d.slice(0, 60)); chime(); });
-      setTimeout(() => { if (!this.peers.size) $('#mpTxt').textContent = 'Just you · invite a friend'; }, 6000);
-    } catch (e) { console.warn('mp', e); this.solo('Solo mode'); }
+    try { mod = await import('./lib/relay.js'); } catch (e) { return this.solo('Solo mode'); }
+    const id = 'v' + Math.random().toString(36).slice(2, 12);
+    const drop = (pid, quiet) => { this.pending.delete(pid); const p = this.peers.get(pid); if (p) { scene.remove(p.av.root); this.peers.delete(pid); if (!quiet) toast((p.name || 'A visitor') + ' left'); this.setCount(); } };
+    this.drop = drop;
+    this.relay = mod.joinRelay({
+      topic: 'zlab/swappcity/v1/lobby', id, ...(window.__BROKERS ? { brokers: window.__BROKERS } : {}),
+      onStatus: (n) => { this.online = n > 0; if (n > 0 && !this.greeted) { this.greeted = true; this.sendProf(this.profile()); } this.setCount(); },
+      onMsg: (msg) => {
+        const pid = msg.i, d = msg.d;
+        if (msg.t === 'bye') return drop(pid);
+        const p = this.peers.get(pid); if (p) p.seen = performance.now();
+        if (msg.t === 'pf') { if (!p && this.peers.size >= 16) return; this.upsert(pid, d); const q = this.peers.get(pid); if (q) q.seen = performance.now(); }
+        else if (msg.t === 'st') { if (!p) return; if (!Array.isArray(d) || d.length < 5) return; const [x, y, z, yaw, mv] = d.map(Number); if ([x, y, z, yaw].some((v) => !isFinite(v))) return; p.t = { x, y, z, yaw, mv: !!mv }; }
+        else if (msg.t === 'ch') { if (typeof d !== 'string') return; chatLine(p ? p.name : 'Visitor', d.slice(0, 140), p ? p.col : '#ccc'); if (p) bubble(p, d.slice(0, 60)); chime(); }
+      }
+    });
+    this.room = this.relay;
+    Object.assign(this, { sendState: (s) => this.relay.send('st', s), sendProf: (pf) => this.relay.send('pf', pf), sendChat: (t) => this.relay.send('ch', t), on: true, selfId: id });
+    addEventListener('pagehide', () => { try { this.relay.leave(); } catch (e) {} });
+    setInterval(() => { // heartbeat + drop anyone silent for 15 s
+      if (this.online) this.sendProf(this.profile());
+      const now = performance.now(); for (const [pid, p] of this.peers) if (now - (p.seen || 0) > 15000) drop(pid, false);
+    }, 5000);
+    setTimeout(() => { if (!this.online) this.solo('Offline · solo mode'); }, 12000);
   },
-  solo(t) { $('#mpTxt').textContent = t; this.on = false; },
+  solo(t) { if (!this.online) $('#mpTxt').textContent = t; },
   profile() { return { n: ME.name.slice(0, 18), k: ME.kind, s: ME.shirt | 0 }; },
   pending: new Map(),
   flushPending() { const q = [...this.pending]; this.pending.clear(); q.forEach(([id, d]) => this.upsert(id, d)); },
@@ -823,14 +833,14 @@ const MP = window.MP = {
     scene.add(av.root);
     p = Object.assign(p || { t: null, c: null }, { name, kind, s, col, av, tag });
     this.peers.set(id, p);
-    if (isNew) { toast(name + ' joined the mall'); this.sendProf(this.profile(), id); }
+    if (isNew) { toast(name + ' joined the mall'); this.sendProf(this.profile()); }
     this.setCount();
   },
-  setCount() { const n = this.peers.size + 1; $('#mpN').textContent = n; $('#mpTxt').textContent = n === 1 ? 'Just you · invite a friend' : n + ' people here'; },
+  setCount() { const n = this.peers.size + 1; $('#mpN').textContent = n; $('#mpTxt').textContent = !this.online ? (this.on ? 'Reconnecting…' : 'Connecting…') : n === 1 ? 'Online · just you' : n + ' people here'; },
   step(dt) {
     if (!this.on) return;
     this.sendT += dt;
-    if (walking && this.sendT > .1) {
+    if (walking && this.online && this.sendT > .15) {
       const mv = Math.hypot(P.vx, P.vz) > .2 || !!P.onEsc;
       const st = [+P.x.toFixed(2), +P.y.toFixed(2), +P.z.toFixed(2), +P.yaw.toFixed(2), mv ? 1 : 0], key = st.join();
       if (key !== this.last || this.sendT > 1) { this.sendState(st); this.last = key; this.sendT = 0; }
