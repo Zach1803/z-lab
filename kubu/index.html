@@ -390,7 +390,7 @@ const DOTU = { uS: { value: 1 }, uT: { value: 0 } };
 const dots = new THREE.Points(dg, new THREE.ShaderMaterial({ uniforms: DOTU, transparent: true, depthWrite: false,
   vertexShader: 'attribute float rnd; uniform float uS; uniform float uT; varying float vA; varying float vR; void main(){ vec4 mv = modelViewMatrix*vec4(position,1.); vec3 n = normalize(normalMatrix*position); vA = smoothstep(-.1, .45, dot(n, normalize(-mv.xyz))); vR = rnd; gl_PointSize = uS*3.2*(6.2/-mv.z); gl_Position = projectionMatrix*mv; }',
   fragmentShader: 'uniform float uT; varying float vA; varying float vR; void main(){ float d = length(gl_PointCoord-.5); if (d > .5) discard; float tw = vR > .97 ? .6 + .4*sin(uT*3. + vR*90.) : 0.; vec3 c = mix(vec3(.55,.68,.76), vec3(.36,.95,.77), tw); gl_FragColor = vec4(c, vA*(.55 + tw*.6)*smoothstep(.5,.2,d)); }' }));
-globe.add(dots);
+dots.renderOrder = 2; globe.add(dots);
 // city markers
 const cityKeys = Object.keys(CITIES);
 const KL = 'Kuala Lumpur';
