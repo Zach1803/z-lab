@@ -1,4 +1,4 @@
-/* Cahaya Avenue layout + atlas builder (shared by the bake script and the page) */
+/* Swapp City layout + atlas builder (shared by the bake script and the page) */
 (function (root) {
   'use strict';
   var TAU = Math.PI * 2;
@@ -249,7 +249,7 @@
   function dirBoard(r) {
     posterBase(r, '#0e5a57', '#0b3e3c');
     bc.fillStyle = '#f5c766'; bc.beginPath(); bc.arc(r.x + 40, r.y + 40, 18, 0, TAU); bc.fill();
-    pText(r, 'Cahaya Avenue', 28, 40, '600 % "Fraunces", Georgia, serif', '#fff', 'left'); bc.textAlign = 'left';
+    pText(r, 'Swapp City', 28, 40, '600 % "Fraunces", Georgia, serif', '#fff', 'left'); bc.textAlign = 'left';
     var y = r.y + 90, lv = ['L2', 'L1', 'G'];
     lv.forEach(function (L) {
       bc.fillStyle = '#f5c766'; bc.font = '800 22px "Plus Jakarta Sans", Arial'; bc.fillText(L, r.x + 18, y); y += 22;
@@ -284,16 +284,16 @@
     var mk = function (key, a, b, bg, arrow) { var c = aCell(); drawWay(c, a, b, bg, arrow); SIGNS[key] = c.uv; };
     mk('tandas', 'TANDAS', 'Toilets · Bilik Air', '#0e5a57', '→'); mk('surau', 'SURAU', 'Prayer Room · Ruang Solat', '#1f7a43', '←');
     mk('keluar', 'KELUAR', 'Exit · Main Entrance', '#167a3a', '→'); mk('selera', 'MEDAN SELERA', 'Food Court · Level 2', '#b8412e', '↑');
-    mk('wayang', 'WAYANG CAHAYA', 'Cinema · Level 2', '#2f2f3a', '↑'); mk('parking', 'PARKIR', 'Parking B1 – B3', '#2f4b9a', '↓');
+    mk('wayang', 'SWAPP CINEMAS', 'Cinema · Level 2', '#2f2f3a', '↑'); mk('parking', 'PARKIR', 'Parking B1 – B3', '#2f4b9a', '↓');
     var big = function (key, name, style, color, sub) { var c = aCell(); drawSign(c, name, style, color, sub); SIGNS[key] = c.uv; };
     big('mymart', 'MyMart', 'clean', '#c0392b', 'Supermarket · Pasar Raya'); big('kedaibesar', 'Kedai Besar', 'serif', '#0e5a57', 'Department Store');
     big('pustaka', 'Pustaka Raya', 'serif', '#6b2d73', 'Books · Buku'); big('selerasign', 'Medan Selera', 'script', '#b8412e', 'Food Court');
-    big('cinema', 'WAYANG CAHAYA', 'bold', '#c98a14', 'Cinemas'); big('mall', 'Cahaya Avenue', 'serif', '#e3a72f', 'Petaling Jaya');
+    big('cinema', 'SWAPP CINEMAS', 'bold', '#c98a14', 'Cinemas'); big('mall', 'Swapp City', 'serif', '#e3a72f', 'Petaling Jaya');
     big('info', 'Info & Concierge', 'clean', '#0e5a57', 'Kaunter Maklumat');
     big('kiosk1', 'Case Corner', 'fun', '#2f4b9a'); big('kiosk2', 'Kuih Cart', 'script', '#c98a14');
     STALLS.forEach(function (s, i) { var c = aCell(); drawSign(c, s[0], 'clean', s[1]); s.sign = c.uv; var p = bAlloc(1, 1); foodPoster(p, s[0], s[1], i); s.post = p.uv; });
     var kr = bAlloc(2, 2); kolam(kr); POST.kolam = kr.uv;
-    var bn = bAlloc(4, 1); banner(bn, 'Selamat Hari Deepavali', 'FESTIVAL OF LIGHTS · CAHAYA AVENUE', '#6b1d5c', '#2a0b3a'); POST.deepa = bn.uv;
+    var bn = bAlloc(4, 1); banner(bn, 'Selamat Hari Deepavali', 'FESTIVAL OF LIGHTS · SWAPP CITY', '#6b1d5c', '#2a0b3a'); POST.deepa = bn.uv;
     var bn2 = bAlloc(4, 1); banner(bn2, 'Mega Sale 11.11', 'UP TO 70% OFF · SELECTED STORES', '#b8412e', '#5a1208'); POST.sale = bn2.uv;
     var hd = bAlloc(2, 1); posterBase(hd, '#f2efe8', '#e2ddd2'); pText(hd, 'AKAN DIBUKA', 64, 100, '400 % "Bebas Neue", Impact', '#0e5a57'); pText(hd, 'COMING SOON · NEW STORE', 22, 160, '800 % "Plus Jakarta Sans", Arial', '#5b6766'); bc.fillStyle = '#e3a72f'; bc.fillRect(hd.x, hd.y + hd.h - 26, hd.w, 26); POST.hoard = hd.uv;
     MOVIES.forEach(function (m, i) { var p = bAlloc(1, 1); moviePoster(p, m); m.uv = p.uv; });

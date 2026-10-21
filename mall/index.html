@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Cahaya Avenue</title>
+<title>Swapp City</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&family=Fraunces:opsz,wght@9..144,600&family=Bebas+Neue&family=Pacifico&family=Playfair+Display:wght@700&family=Archivo+Black&family=Righteous&display=swap">
 <style>
@@ -126,13 +126,13 @@ kbd{font:700 12px/1 "Plus Jakarta Sans",sans-serif;background:rgba(255,255,255,.
 </style>
 </head>
 <body>
-<canvas id="gl" tabindex="0" aria-label="Walkable 3D view of Cahaya Avenue mall"></canvas>
+<canvas id="gl" tabindex="0" aria-label="Walkable 3D view of Swapp City mall"></canvas>
 <div class="loader" id="loader"><div class="in"><span class="sun" aria-hidden="true" style="display:inline-block"></span><div class="bar"><i id="lbar"></i></div><p id="lmsg">Opening the doors…</p></div></div>
-<div class="fallback"><div><h2>Your browser can't open the 3D mall.</h2><p>Cahaya Avenue needs WebGL. Try a recent Chrome, Edge, Safari or Firefox.</p></div></div>
+<div class="fallback"><div><h2>Your browser can't open the 3D mall.</h2><p>Swapp City needs WebGL. Try a recent Chrome, Edge, Safari or Firefox.</p></div></div>
 
 <section class="intro" id="intro">
   <div class="in">
-    <div class="logo"><span class="sun" aria-hidden="true"></span><span><b>Cahaya Avenue</b><small>Petaling Jaya · Selangor</small></span></div>
+    <div class="logo"><span class="sun" aria-hidden="true"></span><span><b>Swapp City</b><small>Petaling Jaya · Selangor</small></span></div>
     <h1>Jalan-jalan, <em>cari makan</em>, window shop. All from here.</h1>
     <p>Walk the whole mall: three floors, 40-odd shops, a Medan Selera and a cinema. Walk up to any shopfront and press E to see what's inside.</p>
     <div class="keys tkeys"><span>Drag the left side to walk</span><span>Drag the right side to look</span><span>Tap <kbd>E</kbd> to view more</span></div>
@@ -144,7 +144,7 @@ kbd{font:700 12px/1 "Plus Jakarta Sans",sans-serif;background:rgba(255,255,255,.
       <span><kbd>M</kbd> directory</span>
     </div>
     <button class="btn" id="enter" type="button" disabled>Masuk · Enter the mall</button>
-    <div class="hours">Open daily 10:00 AM – 10:00 PM · Free Wi-Fi “Cahaya_Free”</div>
+    <div class="hours">Open daily 10:00 AM – 10:00 PM · Free Wi-Fi “SwappCity_Free”</div>
   </div>
 </section>
 
@@ -172,12 +172,12 @@ kbd{font:700 12px/1 "Plus Jakarta Sans",sans-serif;background:rgba(255,255,255,.
   <div class="pb"><div class="hero" id="sHero"><span id="sTag"></span></div><p id="sDesc"></p><div class="facts" id="sFacts"></div><div class="prods" id="sProds"></div></div>
 </aside>
 <aside class="panel" id="dirP" aria-label="Mall directory">
-  <div class="ph"><div class="cat">Cahaya Avenue</div><h2>Mall directory</h2><div class="meta">Pick a shop to walk straight there.</div><button class="x" type="button" data-close aria-label="Close">×</button></div>
+  <div class="ph"><div class="cat">Swapp City</div><h2>Mall directory</h2><div class="meta">Pick a shop to walk straight there.</div><button class="x" type="button" data-close aria-label="Close">×</button></div>
   <div class="pb"><input class="search" id="q" placeholder="Search shops, food, services…" autocomplete="off"><div class="tabs" id="tabs"></div><div class="dl" id="dl"></div></div>
 </aside>
 <aside class="panel" id="bagP" aria-label="Shopping bag">
   <div class="ph"><div class="cat">Your bag</div><h2>Shopping bag</h2><div class="meta" id="bagMeta">Nothing yet. Go jalan-jalan.</div><button class="x" type="button" data-close aria-label="Close">×</button></div>
-  <div class="pb"><div id="bagL"></div><div class="total"><span>Total</span><span id="bagT">RM 0.00</span></div><button class="btn teal" id="pay" type="button">Checkout</button><p class="note" id="payN" style="margin-top:12px">Cahaya Avenue is a demo mall. Nothing is charged.</p></div>
+  <div class="pb"><div id="bagL"></div><div class="total"><span>Total</span><span id="bagT">RM 0.00</span></div><button class="btn teal" id="pay" type="button">Checkout</button><p class="note" id="payN" style="margin-top:12px">Swapp City is a demo mall. Nothing is charged.</p></div>
 </aside>
 <script type="importmap">{"imports":{"three":"./lib/three/build/three.module.js","three/addons/":"./lib/three/examples/jsm/"}}</script>
 <script src="core.js"></script>

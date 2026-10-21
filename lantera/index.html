@@ -7,7 +7,7 @@
 <title>Lantera Digital Bank</title>
 <meta name="description" content="Lantera Digital Bank Berhad — Malaysia's digital bank. Annual review, governance, rates and newsroom.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,600;0,700;0,800;1,800&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap">
 <style>
 :root{--ink:#0b0c0c;--ink2:#131515;--ink3:#1b1e1d;--fg:#f1efe6;--dim:rgba(241,239,230,.68);--faint:rgba(241,239,230,.42);--line:rgba(241,239,230,.12);--line2:rgba(241,239,230,.22);--em:#13805d;--mint:#7af0c1;--gold:#e8bd62;--cream:#f3efe4;--cink:#0b1c16;--cdim:rgba(11,28,22,.66);--cline:rgba(11,28,22,.12);color-scheme:dark}
 *{box-sizing:border-box}
@@ -17,7 +17,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 a{color:inherit}
 .wrap{max-width:1280px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
 .mono{font:500 12px "DM Mono",monospace;letter-spacing:.12em;text-transform:uppercase}
-h1,h2,h3{font-family:"Syne",sans-serif;margin:0;line-height:.95;letter-spacing:-.03em;text-wrap:balance}
+h1,h2,h3{font-family:"Inter Tight",Arial,sans-serif;margin:0;line-height:.95;letter-spacing:-.03em;text-wrap:balance}
 h2{font-size:clamp(40px,6vw,92px);font-weight:800}
 h3{font-size:24px;font-weight:700;letter-spacing:-.01em;line-height:1.1}
 p{margin:0;color:var(--dim)}
@@ -30,7 +30,7 @@ p{margin:0;color:var(--dim)}
 nav.top{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:60;transition:background .3s,backdrop-filter .3s}
 nav.top.solid{background:rgba(11,12,12,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
 nav.top .wrap{display:flex;align-items:center;gap:26px;height:70px}
-.logo{display:flex;align-items:center;gap:10px;font:800 20px "Syne",sans-serif;letter-spacing:-.02em;text-decoration:none}
+.logo{display:flex;align-items:center;gap:10px;font:800 20px "Inter Tight",Arial,sans-serif;letter-spacing:-.02em;text-decoration:none}
 .logo svg{width:28px;height:28px}
 .links{display:flex;gap:26px;margin-left:auto;font-size:14.5px;font-weight:500}
 .links a{text-decoration:none;color:var(--dim);position:relative}
@@ -70,7 +70,7 @@ nav.top .wrap{display:flex;align-items:center;gap:26px;height:70px}
 @keyframes mq{to{transform:translateX(-50%)}}
 /* intro statement */
 .statement{padding-block:clamp(100px,14vw,200px)}
-.statement p.big{font:700 clamp(30px,4.4vw,64px)/1.08 "Syne",sans-serif;letter-spacing:-.025em;color:var(--fg);max-width:1100px}
+.statement p.big{font:700 clamp(30px,4.4vw,64px)/1.08 "Inter Tight",Arial,sans-serif;letter-spacing:-.025em;color:var(--fg);max-width:1100px}
 .statement p.big .w{opacity:.14;transition:opacity .2s}
 .statement .sub{display:flex;gap:40px;margin-top:50px;flex-wrap:wrap}
 .statement .sub div{max-width:300px}
@@ -78,11 +78,11 @@ nav.top .wrap{display:flex;align-items:center;gap:26px;height:70px}
 .year{position:relative;background:var(--cream);color:var(--cink);overflow:hidden}
 .year p{color:var(--cdim)}
 .ytrack{display:flex;height:100svh;width:max-content;align-items:stretch}
-.ypanel{width:min(88vw,1040px);flex:none;padding:12vh 5vw 8vh;display:flex;flex-direction:column;justify-content:space-between;border-right:1px solid var(--cline);min-width:0}
+.ypanel{width:min(88vw,1040px);flex:none;overflow:hidden;padding:12vh 5vw 8vh;display:flex;flex-direction:column;justify-content:space-between;border-right:1px solid var(--cline);min-width:0}
 .ypanel.first{width:100vw;justify-content:center}
 .ypanel.first h2{color:var(--cink)}
 .ypanel .mono{color:var(--em)}
-.num{font:800 clamp(72px,12vw,200px)/.9 "Syne",sans-serif;letter-spacing:-.05em;color:var(--cink)}
+.num{font:800 clamp(72px,12vw,200px)/.9 "Inter Tight",Arial,sans-serif;letter-spacing:-.05em;color:var(--cink)}
 .num small{font-size:.32em;letter-spacing:-.02em;margin-left:.1em;color:var(--em)}
 .ychart{width:100%;height:auto;max-height:34vh;display:block}
 .ychart .ln{fill:none;stroke:var(--em);stroke-width:3}
@@ -102,7 +102,7 @@ nav.top .wrap{display:flex;align-items:center;gap:26px;height:70px}
 #mymap path{stroke:var(--ink);stroke-width:1.2;fill:#202523;transition:fill .3s;cursor:pointer}
 #mymap path:hover{stroke:var(--fg);stroke-width:2}
 .tip{position:fixed;pointer-events:none;z-index:85;background:var(--fg);color:var(--ink);padding:10px 13px;border-radius:10px;font-size:13px;opacity:0;transition:opacity .15s;min-width:150px}
-.tip b{display:block;font:700 15px "Syne",sans-serif}
+.tip b{display:block;font:700 15px "Inter Tight",Arial,sans-serif}
 .legend{display:flex;align-items:center;gap:10px;margin-top:24px;font:500 11px "DM Mono",monospace;color:var(--faint)}
 .legend i{flex:1;max-width:180px;height:8px;border-radius:4px;background:linear-gradient(90deg,#26302c,#3f8f72,#e8bd62)}
 .statelist{margin-top:28px;display:flex;flex-direction:column;gap:8px}
@@ -112,7 +112,7 @@ nav.top .wrap{display:flex;align-items:center;gap:26px;height:70px}
 .statelist span:last-child{font:500 12px "DM Mono",monospace;color:var(--dim);text-align:right}
 /* marquee */
 .mq{overflow:hidden;border-block:1px solid var(--line);padding-block:26px}
-.mq .row{display:inline-flex;white-space:nowrap;gap:50px;font:800 clamp(56px,9vw,140px)/1 "Syne",sans-serif;letter-spacing:-.04em}
+.mq .row{display:inline-flex;white-space:nowrap;gap:50px;font:800 clamp(56px,9vw,140px)/1 "Inter Tight",Arial,sans-serif;letter-spacing:-.04em}
 .mq .row span{color:transparent;-webkit-text-stroke:1.5px rgba(241,239,230,.4)}
 .mq .row span.f{color:var(--fg);-webkit-text-stroke:0}
 /* calculator */
@@ -124,18 +124,18 @@ nav.top .wrap{display:flex;align-items:center;gap:26px;height:70px}
 .tabs button[aria-selected="true"]{background:var(--fg);color:var(--ink)}
 .field{margin-bottom:24px}
 .field label{display:flex;justify-content:space-between;font-size:14px;color:var(--dim);margin-bottom:10px}
-.field label b{font:700 20px "Syne",sans-serif;color:var(--fg)}
+.field label b{font:700 20px "Inter Tight",Arial,sans-serif;color:var(--fg)}
 input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:2px;background:var(--line2);outline:none}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--mint);cursor:pointer;box-shadow:0 0 0 6px rgba(122,240,193,.15)}
 input[type=range]::-moz-range-thumb{width:22px;height:22px;border:0;border-radius:50%;background:var(--mint);cursor:pointer}
 .result{display:flex;flex-direction:column;justify-content:space-between}
-.result .big{font:800 clamp(48px,6vw,88px)/.9 "Syne",sans-serif;letter-spacing:-.04em;margin:10px 0}
+.result .big{font:800 clamp(48px,6vw,88px)/.9 "Inter Tight",Arial,sans-serif;letter-spacing:-.04em;margin:10px 0}
 .result .big small{font-size:.35em;color:var(--mint)}
 #cchart{width:100%;height:260px;display:block;margin-top:20px}
 .rates{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:22px}
 .rates div{border:1px solid var(--line);border-radius:14px;padding:12px 14px}
 .rates span{display:block;font:500 11px "DM Mono",monospace;color:var(--faint);letter-spacing:.06em}
-.rates b{font:700 22px "Syne",sans-serif}
+.rates b{font:700 22px "Inter Tight",Arial,sans-serif}
 .note{font-size:12px;color:var(--faint);margin-top:16px}
 /* governance */
 .gov{background:var(--cream);color:var(--cink);padding-block:clamp(90px,11vw,160px)}
@@ -145,9 +145,9 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border:0;border-radiu
 .board{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:50px}
 .person{text-align:left;background:#fff;border:1px solid var(--cline);border-radius:22px;padding:14px;cursor:pointer;font:inherit;color:inherit;transition:transform .3s,box-shadow .3s;min-width:0}
 .person:hover{transform:translateY(-6px);box-shadow:0 24px 50px rgba(11,28,22,.12)}
-.portrait{aspect-ratio:4/5;max-width:100%;border-radius:14px;position:relative;overflow:hidden;display:grid;place-items:center;font:800 54px "Syne",sans-serif;color:rgba(255,255,255,.92)}
+.portrait{aspect-ratio:4/5;max-width:100%;border-radius:14px;position:relative;overflow:hidden;display:grid;place-items:center;font:800 54px "Inter Tight",Arial,sans-serif;color:rgba(255,255,255,.92)}
 .portrait::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 30% 20%,rgba(255,255,255,.35),transparent 50%)}
-.person b{display:block;margin-top:14px;font:700 17px "Syne",sans-serif;letter-spacing:-.01em}
+.person b{display:block;margin-top:14px;font:700 17px "Inter Tight",Arial,sans-serif;letter-spacing:-.01em}
 .person span{font-size:13px;color:var(--cdim)}
 .person .tags{display:flex;gap:5px;margin-top:10px;flex-wrap:wrap}
 .person .tags i{font:500 10.5px "DM Mono",monospace;font-style:normal;padding:3px 7px;border-radius:5px;background:rgba(19,128,93,.1);color:var(--em)}
@@ -171,7 +171,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border:0;border-radiu
 .rings{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:50px}
 .ring{border:1px solid var(--line);border-radius:24px;padding:24px;background:var(--ink2);min-width:0}
 .ring svg{width:120px;height:120px;display:block;margin-bottom:16px}
-.ring b{font:700 20px "Syne",sans-serif;display:block;margin-bottom:6px;letter-spacing:-.01em}
+.ring b{font:700 20px "Inter Tight",Arial,sans-serif;display:block;margin-bottom:6px;letter-spacing:-.01em}
 .ring p{font-size:14px}
 /* news */
 .news{padding-block:0 clamp(40px,5vw,70px)}
@@ -181,7 +181,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border:0;border-radiu
 .nitem:hover h3{transform:translateX(16px);color:var(--gold)}
 .nitem .mono{color:var(--faint)}
 .nitem .cat{justify-self:end;font:500 12px "DM Mono",monospace;padding:5px 11px;border:1px solid var(--line2);border-radius:999px;color:var(--dim)}
-.preview{position:fixed;width:280px;height:180px;border-radius:18px;pointer-events:none;z-index:84;opacity:0;transform:translate(-50%,-50%) scale(.8) rotate(-4deg);transition:opacity .25s,transform .35s;display:flex;align-items:flex-end;padding:18px;font:800 46px/.9 "Syne",sans-serif;color:var(--ink);overflow:hidden}
+.preview{position:fixed;width:280px;height:180px;border-radius:18px;pointer-events:none;z-index:84;opacity:0;transform:translate(-50%,-50%) scale(.8) rotate(-4deg);transition:opacity .25s,transform .35s;display:flex;align-items:flex-end;padding:18px;font:800 46px/.9 "Inter Tight",Arial,sans-serif;color:var(--ink);overflow:hidden}
 .preview.on{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(-4deg)}
 /* big cta */
 .bigcta{padding-block:clamp(80px,10vw,150px);text-align:center;position:relative;overflow:hidden}
@@ -541,7 +541,7 @@ if (hasGsap) {
   var CN = { ARC: 'Audit', BRC: 'Risk', NRC: 'Nom & Rem', BITC: 'Technology', SC: 'Shariah' };
   var board = $('#board');
   board.innerHTML = B.map(function (p, i) { var ini = p.n.replace(/(Tan Sri|Datuk|Dr\.|Ustaz)\s*/g, '').split(' ').map(function (w) { return w[0]; }).slice(0, 2).join(''); return '<button class="person" data-i="' + i + '"><div class="portrait" style="background:linear-gradient(140deg,' + p.g[0] + ',' + p.g[1] + ')">' + ini + '</div><b>' + p.n + '</b><span>' + p.r + '</span><div class="tags">' + p.c.map(function (c) { return '<i>' + CN[c] + '</i>'; }).join('') + '</div></button>'; }).join('');
-  function ring(v, t, label) { var f = v / t, c = 2 * Math.PI * 34; return '<div><svg viewBox="0 0 84 84"><circle cx="42" cy="42" r="34" fill="none" stroke="rgba(11,28,22,.1)" stroke-width="8"/><circle cx="42" cy="42" r="34" fill="none" stroke="#13805d" stroke-width="8" stroke-linecap="round" stroke-dasharray="' + c + '" stroke-dashoffset="' + c * (1 - f) + '" transform="rotate(-90 42 42)"/><text x="42" y="47" text-anchor="middle" font-family="Syne, Arial, sans-serif" font-weight="800" font-size="16" fill="#0b1c16">' + v + '/' + t + '</text></svg><span>' + label + '</span></div>'; }
+  function ring(v, t, label) { var f = v / t, c = 2 * Math.PI * 34; return '<div><svg viewBox="0 0 84 84"><circle cx="42" cy="42" r="34" fill="none" stroke="rgba(11,28,22,.1)" stroke-width="8"/><circle cx="42" cy="42" r="34" fill="none" stroke="#13805d" stroke-width="8" stroke-linecap="round" stroke-dasharray="' + c + '" stroke-dashoffset="' + c * (1 - f) + '" transform="rotate(-90 42 42)"/><text x="42" y="47" text-anchor="middle" font-family="Inter Tight, Arial, sans-serif" font-weight="800" font-size="16" fill="#0b1c16">' + v + '/' + t + '</text></svg><span>' + label + '</span></div>'; }
   var dr = $('#drawer'), sc = $('#scrim');
   function open(i) { var p = B[i]; $('#dbody').innerHTML = '<div class="portrait" style="background:linear-gradient(140deg,' + p.g[0] + ',' + p.g[1] + ');max-width:180px;font-size:48px">' + board.children[i].querySelector('.portrait').textContent + '</div><h3 style="font-size:30px;margin-top:22px">' + p.n + '</h3><p style="margin-top:6px;font-weight:600;color:#13805d">' + p.r + '</p><p style="margin-top:16px;font-size:15.5px">' + p.bio + '</p><p class="mono" style="margin-top:22px;color:rgba(11,28,22,.5)">Committees</p><p style="margin-top:6px">' + p.c.map(function (c) { return CN[c]; }).join(' · ') + '</p><p class="mono" style="margin-top:22px;color:rgba(11,28,22,.5)">Attendance FY2026 · on board since ' + p.since + '</p><div class="att">' + ring(p.att[0], 12, 'Board') + ring(p.att[1], 12, 'Committees') + '</div>'; dr.classList.add('open'); sc.classList.add('open'); dr.setAttribute('aria-hidden', 'false'); }
   function close() { dr.classList.remove('open'); sc.classList.remove('open'); dr.setAttribute('aria-hidden', 'true'); }
@@ -554,7 +554,7 @@ if (hasGsap) {
 /* ---------- responsible rings ---------- */
 (function resp() {
   var R = [[38, 'First-time borrowers', '38% of financing went to customers with no prior credit history.', '#7af0c1'], [52, 'Women-led SMEs', 'Over half of our micro-SME financing supports businesses led by women.', '#e8bd62'], [100, 'Renewable data centres', 'Our cloud workloads run on 100% renewable-energy contracts.', '#7af0c1'], [71, 'Fraud prevented', 'RM 71 million in attempted fraud stopped before it left customer accounts.', '#e8bd62']];
-  $('#rings').innerHTML = R.map(function (r) { var c = 2 * Math.PI * 50; return '<div class="ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" fill="none" stroke="rgba(241,239,230,.1)" stroke-width="10"/><circle class="rg" data-f="' + Math.min(r[0], 100) / 100 + '" cx="60" cy="60" r="50" fill="none" stroke="' + r[3] + '" stroke-width="10" stroke-linecap="round" stroke-dasharray="' + c + '" stroke-dashoffset="' + c + '" transform="rotate(-90 60 60)" style="transition:stroke-dashoffset 1.6s cubic-bezier(.2,.8,.2,1)"/><text x="60" y="68" text-anchor="middle" font-family="Syne, Arial, sans-serif" font-weight="800" font-size="26" fill="#f1efe6">' + (r[1] === 'Fraud prevented' ? 'RM' + r[0] + 'm' : r[0] + '%') + '</text></svg><b>' + r[1] + '</b><p>' + r[2] + '</p></div>'; }).join('');
+  $('#rings').innerHTML = R.map(function (r) { var c = 2 * Math.PI * 50; return '<div class="ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" fill="none" stroke="rgba(241,239,230,.1)" stroke-width="10"/><circle class="rg" data-f="' + Math.min(r[0], 100) / 100 + '" cx="60" cy="60" r="50" fill="none" stroke="' + r[3] + '" stroke-width="10" stroke-linecap="round" stroke-dasharray="' + c + '" stroke-dashoffset="' + c + '" transform="rotate(-90 60 60)" style="transition:stroke-dashoffset 1.6s cubic-bezier(.2,.8,.2,1)"/><text x="60" y="68" text-anchor="middle" font-family="Inter Tight, Arial, sans-serif" font-weight="800" font-size="26" fill="#f1efe6">' + (r[1] === 'Fraud prevented' ? 'RM' + r[0] + 'm' : r[0] + '%') + '</text></svg><b>' + r[1] + '</b><p>' + r[2] + '</p></div>'; }).join('');
   function go() { document.querySelectorAll('.rg').forEach(function (c) { var C = 2 * Math.PI * 50; c.style.strokeDashoffset = C * (1 - c.dataset.f); }); }
   if (hasGsap) ScrollTrigger.create({ trigger: '#rings', start: 'top 80%', once: true, onEnter: go }); else go();
 })();

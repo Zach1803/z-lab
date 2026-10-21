@@ -367,7 +367,7 @@ function buildPOIs() {
   POIS.push({ kind: 'anchor', key: 'market', level: 0, x: .4, z: 0, nx: 1, nz: 0, title: 'MyMart', sub: 'Supermarket · G-West', cat: 'market', range: 6 });
   POIS.push({ kind: 'anchor', key: 'dept', level: 1, x: 1.2, z: 0, nx: 1, nz: 0, title: 'Kedai Besar', sub: 'Department Store · L1-West', cat: 'dept', range: 6 });
   POIS.push({ kind: 'anchor', key: 'books', level: 1, x: 94.8, z: 0, nx: -1, nz: 0, title: 'Pustaka Raya', sub: 'Bookstore · L1-East', cat: 'books', range: 6 });
-  POIS.push({ kind: 'anchor', key: 'cinema', level: 2, x: 93.6, z: 0, nx: -1, nz: 0, title: 'Wayang Cahaya', sub: 'Cinemas · L2-East', cat: 'cinema', range: 6 });
+  POIS.push({ kind: 'anchor', key: 'cinema', level: 2, x: 93.6, z: 0, nx: -1, nz: 0, title: 'Swapp Cinemas', sub: 'Cinemas · L2-East', cat: 'cinema', range: 6 });
   POIS.push({ kind: 'kolam', level: 0, x: 36, z: 0, nx: 0, nz: 0, title: 'Deepavali Kolam', sub: 'Atrium display · view more', range: 6.5 });
   POIS.push({ kind: 'dir', level: 0, x: 86.6, z: 7.2, nx: 0, nz: -1, title: 'Mall Directory', sub: 'Find any shop', range: 3 });
   POIS.push({ kind: 'info', level: 0, x: 92, z: -7.8, nx: 0, nz: 1, title: 'Info & Concierge', sub: 'Wi-Fi, lost & found, wheelchairs', range: 3.5 });
@@ -401,15 +401,15 @@ function openPOI(p) {
   if (!p) { return; }
   if (p.kind === 'dir') { openDir(); return; }
   var cat = p.u ? p.u.cat : p.cat, color = p.u && p.u.color ? p.u.color : '#0e5a57', items = [], desc = '', facts = [], tag = '';
-  $('#sCat').textContent = p.kind === 'stall' ? 'Medan Selera' : p.kind === 'hoard' ? 'Coming soon' : (CATNAME[cat] || 'Cahaya Avenue');
+  $('#sCat').textContent = p.kind === 'stall' ? 'Medan Selera' : p.kind === 'hoard' ? 'Coming soon' : (CATNAME[cat] || 'Swapp City');
   $('#sName').textContent = p.title;
   var lvlName = ['Ground', 'Level 1', 'Level 2'][p.level];
   var meta = [lvlName, p.u ? 'Unit ' + p.u.code : p.sub.split(' · ')[1] || '', 'Open 10:00 AM – 10:00 PM'];
   if (p.kind === 'shop' || p.kind === 'anchor' || p.kind === 'kiosk') { items = PROD[cat] || []; desc = DESC[cat]; tag = (CATNAME[cat] || '').toUpperCase(); facts = [['Payment', 'Card · DuitNow QR · TnG'], ['Phone', '03-7' + (100 + (p.title.length * 37) % 900) + ' ' + (1000 + (p.title.length * 911) % 9000)]]; }
   if (p.kind === 'stall') { color = STALLS[p.i][1]; items = STALL_ITEMS[p.i]; desc = 'Order at the counter, take a number and find a table. Halal options are marked at every stall in Medan Selera.'; tag = 'HAWKER STALL'; facts = [['Seats', '320 · aircond'], ['Payment', 'Cash · DuitNow QR']]; }
-  if (p.kind === 'hoard') { desc = 'A new store is fitting out here. Leasing enquiries: leasing@cahaya-avenue.example (fictional).'; tag = 'AKAN DIBUKA'; color = '#5b6766'; facts = [['Size', '70 m² · ' + p.u.code], ['Status', 'Fitting out']]; }
+  if (p.kind === 'hoard') { desc = 'A new store is fitting out here. Leasing enquiries: leasing@swappcity.example (fictional).'; tag = 'AKAN DIBUKA'; color = '#5b6766'; facts = [['Size', '70 m² · ' + p.u.code], ['Status', 'Fitting out']]; }
   if (p.kind === 'kolam') { color = '#7b2cbf'; tag = 'DEEPAVALI 2026'; desc = 'A kolam made of coloured rice flour and petals welcomes visitors for the Festival of Lights. Traditionally drawn at the doorstep each morning, kolam invites prosperity in. Our display is redrawn every weekend by local artists, and the diyas around it are lit every evening from 7 PM.'; facts = [['Diameter', '9 metres'], ['Made of', 'Rice flour, petals'], ['Until', '15 Nov 2026'], ['Workshop', 'Sat 3 PM, free']]; }
-  if (p.kind === 'info') { color = '#0e5a57'; tag = 'CONCIERGE'; desc = 'Ask us anything: lost and found, wheelchair and stroller loans, parcel holding and tourist refunds.'; facts = [['Wi-Fi', 'Cahaya_Free'], ['Parking', 'RM 2 first 3 hours'], ['Surau', 'Every level, west'], ['Hotline', '03-7955 0000']]; }
+  if (p.kind === 'info') { color = '#0e5a57'; tag = 'CONCIERGE'; desc = 'Ask us anything: lost and found, wheelchair and stroller loans, parcel holding and tourist refunds.'; facts = [['Wi-Fi', 'SwappCity_Free'], ['Parking', 'RM 2 first 3 hours'], ['Surau', 'Every level, west'], ['Hotline', '03-7955 0000']]; }
   if (p.kind === 'entrance') { color = '#2f4b9a'; tag = 'GETTING HERE'; desc = 'Main entrance with taxi and e-hailing pick-up. The LRT feeder bus stops every 15 minutes outside.'; facts = [['LRT', 'Feeder bus T7'], ['Parking', 'B1 – B3 · 2,400 bays'], ['EV charging', 'B1, 12 bays'], ['Drop-off', 'Lane 2']]; }
   if (p.kind === 'anchor' && p.cat === 'cinema') { items = PROD.cinema.concat(MOVIES.map(function (m) { return [m[0] + ' · ' + m[1], 0]; })).slice(0, 7); }
   $('#sMeta').innerHTML = ''; meta.filter(Boolean).forEach(function (m) { var s = document.createElement('span'); s.textContent = m; $('#sMeta').appendChild(s); });
@@ -439,7 +439,7 @@ function dirEntries() {
   var list = [];
   UNITS.forEach(function (u) { if (u.name) { list.push({ name: u.name, sub: CATNAME[u.cat], code: u.code, level: u.level, go: { x: u.xc, z: u.side * 8.6, yaw: u.side > 0 ? Math.PI / 2 : -Math.PI / 2 }, poi: u }); } });
   STALLS.forEach(function (s, i) { list.push({ name: s[0], sub: 'Medan Selera stall', code: 'L2-FC', level: 2, go: { x: 6, z: -11 + i * 2.75 + 1.375, yaw: Math.PI } }); });
-  [['MyMart', 'Supermarket', 0, 4, 0, Math.PI], ['Kedai Besar', 'Department Store', 1, 4, 0, Math.PI], ['Pustaka Raya', 'Bookstore', 1, 91, 0, 0], ['Wayang Cahaya', 'Cinema', 2, 90, 0, 0], ['Deepavali Kolam', 'Atrium display', 0, 36, 7.5, -Math.PI / 2], ['Info & Concierge', 'Services', 0, 92, -5.5, -Math.PI / 2]].forEach(function (a) { list.push({ name: a[0], sub: a[1], code: ['G', 'L1', 'L2'][a[2]], level: a[2], go: { x: a[3], z: a[4], yaw: a[5] } }); });
+  [['MyMart', 'Supermarket', 0, 4, 0, Math.PI], ['Kedai Besar', 'Department Store', 1, 4, 0, Math.PI], ['Pustaka Raya', 'Bookstore', 1, 91, 0, 0], ['Swapp Cinemas', 'Cinema', 2, 90, 0, 0], ['Deepavali Kolam', 'Atrium display', 0, 36, 7.5, -Math.PI / 2], ['Info & Concierge', 'Services', 0, 92, -5.5, -Math.PI / 2]].forEach(function (a) { list.push({ name: a[0], sub: a[1], code: ['G', 'L1', 'L2'][a[2]], level: a[2], go: { x: a[3], z: a[4], yaw: a[5] } }); });
   return list;
 }
 var tabsEl = $('#tabs'); ['All', 'G', 'L1', 'L2', 'Food'].forEach(function (t) { var b = document.createElement('button'); b.type = 'button'; b.textContent = t === 'G' ? 'Ground' : t; b.dataset.t = t; b.addEventListener('click', function () { curTab = t; renderDir(); }); tabsEl.appendChild(b); });
@@ -466,7 +466,7 @@ function teleport(L, g) { P.x = g.x; P.z = g.z; P.y = LV[L]; P.yaw = g.yaw; P.pi
 function fadeFlash() { cv.style.transition = 'none'; cv.style.opacity = '.2'; requestAnimationFrame(function () { cv.style.transition = 'opacity .5s'; cv.style.opacity = '1'; }); }
 var annEl = $('#ann'), annT = null;
 function announce(t) { annEl.textContent = t; annEl.classList.add('on'); clearTimeout(annT); annT = setTimeout(function () { annEl.classList.remove('on'); }, 4000); }
-var ANNS = ['Perhatian: Medan Selera di Aras 2 kini dibuka. · Attention: the food court on Level 2 is now open.', 'Deepavali kolam workshop this Saturday, 3 PM, at the Ground floor atrium.', 'Kepada pemilik kenderaan WXX 1234, sila ke kaunter maklumat. · Will the owner of car WXX 1234 please come to the info counter.', 'Mega Sale 11.11 starts in three weeks. Up to 70% off at selected stores.', 'Free Wi-Fi: Cahaya_Free. Surau located at the west end of every level.'];
+var ANNS = ['Perhatian: Medan Selera di Aras 2 kini dibuka. · Attention: the food court on Level 2 is now open.', 'Deepavali kolam workshop this Saturday, 3 PM, at the Ground floor atrium.', 'Kepada pemilik kenderaan WXX 1234, sila ke kaunter maklumat. · Will the owner of car WXX 1234 please come to the info counter.', 'Mega Sale 11.11 starts in three weeks. Up to 70% off at selected stores.', 'Free Wi-Fi: SwappCity_Free. Surau located at the west end of every level.'];
 var annI = 0; setInterval(function () { if (walking) { announce(ANNS[annI++ % ANNS.length]); dingdong(); } }, 38000);
 
 /* =========================== INPUT =========================== */
@@ -516,7 +516,7 @@ function startWalking() {
   if (!ready) { return; }
   walking = true; $('#intro').classList.add('off'); $('#hud').classList.add('on'); document.body.classList.add('walking');
   P.x = 90; P.z = 0; P.y = 0; P.yaw = Math.PI; P.pitch = -.04; cv.focus();
-  announce('Selamat datang ke Cahaya Avenue · Welcome to Cahaya Avenue'); dingdong();
+  announce('Selamat datang ke Swapp City · Welcome to Swapp City'); dingdong();
 }
 $('#enter').addEventListener('click', startWalking);
 
