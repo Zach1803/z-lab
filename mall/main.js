@@ -224,34 +224,80 @@ function blobShadow() {
   const m = new THREE.Mesh(new THREE.PlaneGeometry(.9, .9), new THREE.MeshBasicMaterial({ map: shadowTex, transparent: true, depthWrite: false, toneMapped: false }));
   m.rotation.x = -Math.PI / 2; m.position.y = .015; m.renderOrder = 3; return m;
 }
+const CAST = [{"n": "Aina", "g": "f", "h": 1.69}, {"n": "Wei Jie", "g": "m", "h": 1.76}, {"n": "Priya", "g": "f", "h": 1.69}, {"n": "Arjun", "g": "m", "h": 1.76}, {"n": "Daniel", "g": "m", "h": 1.78}, {"n": "Mei Ling", "g": "f", "h": 1.66}, {"n": "Hafiz", "g": "m", "h": 1.75}, {"n": "Sarah", "g": "f", "h": 1.72}, {"n": "Kwame", "g": "m", "h": 1.77}, {"n": "Uncle Lim", "g": "m", "h": 1.72}, {"n": "Nadia", "g": "f", "h": 1.7}, {"n": "Rahman", "g": "m", "h": 1.75}];
+const MPH_H = window.MPH_H || [];
+const clipsFor = (kind) => { const t = CHAR.tpl.find((x) => x.kind === kind); return (t && t.clips) || CHAR.clips[kind === 'rpm' ? 'rpm' : 'mix']; };
+// Retarget a Mixamo clip from the source skeleton (its own rest pose) onto a target skeleton with a different rest pose.
+function retarget(src, clip, tgt) {
+  const S = {}, T = {}, tList = [];
+  src.traverse((o) => { if (o.name) S[o.name] = o; });
+  tgt.traverse((o) => { if (o.isBone) { T[o.name] = o; tList.push(o); } });
+  const saved = new Map(); src.traverse((o) => saved.set(o, o.quaternion.clone()));
+  src.updateMatrixWorld(true); tgt.updateMatrixWorld(true);
+  const restS = {}, restT = {}, q = new THREE.Quaternion();
+  for (const n in T) { restT[n] = T[n].getWorldQuaternion(new THREE.Quaternion()); if (S[n]) restS[n] = S[n].getWorldQuaternion(new THREE.Quaternion()); }
+  // facing correction: align the source's forward to the target's forward (yaw only)
+  const fwd = (B, L, R, up) => { const l = B[L].getWorldPosition(new THREE.Vector3()), r = B[R].getWorldPosition(new THREE.Vector3()); return new THREE.Vector3().subVectors(r, l).cross(up).setY(0).normalize(); };
+  const up = new THREE.Vector3(0, 1, 0), fS = fwd(S, 'mixamorigLeftUpLeg', 'mixamorigRightUpLeg', up), fT = fwd(T, 'mixamorigLeftUpLeg', 'mixamorigRightUpLeg', up);
+  const C = new THREE.Quaternion().setFromUnitVectors(fS, fT), Ci = C.clone().invert();
+  // per-bone swing that turns the target's rest (A-pose) bone direction onto the source's rest (T-pose) direction
+  const A = {}, wp = (o) => o.getWorldPosition(new THREE.Vector3());
+  const pickChild = (b) => {
+    const kids = b.children.filter((c) => c.isBone && S[c.name]);
+    return kids.find((c) => /Spine|Neck|Head$/.test(c.name)) || kids.find((c) => /HandMiddle1$/.test(c.name)) || kids[0];
+  };
+  for (const b of tList) {
+    if (!restS[b.name]) continue; const c = pickChild(b);
+    if (!c) { A[b.name] = (b.parent && A[b.parent.name]) ? A[b.parent.name].clone() : new THREE.Quaternion(); continue; }
+    const dT = wp(c).sub(wp(b)).normalize(), dS = wp(S[c.name]).sub(wp(S[b.name])).applyQuaternion(C).normalize();
+    A[b.name] = new THREE.Quaternion().setFromUnitVectors(dT, dS);
+  }
+  const mx = new THREE.AnimationMixer(src), act = mx.clipAction(clip); act.play();
+  const hipsTrack = clip.tracks.find((t) => /Hips\.quaternion$/.test(t.name)) || clip.tracks[0];
+  const times = Array.from(hipsTrack.times), mapped = tList.filter((b) => restS[b.name]);
+  const vals = {}; mapped.forEach((b) => { vals[b.name] = []; });
+  const W = new Map(), tgtRootW = tgt.getWorldQuaternion(new THREE.Quaternion());
+  for (const tm of times) {
+    mx.setTime(tm); src.updateMatrixWorld(true); W.clear();
+    for (const b of tList) {
+      const pw = W.get(b.parent) || (b.parent ? b.parent.getWorldQuaternion(new THREE.Quaternion()) : new THREE.Quaternion());
+      let w;
+      if (restS[b.name]) {
+        const sw = S[b.name].getWorldQuaternion(new THREE.Quaternion());
+        const d = sw.multiply(restS[b.name].clone().invert()); // world-space delta from source rest
+        w = C.clone().multiply(d).multiply(Ci).multiply(A[b.name]).multiply(restT[b.name]);
+        const loc = pw.clone().invert().multiply(w); vals[b.name].push(loc.x, loc.y, loc.z, loc.w);
+      } else { w = pw.clone().multiply(b.quaternion); }
+      W.set(b, w);
+    }
+  }
+  act.stop(); mx.uncacheRoot(src); saved.forEach((qq, o) => o.quaternion.copy(qq)); src.updateMatrixWorld(true);
+  return new THREE.AnimationClip(clip.name, clip.duration, mapped.map((b) => new THREE.QuaternionKeyframeTrack(b.name + '.quaternion', times, vals[b.name])));
+}
 async function loadCharacters() {
   const parse = async (n) => gltfLoader.parseAsync(b64((await fileLoader.loadAsync('chars/' + n + '.json')).b64).buffer, './');
-  const [clips, mich, rpm] = await Promise.all([parse('clips'), parse('michelle'), parse('rpm')]);
+  // realistic cast (MakeHuman); phones load a smaller random subset
+  let idx = CAST.map((_, i) => i); if (COARSE) idx = idx.sort(() => Math.random() - .5).slice(0, 6);
+  if (window.__wantKind && /^mph\d+$/.test(window.__wantKind)) { const w = +window.__wantKind.slice(3); if (!idx.includes(w)) idx.push(w); }
+  const MPH = idx.map((i) => 'mph_' + i);
+  const [clips, ...mph] = await Promise.all([parse('clips'), ...MPH.map((n) => parse(n).catch(() => null))]);
   const get = (n) => clips.animations.find((a) => a.name === n);
-  const strip = (clip) => { const c = clip.clone(); c.tracks.forEach((t) => { t.name = t.name.replace(/^mixamorig/, ''); }); return c; };
   CHAR.clips.mix = { walk: get('Walk'), idle: get('Idle') };
-  CHAR.clips.rpm = { walk: strip(get('Walk')), idle: strip(get('Idle')) };
-  // The clips were authored on a rig whose Hips parent is rotated -90° about X. Re-parent-orient each rig to match.
-  const QS = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), -Math.PI / 2);
-  [[mich, 'mix', 1.66], [rpm, 'rpm', 1.76]].forEach(([g, kind, h]) => {
-    let hips = null; g.scene.traverse((o) => { if (o.isBone && /Hips$/.test(o.name) && !hips) hips = o; });
-    if (hips && hips.parent) {
-      const par = hips.parent, qOld = par.quaternion.clone();
-      hips.position.applyQuaternion(qOld).applyQuaternion(QS.clone().invert());
-      par.quaternion.copy(QS);
-    }
-    const mx = new THREE.AnimationMixer(g.scene); mx.clipAction(CHAR.clips[kind].idle).play(); mx.update(0.01);
-    g.scene.updateMatrixWorld(true);
+  mph.forEach((g, i) => {
+    if (!g) return;
+    g.scene.traverse((o) => { if (o.isMesh && /Icosphere/.test(o.name)) o.visible = false; });
+    const cl = { walk: retarget(clips.scene, get('Walk'), g.scene), idle: retarget(clips.scene, get('Idle'), g.scene) };
+    const mx = new THREE.AnimationMixer(g.scene); mx.clipAction(cl.idle).play(); mx.update(0.01); g.scene.updateMatrixWorld(true);
     const box = new THREE.Box3(); g.scene.traverse((o) => { if (o.isSkinnedMesh) { o.skeleton.update(); o.computeBoundingBox(); box.union(o.boundingBox.clone().applyMatrix4(o.matrixWorld)); } });
     mx.stopAllAction(); mx.uncacheRoot(g.scene);
-    const ht = box.max.y - box.min.y;
-    CHAR.tpl.push({ scene: g.scene, kind, scale: ht > .01 ? h / ht : 1, footY: box.min.y });
+    const ci = idx[i], meta = CAST[ci] || {}, h = meta.h || 1.7, ht = box.max.y - box.min.y;
+    CHAR.tpl.push({ scene: g.scene, kind: 'mph' + ci, scale: ht > .01 ? h / ht : 1, footY: box.min.y, clips: cl, flip: false, name: meta.n, g: meta.g });
   });
 }
 function makeAvatar(kind, shirt, pants, name) {
-  const t = CHAR.tpl.find((x) => x.kind === kind) || CHAR.tpl[0];
+  const want = CAST[+String(kind).replace('mph', '')], t = CHAR.tpl.find((x) => x.kind === kind) || (want && CHAR.tpl.find((x) => x.g === want.g)) || CHAR.tpl[0];
   const root = new THREE.Group(), body = SkeletonUtils.clone(t.scene);
-  body.scale.multiplyScalar(t.scale); body.position.y = -t.footY * t.scale;
+  body.scale.multiplyScalar(t.scale); body.position.y = -t.footY * t.scale; body.rotation.y = t.flip === false ? 0 : Math.PI;
   body.traverse((o) => {
     if (!o.isMesh) return; o.frustumCulled = false;
     const mn = o.material.name || '';
@@ -261,7 +307,7 @@ function makeAvatar(kind, shirt, pants, name) {
     if (kind === 'mix' && shirt) o.material.color = new THREE.Color(1, 1, 1).lerp(lin(shirt).multiplyScalar(1.3), .18);
   });
   root.add(body); root.add(blobShadow());
-  const mixer = new THREE.AnimationMixer(body), cl = CHAR.clips[t.kind];
+  const mixer = new THREE.AnimationMixer(body), cl = clipsFor(t.kind);
   const walk = mixer.clipAction(cl.walk), idle = mixer.clipAction(cl.idle);
   walk.play(); idle.play(); walk.setEffectiveWeight(0); idle.setEffectiveWeight(1); idle.time = Math.random() * 3; walk.time = Math.random();
   if (name) { const tag = nameTag(name); tag.position.y = 2.05; root.add(tag); root.userData.tag = tag; }
@@ -295,7 +341,8 @@ function lineClear(L, a, b) { const d = Math.hypot(b[0] - a[0], b[1] - a[1]), n 
 function initPeople(n) {
   for (let i = 0; i < n; i++) {
     const L = i % 3, s = randSpot(L); if (!s) continue;
-    const kind = Math.random() < .5 ? 'mix' : 'rpm';
+    if (!initPeople.bag || !initPeople.bag.length) initPeople.bag = CHAR.tpl.map((x) => x.kind).sort(() => Math.random() - .5);
+    const kind = window.__forceKind || initPeople.bag.pop();
     const av = makeAvatar(kind, rndC(CLOTH), rndC(PANTS));
     const sc = .95 + Math.random() * .1; av.root.scale.setScalar(sc); scene.add(av.root);
     PEOPLE.push({ L, x: s[0], z: s[1], tx: s[0], tz: s[1], yaw: Math.random() * TAU, sp: 1.0 + Math.random() * .4, wait: Math.random() * 3, mesh: av.root, av });
@@ -361,7 +408,7 @@ function buildEscalators() {
   ESC.forEach((e) => {
     const sgn = Math.sign(e.xt - e.xb), Lh = Math.abs(e.xt - e.xb), H = e.yt - e.yb, w = (e.z1 - e.z0) - .4, zc = (e.z0 + e.z1) / 2;
     const hAt = (t) => H * Math.max(0, Math.min(1, t / Lh));
-    const n = Math.ceil(Lh / .4) + 1;
+    const n = Math.ceil(Lh / .4) + 3;
     const tg = new THREE.BoxGeometry(.38, .045, w), rg = new THREE.BoxGeometry(.025, 1, w);
     const treads = new THREE.InstancedMesh(tg, treadM, n), risers = new THREE.InstancedMesh(rg, riserM, n);
     treads.frustumCulled = risers.frustumCulled = false; scene.add(treads, risers);
@@ -431,9 +478,13 @@ function buildEscalators() {
     const key = a.xb + ':' + a.xt; if (seen.has(key)) return; seen.add(key);
     const sgn = Math.sign(a.xt - a.xb), xa = a.xb - sgn * .9, xb = a.xt + sgn * .9, H = a.yt - a.yb;
     const gz0 = a.z1 - .02, gz1 = b.z0 + .02, len = Math.hypot(xb - xa, H), ang = sgn * Math.atan2(H, Math.abs(xb - xa));
-    const deck = new THREE.Mesh(new THREE.BoxGeometry(len, 2.0, gz1 - gz0), deckM);
-    deck.rotation.z = ang; const mid = new THREE.Vector3((xa + xb) / 2, (a.yb + a.yt) / 2 + .97, (gz0 + gz1) / 2);
-    deck.position.copy(mid).add(new THREE.Vector3(Math.sin(ang), -Math.cos(ang), 0).multiplyScalar(1.0)); scene.add(deck);
+    // profiled deck: sloped top at handrail height, raked ends that meet the floor like the newels
+    const sh = new THREE.Shape(), u = (x) => x; // build in world x/y
+    sh.moveTo(u(xa + sgn * .35), a.yb); sh.lineTo(u(xa), a.yb + .97); sh.lineTo(u(xb), a.yt + .97); sh.lineTo(u(xb - sgn * .35), a.yt);
+    sh.lineTo(u(a.xt), a.yt); sh.lineTo(u(a.xt), a.yt - 1.05); sh.lineTo(u(a.xb), a.yb - 1.05); sh.lineTo(u(a.xb), a.yb); sh.closePath();
+    const dg = new THREE.ExtrudeGeometry(sh, { depth: gz1 - gz0, bevelEnabled: true, bevelThickness: .03, bevelSize: .03, bevelSegments: 2 });
+    const deck = new THREE.Mesh(dg, deckM); deck.position.z = gz0; scene.add(deck);
+    const mid = new THREE.Vector3((xa + xb) / 2, (a.yb + a.yt) / 2 + .97 + .03, (gz0 + gz1) / 2);
     // brushed top strip with a thin gold inlay
     const inl = new THREE.Mesh(new THREE.BoxGeometry(len, .012, .05), combM); inl.rotation.z = ang; inl.position.copy(mid).add(new THREE.Vector3(-Math.sin(ang), Math.cos(ang), 0).multiplyScalar(.006)); scene.add(inl);
   }));
@@ -441,11 +492,12 @@ function buildEscalators() {
 const _m4 = new THREE.Matrix4(), _p3 = new THREE.Vector3(), _s3 = new THREE.Vector3(), _q4 = new THREE.Quaternion();
 function updateEscalators(t) {
   for (const E of ESCS) {
-    const { e, sgn, Lh, hAt, n, treads, risers, zc } = E, dir = e.dir > 0 ? 1 : -1, off = ((t * .5 * dir) % .4 + .4) % .4;
+    const { e, sgn, Lh, hAt, n, treads, risers, zc } = E, dir = e.dir > 0 ? 1 : -1, loop = n * .4, off = ((t * .5 * dir) % loop + loop) % loop;
     for (let i = 0; i < n; i++) {
-      const s = i * .4 + off, vis = s > -.01 && s < Lh - .38;
+      // steps travel a closed loop; beyond both ends they slide flat under the floor plates, so nothing pops in
+      const s = ((i * .4 + off) % loop) - .45, vis = true;
       const yT = hAt(s + .4), yL = hAt(s), rise = Math.max(0, yT - yL);
-      _p3.set(e.xb + sgn * (s + .2), e.yb + yT - .0225, zc); _s3.set(1, vis ? 1 : 0, 1); _m4.compose(_p3, _q4, _s3); treads.setMatrixAt(i, _m4);
+      _p3.set(e.xb + sgn * (s + .2), e.yb + yT - .0225 - (s < 0 || s > Lh - .4 ? .006 : 0), zc); _s3.set(1, vis ? 1 : 0, 1); _m4.compose(_p3, _q4, _s3); treads.setMatrixAt(i, _m4);
       _p3.set(e.xb + sgn * (s + .012), e.yb + (yT + yL) / 2 - .03, zc); _s3.set(1, vis && rise > .01 ? rise : 0, 1); _m4.compose(_p3, _q4, _s3); risers.setMatrixAt(i, _m4);
     }
     treads.instanceMatrix.needsUpdate = true; risers.instanceMatrix.needsUpdate = true;
@@ -718,8 +770,10 @@ $('#enter').addEventListener('click', startWalking);
 
 /* =========================== MULTIPLAYER (peer-to-peer presence) =========================== */
 // Browser-to-browser via WebRTC; public WebTorrent trackers only introduce peers. No server, no accounts.
-const ME = { name: '', kind: 'mix', shirt: 0 };
+const ME = { name: '', kind: 'mph' + Math.floor(Math.random() * CAST.length), shirt: 0 };
 try { const s = JSON.parse(localStorage.getItem('swapp.me') || 'null'); if (s) Object.assign(ME, s); } catch (e) {}
+if (!/^mph\d+$/.test(ME.kind) || !CAST[+ME.kind.slice(3)]) ME.kind = 'mph0';
+window.__wantKind = ME.kind;
 const PCOL = ['#f5c766', '#7fd1c7', '#f28b82', '#a7c7ff', '#c9a7ff', '#9be29b', '#ffb37a', '#ff9ed2'];
 const hashCol = (id) => { let h = 0; for (const c of id) h = (h * 31 + c.charCodeAt(0)) | 0; return PCOL[Math.abs(h) % PCOL.length]; };
 const MP = window.MP = {
@@ -746,7 +800,7 @@ const MP = window.MP = {
   profile() { return { n: ME.name.slice(0, 18), k: ME.kind, s: ME.shirt | 0 }; },
   upsert(id, d) {
     if (!d || typeof d !== 'object') return;
-    const name = String(d.n || 'Visitor').replace(/[\u0000-\u001f]/g, '').slice(0, 18) || 'Visitor', kind = d.k === 'rpm' ? 'rpm' : 'mix', s = Math.abs(d.s | 0) % CLOTH.length;
+    const name = String(d.n || 'Visitor').replace(/[\u0000-\u001f]/g, '').slice(0, 18) || 'Visitor', kind = (/^mph\d+$/.test(d.k) && CAST[+String(d.k).slice(3)]) ? d.k : 'mph0', s = Math.abs(d.s | 0) % CLOTH.length;
     let p = this.peers.get(id);
     if (p && p.name === name && p.kind === kind && p.s === s) return;
     const isNew = !p;
@@ -794,9 +848,9 @@ function bubble(p, t) { if (p.bub) p.av.root.remove(p.bub); p.bub = nameTag('“
 (function () {
   const nm = $('#meName'); if (!nm) return;
   nm.value = ME.name;
-  const sync = () => { document.querySelectorAll('.av button').forEach((b) => b.classList.toggle('on', b.dataset.k === ME.kind)); document.querySelectorAll('.sw button').forEach((b) => b.classList.toggle('on', +b.dataset.s === ME.shirt)); };
-  document.querySelectorAll('.av button').forEach((b) => b.addEventListener('click', () => { ME.kind = b.dataset.k; sync(); }));
-  const sw = $('.sw'); CLOTH.slice(0, 8).forEach((c, i) => { const b = document.createElement('button'); b.type = 'button'; b.dataset.s = i; b.setAttribute('aria-label', 'Outfit colour ' + (i + 1)); b.style.background = 'rgb(' + c.map((v) => Math.round(Math.pow(v, 1 / 2.2) * 255)).join(',') + ')'; b.addEventListener('click', () => { ME.shirt = i; sync(); }); sw.appendChild(b); });
+  const av = $('.av');
+  CAST.forEach((c, i) => { const b = document.createElement('button'); b.type = 'button'; b.dataset.k = 'mph' + i; b.textContent = c.n; b.addEventListener('click', () => { ME.kind = b.dataset.k; window.__wantKind = ME.kind; sync(); }); av.appendChild(b); });
+  const sync = () => { document.querySelectorAll('.av button').forEach((b) => b.classList.toggle('on', b.dataset.k === ME.kind)); };
   sync();
   nm.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); $('#enter').click(); } });
 })();

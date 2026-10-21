@@ -129,7 +129,7 @@ kbd{font:700 12px/1 "Plus Jakarta Sans",sans-serif;background:rgba(255,255,255,.
 .me label{font-size:11px;letter-spacing:.2em;text-transform:uppercase;opacity:.75;width:100%}
 .me input{flex:1 1 180px;min-width:0;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.3);border-radius:12px;padding:10px 12px;color:#fff;font:600 15px "Plus Jakarta Sans",sans-serif}
 .me input::placeholder{color:rgba(255,255,255,.55)}
-.av{display:flex;gap:6px}.av button{cursor:pointer;border:1px solid rgba(255,255,255,.3);background:transparent;color:#fff;border-radius:999px;padding:8px 14px;font-size:13px;font-weight:700}
+.av{display:flex;gap:6px;flex-wrap:wrap;width:100%}.av button{cursor:pointer;border:1px solid rgba(255,255,255,.3);background:transparent;color:#fff;border-radius:999px;padding:6px 12px;font-size:12.5px;font-weight:700}
 .av button.on{background:#fff;color:var(--teal2)}
 .sw{display:flex;gap:6px;flex-wrap:wrap}.sw button{width:24px;height:24px;border-radius:50%;border:2px solid rgba(255,255,255,.35);cursor:pointer;padding:0}
 .sw button.on{border-color:#fff;box-shadow:0 0 0 2px var(--gold2)}
@@ -172,8 +172,7 @@ kbd{font:700 12px/1 "Plus Jakarta Sans",sans-serif;background:rgba(255,255,255,.
     <div class="me">
       <label for="meName">Live with other visitors</label>
       <input id="meName" maxlength="18" placeholder="Your name" autocomplete="nickname">
-      <div class="av" role="group" aria-label="Character"><button type="button" data-k="mix">Aisyah</button><button type="button" data-k="rpm">Daniel</button></div>
-      <div class="sw" role="group" aria-label="Outfit colour"></div>
+      <div class="av" role="group" aria-label="Pick your character"></div>
       <div class="live"><span class="dot"></span>Everyone with this link walks the same mall, in real time. Press <kbd>T</kbd> to chat.</div>
     </div>
     <button class="btn" id="enter" type="button" disabled>Masuk · Enter the mall</button>
