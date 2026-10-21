@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Lantera Digital Bank</title>
+<meta name="description" content="Lantera Digital Bank Berhad — Malaysia's digital bank. Annual review, governance, rates and newsroom.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap">
+<style>
+:root{--ink:#04130e;--ink2:#082119;--ink3:#0d2e23;--fg:#f1efe6;--dim:rgba(241,239,230,.68);--faint:rgba(241,239,230,.42);--line:rgba(241,239,230,.12);--line2:rgba(241,239,230,.22);--em:#13805d;--mint:#7af0c1;--gold:#e8bd62;--cream:#f3efe4;--cink:#0b1c16;--cdim:rgba(11,28,22,.66);--cline:rgba(11,28,22,.12);color-scheme:dark}
+*{box-sizing:border-box}
+html{background:var(--ink)}
+body{margin:0;background:var(--ink);color:var(--fg);font:16px/1.6 "Inter",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-text-size-adjust:100%;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--ink);z-index:80}
+a{color:inherit}
+.wrap{max-width:1280px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+.mono{font:500 12px "DM Mono",monospace;letter-spacing:.12em;text-transform:uppercase}
+h1,h2,h3{font-family:"Syne",sans-serif;margin:0;line-height:.95;letter-spacing:-.03em;text-wrap:balance}
+h2{font-size:clamp(40px,6vw,92px);font-weight:800}
+h3{font-size:24px;font-weight:700;letter-spacing:-.01em;line-height:1.1}
+p{margin:0;color:var(--dim)}
+.grain{position:fixed;inset:-50%;z-index:70;pointer-events:none;opacity:.07;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");animation:grain 1.2s steps(6) infinite}
+@keyframes grain{0%{transform:translate(0,0)}20%{transform:translate(-3%,2%)}40%{transform:translate(2%,-4%)}60%{transform:translate(-4%,-1%)}80%{transform:translate(3%,3%)}}
+.cursor{position:fixed;left:0;top:0;width:10px;height:10px;border-radius:50%;background:var(--mint);pointer-events:none;z-index:90;mix-blend-mode:difference;transform:translate(-50%,-50%);transition:width .25s,height .25s;display:none}
+.cursor.big{width:60px;height:60px}
+@media (pointer:fine){.cursor{display:block}}
+/* nav */
+nav.top{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:60;transition:background .3s,backdrop-filter .3s}
+nav.top.solid{background:rgba(4,19,14,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+nav.top .wrap{display:flex;align-items:center;gap:26px;height:70px}
+.logo{display:flex;align-items:center;gap:10px;font:800 20px "Syne",sans-serif;letter-spacing:-.02em;text-decoration:none}
+.logo svg{width:28px;height:28px}
+.links{display:flex;gap:26px;margin-left:auto;font-size:14.5px;font-weight:500}
+.links a{text-decoration:none;color:var(--dim);position:relative}
+.links a::after{content:"";position:absolute;left:0;right:100%;bottom:-4px;height:1px;background:var(--mint);transition:right .3s}
+.links a:hover{color:var(--fg)}.links a:hover::after{right:0}
+.zl{font:500 12px "DM Mono",monospace;color:var(--faint);text-decoration:none}
+.btn{display:inline-flex;align-items:center;gap:10px;font:600 15px "Inter",sans-serif;padding:15px 24px;border-radius:999px;text-decoration:none;border:1px solid transparent;cursor:pointer;will-change:transform}
+.btn.pri{background:var(--mint);color:#04130e}
+.btn.gh{border-color:var(--line2);color:var(--fg)}
+.btn.sm{padding:10px 18px;font-size:14px}
+/* hero */
+.hero{position:relative;height:100svh;min-height:640px;overflow:hidden}
+#aurora{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hero .veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,19,14,.15),rgba(4,19,14,.1) 50%,var(--ink));pointer-events:none}
+.hero .wrap{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:9vh}
+.kicker{display:flex;gap:12px;align-items:center;color:var(--mint)}
+.kicker i{width:8px;height:8px;border-radius:50%;background:var(--mint);box-shadow:0 0 0 0 rgba(122,240,193,.6);animation:ping 2s infinite}
+@keyframes ping{70%{box-shadow:0 0 0 10px rgba(122,240,193,0)}100%{box-shadow:0 0 0 0 rgba(122,240,193,0)}}
+.hero h1{font-size:clamp(54px,11.5vw,190px);font-weight:800;margin-top:22px;letter-spacing:-.05em;line-height:.86}
+.hero h1 .line{display:block;overflow:hidden;padding-bottom:.14em;margin-bottom:-.1em}
+.hero h1 .line>span{display:inline-block}
+.rot{display:inline-flex;color:var(--mint);position:relative;font-style:italic;text-shadow:0 4px 40px rgba(4,19,14,.6)}
+.rot .ch{display:inline-block}
+.herobot{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;margin-top:36px;flex-wrap:wrap}
+.herobot p{font-size:18px;max-width:440px;color:rgba(241,239,230,.8)}
+.cta{display:flex;gap:12px;flex-wrap:wrap}
+.scrollcue{position:absolute;right:max(20px,env(safe-area-inset-right,0px));top:50%;writing-mode:vertical-rl;color:var(--faint);z-index:2}
+/* ticker */
+.ticker{border-block:1px solid var(--line);background:var(--ink2);overflow:hidden;white-space:nowrap}
+.trow{display:inline-flex;gap:44px;padding:14px 0;animation:mq 40s linear infinite}
+.trow span{font:500 13px "DM Mono",monospace;color:var(--dim)}
+.trow b{color:var(--fg);font-weight:500}
+.trow em{font-style:normal;color:var(--mint)}
+.trow em.dn{color:#ff8f7a}
+@keyframes mq{to{transform:translateX(-50%)}}
+/* intro statement */
+.statement{padding-block:clamp(100px,14vw,200px)}
+.statement p.big{font:700 clamp(30px,4.4vw,64px)/1.08 "Syne",sans-serif;letter-spacing:-.025em;color:var(--fg);max-width:1100px}
+.statement p.big .w{opacity:.14;transition:opacity .2s}
+.statement .sub{display:flex;gap:40px;margin-top:50px;flex-wrap:wrap}
+.statement .sub div{max-width:300px}
+/* horizontal year in numbers */
+.year{position:relative;background:var(--cream);color:var(--cink)}
+.year p{color:var(--cdim)}
+.ytrack{display:flex;height:100svh;width:max-content;align-items:stretch}
+.ypanel{width:min(88vw,1040px);flex:none;padding:12vh 5vw 8vh;display:flex;flex-direction:column;justify-content:space-between;border-right:1px solid var(--cline);min-width:0}
+.ypanel.first{width:min(78vw,760px);justify-content:center}
+.ypanel.first h2{color:var(--cink)}
+.ypanel .mono{color:var(--em)}
+.num{font:800 clamp(72px,12vw,200px)/.9 "Syne",sans-serif;letter-spacing:-.05em;color:var(--cink)}
+.num small{font-size:.32em;letter-spacing:-.02em;margin-left:.1em;color:var(--em)}
+.ychart{width:100%;height:auto;max-height:34vh;display:block}
+.ychart .ln{fill:none;stroke:var(--em);stroke-width:3}
+.ychart .ar{fill:url(#ga)}
+.ychart text{font:500 12px "DM Mono",monospace;fill:rgba(11,28,22,.5)}
+.bars{display:flex;align-items:flex-end;gap:14px;height:30vh;margin-top:20px}
+.bars div{flex:1;background:var(--cink);border-radius:8px 8px 0 0;position:relative;transform-origin:bottom;min-width:0}
+.bars div.hl{background:var(--em)}
+.bars div span{position:absolute;bottom:100%;left:0;right:0;text-align:center;font:500 12px "DM Mono",monospace;color:var(--cdim);padding-bottom:6px}
+.bars div label{position:absolute;top:100%;left:0;right:0;text-align:center;font:500 11px "DM Mono",monospace;color:var(--cdim);padding-top:6px}
+.yprog{position:absolute;left:5vw;right:5vw;bottom:4vh;height:2px;background:var(--cline)}
+.yprog i{display:block;height:100%;background:var(--em);width:0}
+/* map */
+.mapsec{padding-block:clamp(90px,11vw,160px);position:relative}
+.mapgrid{display:grid;grid-template-columns:1fr 2fr;gap:50px;align-items:center}
+#mymap{width:100%;height:auto;display:block;overflow:visible}
+#mymap path{stroke:var(--ink);stroke-width:1.2;fill:var(--ink3);transition:fill .3s;cursor:pointer}
+#mymap path:hover{stroke:var(--mint);stroke-width:2}
+.tip{position:fixed;pointer-events:none;z-index:85;background:var(--fg);color:var(--ink);padding:10px 13px;border-radius:10px;font-size:13px;opacity:0;transition:opacity .15s;min-width:150px}
+.tip b{display:block;font:700 15px "Syne",sans-serif}
+.legend{display:flex;align-items:center;gap:10px;margin-top:24px;font:500 11px "DM Mono",monospace;color:var(--faint)}
+.legend i{flex:1;max-width:180px;height:8px;border-radius:4px;background:linear-gradient(90deg,#0d2e23,#13805d,#7af0c1)}
+.statelist{margin-top:28px;display:flex;flex-direction:column;gap:8px}
+.statelist div{display:grid;grid-template-columns:110px 1fr 60px;gap:12px;align-items:center;font-size:14px}
+.statelist .bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.statelist .bar i{display:block;height:100%;background:var(--mint);width:0}
+.statelist span:last-child{font:500 12px "DM Mono",monospace;color:var(--dim);text-align:right}
+/* marquee */
+.mq{overflow:hidden;border-block:1px solid var(--line);padding-block:26px}
+.mq .row{display:inline-flex;white-space:nowrap;gap:50px;font:800 clamp(56px,9vw,140px)/1 "Syne",sans-serif;letter-spacing:-.04em}
+.mq .row span{color:transparent;-webkit-text-stroke:1.5px rgba(241,239,230,.4)}
+.mq .row span.f{color:var(--mint);-webkit-text-stroke:0}
+/* calculator */
+.calc{padding-block:clamp(90px,11vw,160px)}
+.cgrid{display:grid;grid-template-columns:1fr 1.25fr;gap:40px;align-items:stretch}
+.panel{background:var(--ink2);border:1px solid var(--line);border-radius:28px;padding:clamp(22px,3vw,40px);min-width:0}
+.tabs{display:inline-flex;background:var(--ink);border:1px solid var(--line);border-radius:999px;padding:4px;margin-bottom:28px}
+.tabs button{font:600 14px "Inter",sans-serif;border:0;background:transparent;color:var(--dim);padding:9px 18px;border-radius:999px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--fg);color:var(--ink)}
+.field{margin-bottom:24px}
+.field label{display:flex;justify-content:space-between;font-size:14px;color:var(--dim);margin-bottom:10px}
+.field label b{font:700 20px "Syne",sans-serif;color:var(--fg)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:2px;background:var(--line2);outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--mint);cursor:pointer;box-shadow:0 0 0 6px rgba(122,240,193,.15)}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border:0;border-radius:50%;background:var(--mint);cursor:pointer}
+.result{display:flex;flex-direction:column;justify-content:space-between}
+.result .big{font:800 clamp(48px,6vw,88px)/.9 "Syne",sans-serif;letter-spacing:-.04em;margin:10px 0}
+.result .big small{font-size:.35em;color:var(--mint)}
+#cchart{width:100%;height:260px;display:block;margin-top:20px}
+.rates{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:22px}
+.rates div{border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.rates span{display:block;font:500 11px "DM Mono",monospace;color:var(--faint);letter-spacing:.06em}
+.rates b{font:700 22px "Syne",sans-serif}
+.note{font-size:12px;color:var(--faint);margin-top:16px}
+/* governance */
+.gov{background:var(--cream);color:var(--cink);padding-block:clamp(90px,11vw,160px)}
+.gov p{color:var(--cdim)}
+.gov h2{color:var(--cink)}
+.gov .mono{color:var(--em)}
+.board{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:50px}
+.person{text-align:left;background:#fff;border:1px solid var(--cline);border-radius:22px;padding:14px;cursor:pointer;font:inherit;color:inherit;transition:transform .3s,box-shadow .3s;min-width:0}
+.person:hover{transform:translateY(-6px);box-shadow:0 24px 50px rgba(11,28,22,.12)}
+.portrait{aspect-ratio:4/5;max-width:100%;border-radius:14px;position:relative;overflow:hidden;display:grid;place-items:center;font:800 54px "Syne",sans-serif;color:rgba(255,255,255,.92)}
+.portrait::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 30% 20%,rgba(255,255,255,.35),transparent 50%)}
+.person b{display:block;margin-top:14px;font:700 17px "Syne",sans-serif;letter-spacing:-.01em}
+.person span{font-size:13px;color:var(--cdim)}
+.person .tags{display:flex;gap:5px;margin-top:10px;flex-wrap:wrap}
+.person .tags i{font:500 10.5px "DM Mono",monospace;font-style:normal;padding:3px 7px;border-radius:5px;background:rgba(19,128,93,.1);color:var(--em)}
+.committees{display:flex;gap:8px;flex-wrap:wrap;margin-top:30px}
+.committees button{font:600 13.5px "Inter",sans-serif;border:1px solid var(--cline);background:#fff;color:var(--cink);border-radius:999px;padding:9px 16px;cursor:pointer}
+.committees button[aria-pressed="true"]{background:var(--cink);color:var(--cream);border-color:var(--cink)}
+.person.fade{opacity:.25}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(480px,100vw);background:var(--cream);color:var(--cink);z-index:95;transform:translateX(100%);transition:transform .5s cubic-bezier(.7,0,.2,1);padding:calc(30px + env(safe-area-inset-top,0px)) max(30px,env(safe-area-inset-right,0px)) 30px 30px;overflow:auto;box-shadow:-30px 0 60px rgba(0,0,0,.35)}
+.drawer.open{transform:none}
+.drawer p{color:var(--cdim)}
+.drawer .close{position:absolute;top:calc(20px + env(safe-area-inset-top,0px));right:max(20px,env(safe-area-inset-right,0px));font:500 13px "DM Mono",monospace;border:1px solid var(--cline);background:transparent;border-radius:999px;padding:7px 12px;cursor:pointer}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:94;opacity:0;pointer-events:none;transition:opacity .4s}
+.scrim.open{opacity:1;pointer-events:auto}
+.att{display:flex;gap:18px;margin-top:22px;flex-wrap:wrap}
+.att div{text-align:center}
+.att svg{width:84px;height:84px}
+.att span{display:block;font:500 11px "DM Mono",monospace;color:var(--cdim);margin-top:4px}
+/* responsible */
+.resp{padding-block:clamp(90px,11vw,160px)}
+.rings{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:50px}
+.ring{border:1px solid var(--line);border-radius:24px;padding:24px;background:var(--ink2);min-width:0}
+.ring svg{width:120px;height:120px;display:block;margin-bottom:16px}
+.ring b{font:700 20px "Syne",sans-serif;display:block;margin-bottom:6px;letter-spacing:-.01em}
+.ring p{font-size:14px}
+/* news */
+.news{padding-block:0 clamp(90px,11vw,160px)}
+.nlist{margin-top:40px;border-top:1px solid var(--line)}
+.nitem{display:grid;grid-template-columns:140px 1fr 140px;gap:20px;align-items:center;padding:28px 0;border-bottom:1px solid var(--line);text-decoration:none;position:relative}
+.nitem h3{font-size:clamp(22px,2.4vw,34px);transition:transform .4s}
+.nitem:hover h3{transform:translateX(16px);color:var(--mint)}
+.nitem .mono{color:var(--faint)}
+.nitem .cat{justify-self:end;font:500 12px "DM Mono",monospace;padding:5px 11px;border:1px solid var(--line2);border-radius:999px;color:var(--dim)}
+.preview{position:fixed;width:280px;height:180px;border-radius:18px;pointer-events:none;z-index:84;opacity:0;transform:translate(-50%,-50%) scale(.8) rotate(-4deg);transition:opacity .25s,transform .35s;display:flex;align-items:flex-end;padding:18px;font:800 46px/.9 "Syne",sans-serif;color:var(--ink);overflow:hidden}
+.preview.on{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(-4deg)}
+/* big cta */
+.bigcta{padding-block:clamp(100px,14vw,200px);text-align:center;position:relative;overflow:hidden}
+.bigcta h2{font-size:clamp(56px,11vw,180px);letter-spacing:-.05em}
+.bigcta h2 em{font-style:italic;color:var(--mint)}
+.bigcta p{max-width:520px;margin:26px auto 36px;font-size:18px}
+.openmsg{display:none;max-width:520px;margin:20px auto 0;padding:14px 18px;border-radius:14px;border:1px solid rgba(122,240,193,.35);background:rgba(122,240,193,.08);color:var(--mint);font-size:14.5px}
+footer{border-top:1px solid var(--line);padding-block:50px calc(36px + env(safe-area-inset-bottom,0px));background:#020b08}
+.fg{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:30px}
+.fg h4{margin:0 0 14px;font:500 11px "DM Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:500}
+.fg ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;font-size:14.5px}
+.fg ul a{text-decoration:none;color:var(--dim)}
+.legal{margin-top:40px;padding-top:22px;border-top:1px solid var(--line);font-size:12.5px;color:var(--faint);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+@media (max-width:1000px){
+  .links{display:none}
+  .mapgrid,.cgrid{grid-template-columns:1fr}
+  .board,.rings{grid-template-columns:1fr 1fr}
+  .fg{grid-template-columns:1fr 1fr}
+  .nitem{grid-template-columns:1fr;gap:8px}
+  .nitem .cat{justify-self:start}
+  .scrollcue{display:none}
+}
+@media (max-width:600px){
+  .board,.rings,.fg,.rates{grid-template-columns:1fr}
+  .ypanel{width:92vw;padding:14vh 6vw 10vh}
+  .statelist div{grid-template-columns:96px 1fr 50px}
+}
+@media (prefers-reduced-motion:reduce){.trow,.grain{animation:none}}
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+<div class="cursor" id="cursor" aria-hidden="true"></div>
+<div class="tip" id="tip"></div>
+<div class="preview" id="preview" aria-hidden="true"></div>
+
+<nav class="top" id="nav"><div class="wrap">
+  <a class="logo" href="#"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="#13805d"/><path d="M16 6c3 4 5 7 5 10a5 5 0 0 1-10 0c0-3 2-6 5-10Z" fill="#7af0c1"/><path d="M16 13c1.4 2 2.2 3.3 2.2 4.6a2.2 2.2 0 0 1-4.4 0c0-1.3.8-2.6 2.2-4.6Z" fill="#e8bd62"/></svg>Lantera</a>
+  <div class="links"><a href="#year">Annual review</a><a href="#reach">Our reach</a><a href="#rates">Rates</a><a href="#governance">Governance</a><a href="#news">Newsroom</a></div>
+  <a class="btn pri sm mag" href="#open">Open account</a>
+  <a class="zl" href="../">← Z Lab</a>
+</div></nav>
+
+<header class="hero">
+  <canvas id="aurora" aria-hidden="true"></canvas>
+  <div class="veil"></div>
+  <span class="scrollcue mono">Scroll ↓</span>
+  <div class="wrap">
+    <div class="kicker mono"><i></i>Licensed digital bank · Malaysia</div>
+    <h1><span class="line"><span>Banking that</span></span><span class="line"><span class="rot" id="rot" aria-live="polite"></span></span></h1>
+    <div class="herobot">
+      <p>Lantera is the bank in your pocket for 2.4 million Malaysians. No branches, no queues, no fine print, and financing decisions in minutes, not weeks.</p>
+      <div class="cta"><a class="btn pri mag" href="#open">Open an account <span aria-hidden="true">→</span></a><a class="btn gh mag" href="#year">2026 in review</a></div>
+    </div>
+  </div>
+</header>
+
+<div class="ticker" aria-hidden="true"><div class="trow" id="trow"></div></div>
+
+<section class="statement wrap">
+  <span class="mono" style="color:var(--mint)">Our purpose</span>
+  <p class="big" id="stmt" style="margin-top:28px">We built Lantera for the teacher in Kuantan, the hawker in Kuching and the founder in Cyberjaya. People who were told to come back on Monday, with three months of payslips. Now they bank at midnight, from anywhere.</p>
+  <div class="sub"><div><span class="mono" style="color:var(--faint)">Founded</span><p style="margin-top:6px">2023, after receiving one of five digital bank licences.</p></div><div><span class="mono" style="color:var(--faint)">Headquarters</span><p style="margin-top:6px">Bangsar South, Kuala Lumpur. 640 people, half of them engineers.</p></div><div><span class="mono" style="color:var(--faint)">Shariah</span><p style="margin-top:6px">Every product available in a Shariah-compliant version.</p></div></div>
+</section>
+
+<section class="year" id="year">
+  <div class="ytrack" id="ytrack">
+    <div class="ypanel first"><span class="mono">Annual review</span><h2 style="margin-top:20px">2026 in numbers.</h2><p style="margin-top:22px;font-size:18px;max-width:420px">Our third full year. Keep scrolling and the year plays out sideways.</p></div>
+    <div class="ypanel"><div><span class="mono">Customers</span><div class="num" style="margin-top:12px"><span class="count" data-to="2.4" data-dec="1">0</span><small>million</small></div><p style="max-width:420px;margin-top:10px">Up from 1.1 million a year ago. 38% of new customers had never held a bank account with financing access before.</p></div>
+      <svg class="ychart" viewBox="0 0 800 260" preserveAspectRatio="none" aria-label="Customer growth chart"><defs><linearGradient id="ga" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#13805d" stop-opacity=".35"/><stop offset="1" stop-color="#13805d" stop-opacity="0"/></linearGradient></defs><path class="ar" id="ar1" d=""/><path class="ln" id="ln1" d=""/><g id="ax1"></g></svg></div>
+    <div class="ypanel"><div><span class="mono">Deposits</span><div class="num" style="margin-top:12px">RM<span class="count" data-to="18.6" data-dec="1">0</span><small>billion</small></div><p style="max-width:420px;margin-top:10px">Customer deposits grew 74%. The average saver earned 3.1% a year in our flexible savings pockets.</p></div>
+      <div class="bars" id="bars1"></div></div>
+    <div class="ypanel"><div><span class="mono">Financing</span><div class="num" style="margin-top:12px"><span class="count" data-to="4" data-dec="0">0</span><small>minutes</small></div><p style="max-width:440px;margin-top:10px">Median time from application to decision for personal and micro-SME financing. RM 3.2 billion disbursed to 410,000 customers, 61,000 of them small businesses.</p></div>
+      <div class="bars" id="bars2"></div></div>
+    <div class="ypanel"><div><span class="mono">Profit</span><div class="num" style="margin-top:12px">RM<span class="count" data-to="212" data-dec="0">0</span><small>million</small></div><p style="max-width:440px;margin-top:10px">Our first full year of profit before tax, two years ahead of plan. Cost-to-income fell to 41%.</p></div>
+      <div class="bars" id="bars3"></div></div>
+  </div>
+  <div class="yprog"><i id="yprog"></i></div>
+</section>
+
+<section class="mapsec wrap" id="reach">
+  <div class="mapgrid">
+    <div><span class="mono" style="color:var(--mint)">Our reach</span><h2 style="margin-top:18px;font-size:clamp(40px,5vw,72px)">Every state. Every district.</h2><p style="margin-top:20px;font-size:17px">Customers by state, as at 30 September 2026. Hover a state to see it.</p>
+      <div class="legend"><span>Fewer</span><i></i><span>More customers</span></div>
+      <div class="statelist" id="statelist"></div>
+    </div>
+    <svg id="mymap" role="img" aria-label="Map of Malaysia shaded by Lantera customers per state"></svg>
+  </div>
+</section>
+
+<div class="mq" aria-hidden="true"><div class="row" id="mqrow"></div></div>
+
+<section class="calc wrap" id="rates">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:30px;flex-wrap:wrap;margin-bottom:46px"><div><span class="mono" style="color:var(--mint)">Rates &amp; calculator</span><h2 style="margin-top:18px;font-size:clamp(40px,5vw,72px)">Watch it grow.</h2></div><p style="max-width:420px;font-size:17px">Move the sliders. Everything is calculated from today's published rates.</p></div>
+  <div class="cgrid">
+    <div class="panel">
+      <div class="tabs" role="tablist"><button role="tab" aria-selected="true" data-m="save">Save</button><button role="tab" aria-selected="false" data-m="fin">Finance</button></div>
+      <div id="fields"></div>
+      <div class="rates"><div><span>SAVINGS POCKET</span><b>3.10%</b></div><div><span>12-MONTH FD</span><b>3.65%</b></div><div><span>PERSONAL FIN.</span><b>from 5.88%</b></div></div>
+      <p class="note">Rates p.a., effective 1 October 2026. Illustrative only. Lantera is a fictional bank.</p>
+    </div>
+    <div class="panel result"><div><span class="mono" id="rlabel" style="color:var(--faint)">You'll have</span><div class="big" id="rbig">RM 0</div><p id="rsub"></p></div><canvas id="cchart" aria-label="Growth chart"></canvas></div>
+  </div>
+</section>
+
+<section class="gov" id="governance"><div class="wrap">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:30px;flex-wrap:wrap"><div><span class="mono">Governance</span><h2 style="margin-top:18px;font-size:clamp(40px,5vw,72px)">The people accountable.</h2></div><p style="max-width:440px;font-size:17px">Our board has eight directors, five of them independent. Filter by committee, then open a profile for full details.</p></div>
+  <div class="committees" id="comm"><button data-c="all" aria-pressed="true">Full board</button><button data-c="ARC">Audit</button><button data-c="BRC">Risk</button><button data-c="NRC">Nomination &amp; Remuneration</button><button data-c="BITC">Technology</button><button data-c="SC">Shariah</button></div>
+  <div class="board" id="board"></div>
+</div></section>
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true"><button class="close" id="dclose">Close ✕</button><div id="dbody"></div></aside>
+
+<section class="resp wrap">
+  <span class="mono" style="color:var(--mint)">Responsible banking</span><h2 style="margin-top:18px;font-size:clamp(40px,5vw,72px);max-width:900px">Progress we measure, in public.</h2>
+  <div class="rings" id="rings"></div>
+</section>
+
+<section class="news wrap" id="news">
+  <span class="mono" style="color:var(--mint)">Newsroom</span><h2 style="margin-top:18px;font-size:clamp(40px,5vw,72px)">Latest from Lantera.</h2>
+  <div class="nlist" id="nlist"></div>
+</section>
+
+<section class="bigcta" id="open">
+  <h2>Open in <em>4</em> minutes.</h2>
+  <p>Your MyKad, a selfie and a phone. That's the whole application.</p>
+  <button class="btn pri mag" id="openbtn" style="font-size:17px;padding:18px 30px">Start my account →</button>
+  <div class="openmsg" id="openmsg">Lantera Digital Bank is fictional, made for Z Lab, so there's no account to open. But thanks for wanting one.</div>
+</section>
+
+<footer><div class="wrap">
+  <div class="fg">
+    <div><a class="logo" href="#"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="#13805d"/><path d="M16 6c3 4 5 7 5 10a5 5 0 0 1-10 0c0-3 2-6 5-10Z" fill="#7af0c1"/></svg>Lantera</a><p style="margin-top:14px;max-width:320px;font-size:14px">Lantera Digital Bank Berhad. Level 18, Tower 3, Bangsar South, Kuala Lumpur.</p></div>
+    <div><h4>Company</h4><ul><li><a href="#year">Annual review</a></li><li><a href="#governance">Governance</a></li><li><a href="#news">Newsroom</a></li><li><a href="#">Careers</a></li></ul></div>
+    <div><h4>Products</h4><ul><li><a href="#rates">Savings pockets</a></li><li><a href="#rates">Fixed deposit</a></li><li><a href="#rates">Personal financing</a></li><li><a href="#rates">SME financing</a></li></ul></div>
+    <div><h4>Help</h4><ul><li><a href="#">Report fraud</a></li><li><a href="#">Security tips</a></li><li><a href="#">Complaints</a></li><li><a href="#">Contact</a></li></ul></div>
+  </div>
+  <div class="legal"><span>© 2026 Lantera Digital Bank Berhad. A fictional bank, made for Z Lab. No real deposits, rates or licences.</span><span>Never share your TAC or PIN with anyone.</span></div>
+</div></footer>
+
+<script src="js/gsap.min.js"></script>
+<script src="js/ScrollTrigger.min.js"></script>
+<script src="js/mapdata.js"></script>
+<script>
+(function () {
+'use strict';
+var $ = function (s) { return document.querySelector(s); };
+var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+var fine = matchMedia('(pointer:fine)').matches;
+var hasGsap = typeof gsap !== 'undefined';
+if (hasGsap) gsap.registerPlugin(ScrollTrigger);
+function fmt(n, d) { return n.toLocaleString('en-MY', { minimumFractionDigits: d || 0, maximumFractionDigits: d || 0 }); }
+
+/* ---------- aurora shader (2D, fullscreen) ---------- */
+(function aurora() {
+  var c = $('#aurora'), gl = c.getContext('webgl', { antialias: false, premultipliedAlpha: false });
+  if (!gl) { c.style.background = 'radial-gradient(circle at 30% 30%,#13805d,#04130e 70%)'; return; }
+  var vs = 'attribute vec2 p; void main(){ gl_Position = vec4(p,0.,1.); }';
+  var fs = 'precision highp float; uniform vec2 r; uniform float t; uniform vec2 m;' +
+    'float h(vec2 p){ return fract(sin(dot(p, vec2(127.1,311.7)))*43758.5453); }' +
+    'float n(vec2 p){ vec2 i=floor(p), f=fract(p); f=f*f*(3.-2.*f); return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y); }' +
+    'float fbm(vec2 p){ float v=0., a=.5; for(int i=0;i<5;i++){ v+=a*n(p); p*=2.02; a*=.5; } return v; }' +
+    'void main(){ vec2 uv = gl_FragCoord.xy/r; vec2 p = (gl_FragCoord.xy - .5*r)/r.y; p += (m-.5)*.18;' +
+    ' float tt = t*.06; vec2 q = vec2(fbm(p*1.6 + tt), fbm(p*1.6 - tt + 3.1));' +
+    ' float f = fbm(p*1.3 + q*1.8 + vec2(tt*1.6, -tt));' +
+    ' float band = smoothstep(.15, .0, abs(p.y + .25*sin(p.x*2.2 + t*.25) - (f-.5)*.9 - .05));' +
+    ' float band2 = smoothstep(.22, .0, abs(p.y - .3 + .2*sin(p.x*1.6 - t*.2) - (q.x-.5)*.7));' +
+    ' vec3 c = vec3(.016,.075,.055);' +
+    ' c = mix(c, vec3(.05,.42,.3), smoothstep(.3,.9,f)*.8);' +
+    ' c += vec3(.25,.95,.7)*band*.55 + vec3(.9,.7,.3)*band2*.22;' +
+    ' c += vec3(.48,.94,.76)*pow(band,4.)*.6;' +
+    ' float vig = smoothstep(1.3,.2,length(p*vec2(.8,1.)));' +
+    ' c *= .55 + .55*vig; c *= 1. - .35*uv.y*0.;' +
+    ' gl_FragColor = vec4(c, 1.); }';
+  function sh(t, s) { var o = gl.createShader(t); gl.shaderSource(o, s); gl.compileShader(o); return o; }
+  var pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(pr); gl.useProgram(pr);
+  var b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  var loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  var ur = gl.getUniformLocation(pr, 'r'), ut = gl.getUniformLocation(pr, 't'), um = gl.getUniformLocation(pr, 'm');
+  var mx = .5, my = .5, tx = .5, ty = .5, vis = true, scale = matchMedia('(pointer:coarse)').matches ? .5 : .7;
+  addEventListener('pointermove', function (e) { tx = e.clientX / innerWidth; ty = 1 - e.clientY / innerHeight; });
+  function size() { c.width = Math.round(c.clientWidth * scale); c.height = Math.round(c.clientHeight * scale); gl.viewport(0, 0, c.width, c.height); }
+  addEventListener('resize', size); size();
+  new IntersectionObserver(function (es) { vis = es[0].isIntersecting; }).observe(c);
+  var t0 = performance.now();
+  (function loop() { requestAnimationFrame(loop); if (!vis || document.hidden) return; mx += (tx - mx) * .04; my += (ty - my) * .04; gl.uniform2f(ur, c.width, c.height); gl.uniform1f(ut, reduce ? 20 : (performance.now() - t0) / 1000); gl.uniform2f(um, mx, my); gl.drawArrays(gl.TRIANGLES, 0, 3); })();
+})();
+
+/* ---------- nav, cursor, magnetic buttons ---------- */
+addEventListener('scroll', function () { $('#nav').classList.toggle('solid', scrollY > 40); }, { passive: true });
+if (fine) {
+  var cur = $('#cursor'), cx = 0, cy = 0, kx = 0, ky = 0;
+  addEventListener('pointermove', function (e) { cx = e.clientX; cy = e.clientY; });
+  (function cl() { requestAnimationFrame(cl); kx += (cx - kx) * .2; ky += (cy - ky) * .2; cur.style.transform = 'translate(' + kx + 'px,' + ky + 'px) translate(-50%,-50%)'; })();
+  document.querySelectorAll('a,button,#mymap path').forEach(function (el) { el.addEventListener('pointerenter', function () { cur.classList.add('big'); }); el.addEventListener('pointerleave', function () { cur.classList.remove('big'); }); });
+  document.querySelectorAll('.mag').forEach(function (b) {
+    b.addEventListener('pointermove', function (e) { var r = b.getBoundingClientRect(); var x = e.clientX - r.left - r.width / 2, y = e.clientY - r.top - r.height / 2; b.style.transform = 'translate(' + x * .25 + 'px,' + y * .35 + 'px)'; });
+    b.addEventListener('pointerleave', function () { b.style.transition = 'transform .4s'; b.style.transform = ''; setTimeout(function () { b.style.transition = ''; }, 400); });
+  });
+}
+
+/* ---------- hero kinetic word ---------- */
+var WORDS = ['grows with you.', 'never sleeps.', 'speaks Malaysian.', 'pays you back.'];
+var rot = $('#rot'), wi = 0;
+function setWord(w, animate) {
+  rot.innerHTML = w.split('').map(function (ch) { return '<span class="ch">' + (ch === ' ' ? '&nbsp;' : ch) + '</span>'; }).join('');
+  if (hasGsap && animate && !reduce) gsap.from(rot.querySelectorAll('.ch'), { yPercent: 110, opacity: 0, rotate: 8, duration: .7, ease: 'power4.out', stagger: .025 });
+}
+setWord(WORDS[0], false);
+if (hasGsap && !reduce) {
+  gsap.from('.hero h1 .line>span', { yPercent: 105, duration: 1.1, ease: 'power4.out', stagger: .12, delay: .15 });
+  gsap.from('.herobot>*, .kicker', { y: 30, opacity: 0, duration: 1, ease: 'power3.out', stagger: .1, delay: .5 });
+  setInterval(function () { wi = (wi + 1) % WORDS.length; gsap.to(rot.querySelectorAll('.ch'), { yPercent: -110, opacity: 0, duration: .35, ease: 'power2.in', stagger: .015, onComplete: function () { setWord(WORDS[wi], true); } }); }, 3200);
+}
+
+/* ---------- ticker ---------- */
+var TK = [['LANTERA SAVINGS', '3.10%', ''], ['12M FD', '3.65%', ''], ['OPR', '3.00%', ''], ['USD/MYR', '4.21', '-0.3%'], ['SGD/MYR', '3.27', '+0.1%'], ['APP RATING', '4.8 ★', ''], ['CUSTOMERS', '2.41M', '+18k this week'], ['GOLD (g)', 'RM 412.60', '+0.6%'], ['FINANCING DECISION', '4 min', 'median']];
+var tr = TK.map(function (t) { return '<span>' + t[0] + ' <b>' + t[1] + '</b> ' + (t[2] ? '<em class="' + (t[2][0] === '-' ? 'dn' : '') + '">' + t[2] + '</em>' : '') + '</span>'; }).join('');
+$('#trow').innerHTML = tr + tr;
+
+/* ---------- statement word reveal ---------- */
+var st = $('#stmt'); st.innerHTML = st.textContent.split(' ').map(function (w) { return '<span class="w">' + w + '</span>'; }).join(' ');
+var words = st.querySelectorAll('.w');
+if (hasGsap) {
+  ScrollTrigger.create({ trigger: st, start: 'top 80%', end: 'bottom 45%', scrub: true, onUpdate: function (s) { var k = Math.round(s.progress * words.length); words.forEach(function (w, i) { w.style.opacity = i < k ? 1 : .14; }); } });
+} else words.forEach(function (w) { w.style.opacity = 1; });
+
+/* ---------- year in numbers: charts ---------- */
+(function charts() {
+  var data = [0.12, 0.2, 0.31, 0.45, 0.58, 0.72, 0.86, 1.1, 1.3, 1.55, 1.8, 2.05, 2.4];
+  var W = 800, H = 230, max = 2.6;
+  var pts = data.map(function (v, i) { return [i / (data.length - 1) * W, H - v / max * (H - 20)]; });
+  var d = 'M' + pts.map(function (p) { return p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' L');
+  $('#ln1').setAttribute('d', d); $('#ar1').setAttribute('d', d + ' L' + W + ' ' + H + ' L0 ' + H + ' Z');
+  $('#ax1').innerHTML = ['Q3 23', 'Q3 24', 'Q3 25', 'Q3 26'].map(function (t, i) { return '<text x="' + (i / 3 * (W - 40) + 4) + '" y="256">' + t + '</text>'; }).join('');
+  function bars(id, vals, labels, hl, unit) { $('#' + id).innerHTML = vals.map(function (v, i) { return '<div class="' + (i === hl ? 'hl' : '') + '" style="height:' + (v / Math.max.apply(null, vals) * 100) + '%"><span>' + unit(v) + '</span><label>' + labels[i] + '</label></div>'; }).join(''); }
+  bars('bars1', [1.2, 4.9, 10.7, 18.6], ['2023', '2024', '2025', '2026'], 3, function (v) { return 'RM' + v + 'b'; });
+  bars('bars2', [19, 11, 7, 4], ['2023', '2024', '2025', '2026'], 3, function (v) { return v + ' min'; });
+  bars('bars3', [-180, -64, 41, 212].map(function (v) { return Math.max(v, 6); }), ['2023', '2024', '2025', '2026'], 3, function (v) { return 'RM' + v + 'm'; });
+  var b3 = $('#bars3').children; b3[0].querySelector('span').textContent = '−RM180m'; b3[1].querySelector('span').textContent = '−RM64m'; b3[0].style.background = b3[1].style.background = 'rgba(11,28,22,.25)';
+})();
+(function horizontal() {
+  var track = $('#ytrack'), sec = $('#year');
+  var len1 = $('#ln1').getTotalLength();
+  $('#ln1').style.strokeDasharray = len1; $('#ln1').style.strokeDashoffset = len1;
+  var counts = [].slice.call(document.querySelectorAll('.count'));
+  function setCount(el, f) { var to = +el.dataset.to, dec = +el.dataset.dec; el.textContent = fmt(to * f, dec); }
+  if (!hasGsap) { $('#ln1').style.strokeDashoffset = 0; counts.forEach(function (c) { setCount(c, 1); }); return; }
+  var mm = gsap.matchMedia();
+  mm.add('(min-width: 0px)', function () {
+    var dist = function () { return track.scrollWidth - innerWidth; };
+    var tl = gsap.to(track, { x: function () { return -dist(); }, ease: 'none', scrollTrigger: { trigger: sec, start: 'top top', end: function () { return '+=' + dist(); }, pin: true, scrub: .6, invalidateOnRefresh: true, anticipatePin: 1, onUpdate: function (s) { $('#yprog').style.width = (s.progress * 100) + '%'; } } });
+    track.querySelectorAll('.ypanel:not(.first)').forEach(function (p) {
+      var c = p.querySelector('.count'), o = { f: 0 };
+      gsap.to(o, { f: 1, ease: 'power2.out', scrollTrigger: { trigger: p, containerAnimation: tl, start: 'left 85%', end: 'left 30%', scrub: true }, onUpdate: function () { setCount(c, o.f); } });
+      var bs = p.querySelectorAll('.bars div'); if (bs.length) gsap.from(bs, { scaleY: 0, ease: 'power3.out', stagger: .08, scrollTrigger: { trigger: p, containerAnimation: tl, start: 'left 75%', end: 'left 25%', scrub: true } });
+      var ln = p.querySelector('#ln1'); if (ln) { gsap.to(ln, { strokeDashoffset: 0, ease: 'none', scrollTrigger: { trigger: p, containerAnimation: tl, start: 'left 80%', end: 'left 10%', scrub: true } }); gsap.from('#ar1', { opacity: 0, scrollTrigger: { trigger: p, containerAnimation: tl, start: 'left 60%', end: 'left 20%', scrub: true } }); }
+    });
+  });
+})();
+
+/* ---------- map ---------- */
+(function map() {
+  var M = window.MY_MAP; if (!M) return;
+  var DATA = { 'Selangor': 612, 'Kuala Lumpur': 298, 'Johor': 341, 'Penang': 164, 'Perak': 172, 'Sabah': 151, 'Sarawak': 166, 'Kedah': 108, 'Negeri Sembilan': 92, 'Pahang': 89, 'Kelantan': 96, 'Terengganu': 71, 'Malacca': 64, 'Perlis': 14, 'Putrajaya': 22, 'Labuan': 9 };
+  var svg = $('#mymap'); svg.setAttribute('viewBox', '0 0 ' + M.w + ' ' + M.h);
+  var max = 612;
+  function col(v) { var t = Math.pow(v / max, .55); var a = [13, 46, 35], b = [19, 128, 93], c = [122, 240, 193]; var k = t < .5 ? t / .5 : (t - .5) / .5, x = t < .5 ? a : b, y = t < .5 ? b : c; return 'rgb(' + x.map(function (q, i) { return Math.round(q + (y[i] - q) * k); }).join(',') + ')'; }
+  var tip = $('#tip');
+  Object.keys(M.states).forEach(function (n) {
+    var p = document.createElementNS('http://www.w3.org/2000/svg', 'path'); p.setAttribute('d', M.states[n]); p.dataset.n = n; p.dataset.fill = col(DATA[n] || 5); svg.appendChild(p);
+    p.addEventListener('pointermove', function (e) { tip.innerHTML = '<b>' + n + '</b>' + fmt((DATA[n] || 0) * 1000) + ' customers'; tip.style.opacity = 1; tip.style.left = (e.clientX + 16) + 'px'; tip.style.top = (e.clientY + 16) + 'px'; });
+    p.addEventListener('pointerleave', function () { tip.style.opacity = 0; });
+  });
+  var top = Object.keys(DATA).sort(function (a, b) { return DATA[b] - DATA[a]; }).slice(0, 6);
+  $('#statelist').innerHTML = top.map(function (n) { return '<div><span>' + n + '</span><span class="bar"><i data-w="' + (DATA[n] / max * 100) + '"></i></span><span>' + (DATA[n] >= 1000 ? '' : DATA[n] + 'k') + '</span></div>'; }).join('');
+  var paths = [].slice.call(svg.querySelectorAll('path')).sort(function (a, b) { return a.getBBox().x - b.getBBox().x; });
+  function reveal() { paths.forEach(function (p, i) { setTimeout(function () { p.style.fill = p.dataset.fill; }, reduce ? 0 : i * 70); }); document.querySelectorAll('#statelist i').forEach(function (i, k) { setTimeout(function () { i.style.transition = 'width 1s cubic-bezier(.2,.8,.2,1)'; i.style.width = i.dataset.w + '%'; }, reduce ? 0 : 300 + k * 90); }); }
+  if (hasGsap) ScrollTrigger.create({ trigger: svg, start: 'top 75%', once: true, onEnter: reveal }); else reveal();
+})();
+
+/* ---------- marquee driven by scroll ---------- */
+(function mq() {
+  var W = ['SAVE', 'FINANCE', 'INVEST', 'PROTECT', 'GROW'], row = $('#mqrow'), html = '';
+  for (var k = 0; k < 3; k++) W.forEach(function (w, i) { html += '<span class="' + ((i + k) % 3 === 0 ? 'f' : '') + '">' + w + '</span><span>✦</span>'; });
+  row.innerHTML = html;
+  if (hasGsap) gsap.fromTo(row, { x: 0 }, { x: function () { return -(row.scrollWidth / 3); }, ease: 'none', scrollTrigger: { trigger: '.mq', start: 'top bottom', end: 'bottom top', scrub: true } });
+})();
+
+/* ---------- calculator ---------- */
+(function calc() {
+  var mode = 'save', S = { dep: 500, yrs: 10, start: 5000 }, F = { amt: 30000, yrs: 5 };
+  var cv = $('#cchart'), cx = cv.getContext('2d'), anim = { k: 1 };
+  function fields() {
+    $('#fields').innerHTML = mode === 'save'
+      ? field('start', 'Starting amount', 0, 50000, 500, S.start, 'RM ') + field('dep', 'Monthly deposit', 50, 5000, 50, S.dep, 'RM ') + field('yrs', 'Years', 1, 30, 1, S.yrs, '', ' yrs')
+      : field('amt', 'Financing amount', 5000, 150000, 1000, F.amt, 'RM ') + field('yrs', 'Tenure', 1, 10, 1, F.yrs, '', ' yrs');
+    $('#fields').querySelectorAll('input').forEach(function (i) { i.addEventListener('input', function () { (mode === 'save' ? S : F)[i.dataset.k] = +i.value; i.parentElement.querySelector('b').textContent = i.dataset.pre + fmt(+i.value) + i.dataset.suf; compute(false); }); });
+  }
+  function field(k, l, mn, mx, st, v, pre, suf) { return '<div class="field"><label>' + l + '<b>' + pre + fmt(v) + (suf || '') + '</b></label><input type="range" data-k="' + k + '" data-pre="' + pre + '" data-suf="' + (suf || '') + '" min="' + mn + '" max="' + mx + '" step="' + st + '" value="' + v + '" aria-label="' + l + '"></div>'; }
+  var series = [], series2 = [];
+  function compute(fresh) {
+    series = []; series2 = [];
+    if (mode === 'save') {
+      var r = .031 / 12, bal = S.start, paid = S.start; series.push(bal); series2.push(paid);
+      for (var m = 1; m <= S.yrs * 12; m++) { bal = bal * (1 + r) + S.dep; paid += S.dep; if (m % 3 === 0) { series.push(bal); series2.push(paid); } }
+      $('#rlabel').textContent = 'You\'ll have'; $('#rbig').innerHTML = 'RM ' + fmt(bal) + '<small> in ' + S.yrs + ' yrs</small>';
+      $('#rsub').textContent = 'RM ' + fmt(paid) + ' deposited · RM ' + fmt(bal - paid) + ' earned in profit at 3.10% p.a.';
+    } else {
+      var rr = .0588 / 12, n = F.yrs * 12, pay = F.amt * rr / (1 - Math.pow(1 + rr, -n)), b = F.amt; series.push(b); series2.push(F.amt);
+      for (var mm = 1; mm <= n; mm++) { b = b * (1 + rr) - pay; if (mm % 3 === 0) { series.push(Math.max(0, b)); series2.push(F.amt); } }
+      $('#rlabel').textContent = 'Your monthly instalment'; $('#rbig').innerHTML = 'RM ' + fmt(pay) + '<small> /month</small>';
+      $('#rsub').textContent = 'Total repayable RM ' + fmt(pay * n) + ' over ' + F.yrs + ' years at 5.88% p.a. Decision in about 4 minutes.';
+    }
+    if (fresh && hasGsap) { anim.k = 0; gsap.to(anim, { k: 1, duration: 1.1, ease: 'power3.out', onUpdate: draw }); } else draw();
+  }
+  function draw() {
+    var d = Math.min(devicePixelRatio, 2), w = cv.clientWidth, h = cv.clientHeight; cv.width = w * d; cv.height = h * d; cx.setTransform(d, 0, 0, d, 0, 0); cx.clearRect(0, 0, w, h);
+    var max = Math.max.apply(null, series.concat(series2)) * 1.08, n = series.length;
+    function y(v) { return h - 20 - v / max * (h - 30) * anim.k; } function x(i) { return i / (n - 1) * w; }
+    cx.strokeStyle = 'rgba(241,239,230,.08)'; for (var g = 0; g < 4; g++) { cx.beginPath(); cx.moveTo(0, h - 20 - g * (h - 30) / 3); cx.lineTo(w, h - 20 - g * (h - 30) / 3); cx.stroke(); }
+    var grad = cx.createLinearGradient(0, 0, 0, h); grad.addColorStop(0, 'rgba(122,240,193,.45)'); grad.addColorStop(1, 'rgba(122,240,193,0)');
+    cx.beginPath(); series.forEach(function (v, i) { i ? cx.lineTo(x(i), y(v)) : cx.moveTo(x(i), y(v)); }); cx.lineTo(w, h - 20); cx.lineTo(0, h - 20); cx.fillStyle = grad; cx.fill();
+    cx.beginPath(); series.forEach(function (v, i) { i ? cx.lineTo(x(i), y(v)) : cx.moveTo(x(i), y(v)); }); cx.strokeStyle = '#7af0c1'; cx.lineWidth = 2.5; cx.stroke();
+    cx.setLineDash([5, 6]); cx.beginPath(); series2.forEach(function (v, i) { i ? cx.lineTo(x(i), y(v)) : cx.moveTo(x(i), y(v)); }); cx.strokeStyle = 'rgba(232,189,98,.8)'; cx.lineWidth = 1.5; cx.stroke(); cx.setLineDash([]);
+    cx.font = '11px "DM Mono"'; cx.fillStyle = 'rgba(241,239,230,.45)'; cx.fillText(mode === 'save' ? '— balance   - - deposited' : '— balance owed   - - amount financed', 0, h - 4);
+  }
+  document.querySelectorAll('.tabs button').forEach(function (b) { b.addEventListener('click', function () { mode = b.dataset.m; document.querySelectorAll('.tabs button').forEach(function (x) { x.setAttribute('aria-selected', x === b ? 'true' : 'false'); }); fields(); compute(true); }); });
+  addEventListener('resize', draw);
+  fields(); compute(false);
+  if (hasGsap) ScrollTrigger.create({ trigger: cv, start: 'top 80%', once: true, onEnter: function () { compute(true); } });
+})();
+
+/* ---------- governance ---------- */
+(function gov() {
+  var B = [
+    { n: 'Tan Sri Dr. Aminah Rashid', r: 'Independent Non-Executive Chair', c: ['NRC'], g: ['#13805d', '#e8bd62'], att: [12, 12], since: 2023, bio: 'Former deputy governor at the central bank with 30 years in payments and financial inclusion. Chairs the board and leads its engagement with regulators.' },
+    { n: 'Daniel Ong Wei Ming', r: 'Chief Executive Officer', c: ['BITC'], g: ['#0d2e23', '#7af0c1'], att: [12, 12], since: 2023, bio: 'Built the bank from a team of eleven. Previously led consumer lending at a regional super-app and engineering at a Singapore fintech.' },
+    { n: 'Priya Nair', r: 'Independent Director', c: ['ARC', 'BRC'], g: ['#1b5e7a', '#7af0c1'], att: [12, 11], since: 2023, bio: 'Chartered accountant and former audit partner. Chairs the Audit Committee and sits on the Risk Committee.' },
+    { n: 'Datuk Haris Zulkifli', r: 'Independent Director', c: ['BRC', 'NRC'], g: ['#6b3a1f', '#e8bd62'], att: [11, 12], since: 2024, bio: 'Thirty years in corporate banking and credit risk. Chairs the Board Risk Committee.' },
+    { n: 'Dr. Lim Su-Ann', r: 'Independent Director', c: ['BITC', 'ARC'], g: ['#2f2a6b', '#7af0c1'], att: [12, 12], since: 2023, bio: 'Computer scientist and cybersecurity researcher. Chairs the Board IT Committee and oversees technology resilience.' },
+    { n: 'Ustaz Dr. Faiz Idris', r: 'Chair, Shariah Committee', c: ['SC'], g: ['#13805d', '#0d2e23'], att: [10, 10], since: 2023, bio: 'Professor of Islamic finance. Leads the Shariah Committee and attends board meetings on Shariah matters.' },
+    { n: 'Rebecca Chong', r: 'Non-Independent Director', c: ['NRC', 'BITC'], g: ['#7a1b4a', '#e8bd62'], att: [11, 12], since: 2023, bio: 'Represents a founding shareholder. Former chief strategy officer of a listed telecommunications group.' },
+    { n: 'Kumar Selvaraj', r: 'Independent Director', c: ['ARC', 'BRC'], g: ['#1f4d2e', '#7af0c1'], att: [12, 12], since: 2025, bio: 'Former chief risk officer at an insurer. Brings expertise in capital management and actuarial risk.' }
+  ];
+  var CN = { ARC: 'Audit', BRC: 'Risk', NRC: 'Nom & Rem', BITC: 'Technology', SC: 'Shariah' };
+  var board = $('#board');
+  board.innerHTML = B.map(function (p, i) { var ini = p.n.replace(/(Tan Sri|Datuk|Dr\.|Ustaz)\s*/g, '').split(' ').map(function (w) { return w[0]; }).slice(0, 2).join(''); return '<button class="person" data-i="' + i + '"><div class="portrait" style="background:linear-gradient(140deg,' + p.g[0] + ',' + p.g[1] + ')">' + ini + '</div><b>' + p.n + '</b><span>' + p.r + '</span><div class="tags">' + p.c.map(function (c) { return '<i>' + CN[c] + '</i>'; }).join('') + '</div></button>'; }).join('');
+  function ring(v, t, label) { var f = v / t, c = 2 * Math.PI * 34; return '<div><svg viewBox="0 0 84 84"><circle cx="42" cy="42" r="34" fill="none" stroke="rgba(11,28,22,.1)" stroke-width="8"/><circle cx="42" cy="42" r="34" fill="none" stroke="#13805d" stroke-width="8" stroke-linecap="round" stroke-dasharray="' + c + '" stroke-dashoffset="' + c * (1 - f) + '" transform="rotate(-90 42 42)"/><text x="42" y="47" text-anchor="middle" font-family="Syne" font-weight="800" font-size="16" fill="#0b1c16">' + v + '/' + t + '</text></svg><span>' + label + '</span></div>'; }
+  var dr = $('#drawer'), sc = $('#scrim');
+  function open(i) { var p = B[i]; $('#dbody').innerHTML = '<div class="portrait" style="background:linear-gradient(140deg,' + p.g[0] + ',' + p.g[1] + ');max-width:180px;font-size:48px">' + board.children[i].querySelector('.portrait').textContent + '</div><h3 style="font-size:30px;margin-top:22px">' + p.n + '</h3><p style="margin-top:6px;font-weight:600;color:#13805d">' + p.r + '</p><p style="margin-top:16px;font-size:15.5px">' + p.bio + '</p><p class="mono" style="margin-top:22px;color:rgba(11,28,22,.5)">Committees</p><p style="margin-top:6px">' + p.c.map(function (c) { return CN[c]; }).join(' · ') + '</p><p class="mono" style="margin-top:22px;color:rgba(11,28,22,.5)">Attendance FY2026 · on board since ' + p.since + '</p><div class="att">' + ring(p.att[0], 12, 'Board') + ring(p.att[1], 12, 'Committees') + '</div>'; dr.classList.add('open'); sc.classList.add('open'); dr.setAttribute('aria-hidden', 'false'); }
+  function close() { dr.classList.remove('open'); sc.classList.remove('open'); dr.setAttribute('aria-hidden', 'true'); }
+  board.addEventListener('click', function (e) { var b = e.target.closest('.person'); if (b) open(+b.dataset.i); });
+  $('#dclose').addEventListener('click', close); sc.addEventListener('click', close); addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+  document.querySelectorAll('#comm button').forEach(function (b) { b.addEventListener('click', function () { document.querySelectorAll('#comm button').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); var c = b.dataset.c; board.querySelectorAll('.person').forEach(function (el, i) { el.classList.toggle('fade', c !== 'all' && B[i].c.indexOf(c) < 0); }); }); });
+  if (hasGsap && !reduce) gsap.from('.person', { y: 60, opacity: 0, duration: .9, ease: 'power3.out', stagger: .07, scrollTrigger: { trigger: '#board', start: 'top 80%' } });
+})();
+
+/* ---------- responsible rings ---------- */
+(function resp() {
+  var R = [[38, 'First-time borrowers', '38% of financing went to customers with no prior credit history.', '#7af0c1'], [52, 'Women-led SMEs', 'Over half of our micro-SME financing supports businesses led by women.', '#e8bd62'], [100, 'Renewable data centres', 'Our cloud workloads run on 100% renewable-energy contracts.', '#7af0c1'], [71, 'Fraud prevented', 'RM 71 million in attempted fraud stopped before it left customer accounts.', '#e8bd62']];
+  $('#rings').innerHTML = R.map(function (r) { var c = 2 * Math.PI * 50; return '<div class="ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" fill="none" stroke="rgba(241,239,230,.1)" stroke-width="10"/><circle class="rg" data-f="' + Math.min(r[0], 100) / 100 + '" cx="60" cy="60" r="50" fill="none" stroke="' + r[3] + '" stroke-width="10" stroke-linecap="round" stroke-dasharray="' + c + '" stroke-dashoffset="' + c + '" transform="rotate(-90 60 60)" style="transition:stroke-dashoffset 1.6s cubic-bezier(.2,.8,.2,1)"/><text x="60" y="68" text-anchor="middle" font-family="Syne" font-weight="800" font-size="26" fill="#f1efe6">' + (r[1] === 'Fraud prevented' ? 'RM' + r[0] + 'm' : r[0] + '%') + '</text></svg><b>' + r[1] + '</b><p>' + r[2] + '</p></div>'; }).join('');
+  function go() { document.querySelectorAll('.rg').forEach(function (c) { var C = 2 * Math.PI * 50; c.style.strokeDashoffset = C * (1 - c.dataset.f); }); }
+  if (hasGsap) ScrollTrigger.create({ trigger: '#rings', start: 'top 80%', once: true, onEnter: go }); else go();
+})();
+
+/* ---------- newsroom with hover preview ---------- */
+(function news() {
+  var N = [['14 Oct 2026', 'Lantera posts first full-year profit of RM212 million', 'Results', '#7af0c1', 'RM212m'], ['02 Oct 2026', 'Micro-SME financing now approved in under four minutes', 'Product', '#e8bd62', '4 min'], ['18 Sep 2026', 'Lantera joins national scam response centre as a founding digital bank', 'Security', '#f1efe6', '24/7'], ['30 Aug 2026', 'Savings pockets pass RM5 billion in deposits', 'Milestone', '#7af0c1', 'RM5b'], ['11 Aug 2026', 'Board appoints Kumar Selvaraj as Independent Director', 'Governance', '#e8bd62', 'Board']];
+  var L = $('#nlist'), pv = $('#preview');
+  L.innerHTML = N.map(function (n, i) { return '<a class="nitem" href="#news" data-i="' + i + '"><span class="mono">' + n[0] + '</span><h3>' + n[1] + '</h3><span class="cat">' + n[2] + '</span></a>'; }).join('');
+  if (fine) L.querySelectorAll('.nitem').forEach(function (a) {
+    a.addEventListener('pointerenter', function () { var n = N[+a.dataset.i]; pv.style.background = n[3]; pv.textContent = n[4]; pv.classList.add('on'); });
+    a.addEventListener('pointermove', function (e) { pv.style.left = e.clientX + 'px'; pv.style.top = e.clientY + 'px'; });
+    a.addEventListener('pointerleave', function () { pv.classList.remove('on'); });
+  });
+  if (hasGsap && !reduce) gsap.from('.nitem', { y: 40, opacity: 0, duration: .8, stagger: .08, ease: 'power3.out', scrollTrigger: { trigger: '#nlist', start: 'top 85%' } });
+})();
+
+/* ---------- big CTA ---------- */
+$('#openbtn').addEventListener('click', function () { $('#openmsg').style.display = 'block'; });
+if (hasGsap && !reduce) {
+  gsap.from('.bigcta h2', { scale: .7, opacity: 0, ease: 'power3.out', scrollTrigger: { trigger: '.bigcta', start: 'top 85%', end: 'top 35%', scrub: true } });
+  document.querySelectorAll('section h2:not(.bigcta h2)').forEach(function (h) { if (h.closest('.ypanel') || h.closest('.hero')) return; gsap.from(h, { y: 60, opacity: 0, duration: 1, ease: 'power3.out', scrollTrigger: { trigger: h, start: 'top 88%' } }); });
+}
+window.addEventListener('load', function () { if (hasGsap) ScrollTrigger.refresh(); });
+})();
+</script>
+</body>
+</html>
