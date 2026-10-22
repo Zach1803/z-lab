@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Laluan Metro</title>
+<meta name="description" content="Laluan runs the Teratai, Kenanga and Cempaka lines across the Klang Valley. Plan a journey, see live departures, check fares and station facilities.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<script type="importmap">{ "imports": { "three": "./lib/three/build/three.module.js", "three/addons/": "./lib/three/examples/jsm/" } }</script>
+<style>
+:root{
+  --ink:#0f2240; --ink2:#46566f; --ink3:#7a879c; --bg:#f4f6fa; --card:#fff; --line:#e1e6ee; --navy:#0f2240; --blue:#1f5fd1;
+  --L1:#e2457a; --L2:#f08a1c; --L3:#139c8e; --ok:#11885a; --warn:#c77700;
+  --f:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --gut:max(20px, env(safe-area-inset-left, 0px)); --gutr:max(20px, env(safe-area-inset-right, 0px)); color-scheme:light;
+}
+*{box-sizing:border-box} html{scroll-behavior:auto}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--f);-webkit-font-smoothing:antialiased;overflow-x:hidden;font-feature-settings:"tnum" 1}
+[hidden]{display:none!important}
+h1,h2,h3,h4{margin:0;font-weight:700;letter-spacing:-.025em;line-height:1.1;text-wrap:balance}
+p{margin:0} a{color:inherit}
+.wrap{max-width:1240px;margin:0 auto;padding-left:var(--gut);padding-right:var(--gutr)}
+.eyebrow{font:700 12px/1 var(--f);letter-spacing:.14em;text-transform:uppercase;color:var(--blue)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:46px;padding:0 20px;border-radius:12px;font:700 15px var(--f);border:1px solid transparent;cursor:pointer;text-decoration:none;color:inherit;background:none;transition:background .2s, transform .2s}
+.btn.pri{background:var(--navy);color:#fff} .btn.pri:hover{background:#1b3560}
+.btn.line{border-color:var(--line);background:#fff}
+.btn.sm{height:36px;padding:0 13px;font-size:13.5px;border-radius:10px}
+.pill{display:inline-flex;align-items:center;gap:7px;height:26px;padding:0 10px;border-radius:999px;font:700 12px var(--f);color:#fff;background:var(--c)}
+.dotl{width:10px;height:10px;border-radius:50%;background:var(--c);display:inline-block;flex:none}
+
+/* nav */
+.nav{position:fixed;inset:0 0 auto;z-index:30;padding-top:env(safe-area-inset-top,0px);background:rgba(255,255,255,.96);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;gap:22px;height:64px}
+.brand{display:flex;align-items:center;gap:10px;font:800 21px var(--f);letter-spacing:-.03em;text-decoration:none}
+.brand svg{width:30px;height:30px}
+.nav ul{display:flex;gap:2px;list-style:none;margin:0 0 0 auto;padding:0}
+.nav ul a{display:block;padding:8px 12px;border-radius:9px;text-decoration:none;font:600 14.5px var(--f);color:var(--ink2)}
+.nav ul a:hover{background:var(--bg);color:var(--ink)}
+.clockchip{font:600 13px var(--f);color:var(--ink2);border:1px solid var(--line);border-radius:999px;padding:6px 12px;white-space:nowrap}
+.clockchip b{color:var(--ink)}
+
+/* map stage */
+#stage{position:relative;height:100vh;height:100svh;padding-top:calc(64px + env(safe-area-inset-top,0px))}
+#mapwrap{position:absolute;inset:calc(64px + env(safe-area-inset-top,0px)) 0 0 0;overflow:hidden}
+#map{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+#labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.st-lab{position:absolute;left:0;top:0;pointer-events:auto;display:flex;align-items:center;gap:5px;margin:-30px 0 0 -6px;padding:3px 8px 3px 5px;border-radius:7px;border:1px solid var(--line);background:rgba(255,255,255,.95);font:600 11.5px var(--f);color:var(--ink);white-space:nowrap;cursor:pointer;transition:opacity .25s;box-shadow:0 2px 8px -4px rgba(15,34,64,.4)}
+.st-lab .dots{display:flex;gap:2px} .st-lab .dots i{width:7px;height:7px;border-radius:50%}
+.st-lab.inter{font-weight:700}
+.st-lab.hid{opacity:0;pointer-events:none}
+.st-lab.off{opacity:.35}
+.st-lab.on{border-color:var(--ink);opacity:1!important;pointer-events:auto}
+.st-lab.pick{background:var(--navy);color:#fff;border-color:var(--navy)}
+.st-lab:hover{border-color:var(--ink)}
+.mapctl{position:absolute;right:var(--gutr);bottom:20px;display:flex;gap:8px;z-index:3}
+.mapctl button{all:unset;cursor:pointer;height:38px;padding:0 13px;border-radius:10px;background:#fff;border:1px solid var(--line);font:600 13px var(--f);display:flex;align-items:center;gap:6px;box-shadow:0 4px 14px -8px rgba(15,34,64,.4)}
+.legend{position:absolute;right:var(--gutr);top:16px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:grid;gap:8px;font:600 13px var(--f);z-index:3;box-shadow:0 8px 24px -16px rgba(15,34,64,.5)}
+.legend div{display:flex;align-items:center;gap:9px}
+.legend small{font-weight:500;color:var(--ink3);margin-left:auto;padding-left:14px}
+.legend .ok{color:var(--ok);font-weight:700;font-size:11.5px;margin-left:auto;padding-left:10px}
+
+/* planner */
+.planner{position:absolute;left:var(--gut);top:calc(80px + env(safe-area-inset-top,0px));width:400px;max-height:calc(100% - 100px);display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:0 24px 50px -28px rgba(15,34,64,.55);z-index:4;overflow:hidden}
+.planner .hd{padding:22px 22px 6px}
+.planner h1{font-size:26px;margin:10px 0 4px}
+.planner .hd p{color:var(--ink2);font-size:14px}
+.pf{padding:14px 22px 18px;display:grid;gap:10px}
+.fld{position:relative;display:grid;gap:5px}
+.fld label{font:700 11.5px var(--f);letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.fld select,.fld input{appearance:none;-webkit-appearance:none;font:600 15px var(--f);color:var(--ink);padding:12px 38px 12px 14px;border:1px solid var(--line);border-radius:12px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a879c' stroke-width='1.8' fill='none'/%3E%3C/svg%3E") no-repeat right 14px center;width:100%}
+.fld input{background-image:none;padding-right:14px}
+.fld select:focus,.fld input:focus{outline:2px solid rgba(31,95,209,.35);border-color:var(--blue)}
+.swap{position:absolute;right:16px;top:-14px;width:32px;height:32px;border-radius:50%;border:1px solid var(--line);background:#fff;cursor:pointer;display:grid;place-items:center;z-index:2;color:var(--ink2)}
+.swap:hover{border-color:var(--ink3);color:var(--ink)}
+.two{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end}
+.res{border-top:1px solid var(--line);overflow:auto;padding:16px 22px 20px;overscroll-behavior:contain}
+.sum{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.sum .big{font:800 30px/1 var(--f);letter-spacing:-.03em}
+.sum .big small{font:600 14px var(--f);color:var(--ink3);letter-spacing:0;margin-left:4px}
+.sum .when{font:600 14px var(--f);color:var(--ink2);margin-top:6px}
+.sum .fare{text-align:right;font:800 20px var(--f)}
+.sum .fare small{display:block;font:500 12px var(--f);color:var(--ink3)}
+.legs{margin-top:18px;display:grid}
+.leg{display:grid;grid-template-columns:54px 18px 1fr;gap:0 10px;position:relative}
+.leg .tm{font:700 13.5px var(--f);text-align:right;padding-top:1px}
+.leg .rail{position:relative;display:flex;justify-content:center}
+.leg .rail::before{content:"";position:absolute;top:8px;bottom:-8px;width:5px;border-radius:4px;background:var(--c)}
+.leg .rail i{position:relative;width:13px;height:13px;border-radius:50%;background:#fff;border:3px solid var(--c);margin-top:3px}
+.leg .bd{padding-bottom:18px}
+.leg .bd b{display:block;font-size:15px}
+.leg .bd span{font-size:13.5px;color:var(--ink2)}
+.leg .bd .pill{margin:6px 0 4px}
+.leg .bd .pill + span{display:block}
+.leg.end .rail::before{display:none}
+.chg{display:grid;grid-template-columns:54px 18px 1fr;gap:0 10px;margin:-8px 0 10px}
+.chg .rail{display:flex;justify-content:center}
+.chg .rail::before{content:"";width:2px;background:repeating-linear-gradient(var(--ink3) 0 3px,transparent 3px 6px)}
+.chg .bd{font-size:13px;color:var(--ink2);padding:8px 0;display:flex;gap:6px;align-items:center}
+.note{font-size:13px;color:var(--ink3);margin-top:6px}
+.closed{padding:14px;border-radius:12px;background:#fff6e5;color:#7a4b00;font-size:14px}
+
+/* sections */
+section.blk{padding-block:clamp(70px,9vw,120px)}
+.sh{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:end;margin-bottom:40px}
+.sh h2{font-size:clamp(30px,3.8vw,48px);margin-top:12px}
+.sh p{color:var(--ink2);font-size:17px;max-width:520px}
+.card{background:#fff;border:1px solid var(--line);border-radius:20px}
+.live{display:grid;grid-template-columns:340px 1fr;gap:16px}
+.status{padding:20px;display:grid;gap:12px;align-content:start}
+.status .ln{display:grid;gap:4px;padding:14px;border-radius:14px;background:var(--bg)}
+.status .ln .r1{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:4px}
+.status .ln b{display:block;font-size:15px}
+.status .ln span{font-size:13px;color:var(--ink2)}
+.status .ln .st{font:700 12.5px var(--f);color:var(--ok);display:flex;align-items:center;gap:6px;white-space:nowrap}
+.status .ln .st::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.board{background:var(--navy);color:#fff;border-radius:20px;padding:22px;min-width:0}
+.board .top{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:16px}
+.board select{font:700 16px var(--f);background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.18);border-radius:10px;padding:10px 12px}
+.board select option{color:var(--ink)}
+.board .now{font:600 13px var(--f);color:#a9b7d4}
+.dep{display:grid;grid-template-columns:auto 1fr auto auto;gap:14px;align-items:center;padding:13px 4px;border-top:1px solid rgba(255,255,255,.1);font-size:15px}
+.dep .to{font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dep .to small{display:block;font-weight:500;color:#a9b7d4;font-size:12.5px}
+.dep .mins{font:800 22px var(--f);color:#ffd36b;text-align:right;min-width:62px}
+.dep .mins small{font-size:12px;font-weight:600;color:#a9b7d4;margin-left:2px}
+.dep .clk{color:#a9b7d4;font-size:13px;min-width:62px;text-align:right}
+.fares{display:grid;grid-template-columns:1.1fr 1fr;gap:16px}
+.calc{padding:24px}
+.calc .row3{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.calc .out{margin-top:18px;padding:18px;border-radius:14px;background:var(--bg);display:flex;justify-content:space-between;align-items:center;gap:12px}
+.calc .out b{font:800 32px var(--f);letter-spacing:-.03em}
+.calc .out span{font-size:13.5px;color:var(--ink2)}
+.seg{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.seg button{all:unset;cursor:pointer;padding:8px 12px;border-radius:10px;border:1px solid var(--line);font:600 13.5px var(--f);background:#fff}
+.seg button[aria-pressed="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}
+.tix{display:grid;gap:12px}
+.tk{padding:18px 20px;display:grid;grid-template-columns:44px 1fr auto;gap:14px;align-items:center}
+.tk .ic{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--bg);color:var(--blue)}
+.tk .ic svg{width:22px;height:22px}
+.tk b{display:block;font-size:16px} .tk span{font-size:13.5px;color:var(--ink2)} .tk em{font-style:normal;font:800 18px var(--f);white-space:nowrap}
+.stns{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.sfind{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.sfind input{flex:1;min-width:200px;font:600 15px var(--f);padding:13px 16px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.stc{padding:16px 18px;display:grid;gap:8px;cursor:pointer;transition:border-color .2s, transform .2s;text-align:left;font:inherit;color:inherit}
+.stc:hover{border-color:var(--ink3);transform:translateY(-2px)}
+.stc .nm{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.stc b{font-size:16px}
+.stc .lines{display:flex;gap:4px}
+.fac{display:flex;gap:6px;flex-wrap:wrap}
+.fac span{font:600 11.5px var(--f);padding:3px 8px;border-radius:7px;background:var(--bg);color:var(--ink2)}
+.acc{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.acc .card{padding:22px}
+.acc svg{width:28px;height:28px;color:var(--blue)}
+.acc h3{font-size:18px;margin:14px 0 6px}
+.acc p{font-size:14.5px;color:var(--ink2)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}
+.stats div{padding:22px;background:var(--navy);color:#fff;border-radius:18px}
+.stats b{display:block;font:800 36px/1 var(--f);letter-spacing:-.03em}
+.stats span{font-size:13.5px;color:#a9b7d4}
+footer{background:#fff;border-top:1px solid var(--line);padding-block:40px;color:var(--ink3);font-size:14px}
+footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:center}
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .7s, transform .7s}
+.reveal.in{opacity:1;transform:none}
+
+@media (max-width:1060px){ .nav ul{display:none} .stns{grid-template-columns:1fr 1fr} .acc{grid-template-columns:1fr 1fr} }
+@media (max-width:860px){
+  #stage{height:auto;padding-top:calc(64px + env(safe-area-inset-top,0px))}
+  #mapwrap{position:relative;inset:auto;height:58svh}
+  .planner{position:relative;left:auto;top:auto;width:auto;max-height:none;margin:-28px 12px 0;border-radius:20px}
+  .legend{top:10px;right:10px;padding:9px 11px;font-size:12px;gap:6px} .legend small{display:none}
+  .mapctl{bottom:40px}
+  .live,.fares,.sh{grid-template-columns:1fr} .sh{gap:14px}
+  .stats{grid-template-columns:1fr 1fr}
+}
+@media (max-width:560px){ .stns,.acc{grid-template-columns:1fr} .clockchip{display:none} .dep{grid-template-columns:auto 1fr auto} .dep .clk{display:none} }
+@media (prefers-reduced-motion: reduce){ .reveal{opacity:1;transform:none;transition:none} }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><symbol id="logo" viewBox="0 0 32 32"><rect width="32" height="32" rx="9" fill="#0f2240"/><path d="M7 21c4-9 8-9 9-4s5 5 9-4" stroke="#e2457a" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M7 16c4-4 7-4 9-1" stroke="#f08a1c" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M16 23c3 1 6 0 9-3" stroke="#139c8e" stroke-width="2.6" fill="none" stroke-linecap="round"/></symbol></svg>
+<header class="nav"><div class="wrap">
+  <a class="brand" href="#top" data-go><svg><use href="#logo"/></svg>Laluan</a>
+  <ul><li><a href="#top" data-go>Plan a journey</a></li><li><a href="#live" data-go>Live departures</a></li><li><a href="#fares" data-go>Fares</a></li><li><a href="#stations" data-go>Stations</a></li><li><a href="#access" data-go>Accessibility</a></li></ul>
+  <span class="clockchip" id="clockchip">Malaysia time <b>--:--</b></span>
+</div></header>
+
+<main id="top">
+  <section id="stage">
+    <div id="mapwrap"><canvas id="map" aria-label="Live 3D map of the Laluan network with trains running"></canvas><div id="labels"></div>
+      <div class="legend" id="legend"></div>
+      <div class="mapctl"><button type="button" id="ov"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4"/></svg>Whole network</button></div>
+    </div>
+    <div class="planner" id="planner">
+      <div class="hd"><span class="eyebrow">Plan a journey</span><h1>Where to today?</h1><p>Times come from the live timetable. Tap a station on the map to pick it.</p></div>
+      <form class="pf" id="pf" novalidate>
+        <div class="fld"><label for="from">From</label><select id="from"></select></div>
+        <div class="fld"><label for="to">To</label><select id="to"></select><button type="button" class="swap" id="swap" aria-label="Swap from and to"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 2v12M2 5l3-3 3 3M11 14V2M8 11l3 3 3-3"/></svg></button></div>
+        <div class="two"><div class="fld"><label for="when">Leaving</label><select id="when"><option value="0">Now</option><option value="15">In 15 minutes</option><option value="30">In 30 minutes</option><option value="60">In 1 hour</option><option value="t">At a set time…</option></select></div><button class="btn pri" type="submit">Plan</button></div>
+        <div class="fld" id="atwrap" hidden><label for="at">Time</label><input type="time" id="at" value="08:00"></div>
+      </form>
+      <div class="res" id="res" hidden></div>
+    </div>
+  </section>
+
+  <section class="blk" id="live">
+    <div class="wrap">
+      <div class="sh reveal"><div><span class="eyebrow">Live departures</span><h2>Next trains, to the minute.</h2></div><p>Choose a station to see the next trains in both directions on every line that stops there.</p></div>
+      <div class="live">
+        <div class="card status reveal" id="status"></div>
+        <div class="board reveal"><div class="top"><select id="bst" aria-label="Station"></select><span class="now" id="bnow"></span></div><div id="deps"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="blk" id="fares" style="padding-top:0">
+    <div class="wrap">
+      <div class="sh reveal"><div><span class="eyebrow">Fares</span><h2>Pay by distance. Tap and go.</h2></div><p>Every journey starts at RM 1.20 and is capped at RM 6.40, however far you ride and however many times you change lines.</p></div>
+      <div class="fares">
+        <div class="card calc reveal">
+          <h3 style="font-size:20px">Fare calculator</h3>
+          <div class="row3" style="margin-top:14px"><div class="fld"><label for="ff">From</label><select id="ff"></select></div><div class="fld"><label for="ft">To</label><select id="ft"></select></div></div>
+          <div class="seg" id="ptype"><button type="button" data-k="1" aria-pressed="true">Adult</button><button type="button" data-k=".5" aria-pressed="false">Student</button><button type="button" data-k=".5" aria-pressed="false">Senior (60+)</button><button type="button" data-k="0" aria-pressed="false">OKU</button><button type="button" data-k="0" aria-pressed="false">Child under 7</button></div>
+          <div class="out"><span id="fdesc">Choose two stations</span><b id="fval">RM 0.00</b></div>
+        </div>
+        <div class="tix">
+          <div class="card tk reveal"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/></svg></span><span><b>Laluan Card</b><span>Top up at any station or in the app. Works on buses too.</span></span><em>RM 10 card</em></div>
+          <div class="card tk reveal"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 8a6 6 0 0 1 0 8M12 6a9 9 0 0 1 0 12M16 4a12 12 0 0 1 0 16"/></svg></span><span><b>Contactless</b><span>Tap a Visa or Mastercard, or your phone. Same fare as the card.</span></span><em>No card fee</em></div>
+          <div class="card tk reveal"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9h16M9 3v4M15 3v4"/></svg></span><span><b>Pas Bulanan</b><span>Unlimited rides for 30 days on all three lines.</span></span><em>RM 60</em></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="blk" id="stations" style="padding-top:0">
+    <div class="wrap">
+      <div class="sh reveal"><div><span class="eyebrow">Stations</span><h2>Every station, step-free.</h2></div><p>All stations have lifts from street to platform. Search for one to see its facilities, or tap it to find it on the map.</p></div>
+      <div class="sfind"><input id="sq" type="search" placeholder="Search stations" aria-label="Search stations"><div class="seg" id="sline" style="margin:0"></div></div>
+      <div class="stns" id="stns"></div>
+    </div>
+  </section>
+
+  <section class="blk" id="access" style="padding-top:0">
+    <div class="wrap">
+      <div class="sh reveal"><div><span class="eyebrow">Accessibility</span><h2>Built for everyone who travels.</h2></div><p>If you need a hand, tell us before you travel and a member of staff will meet you at the gate and help you onto the train.</p></div>
+      <div class="acc">
+        <div class="card reveal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M12 7v2M10 13l2-2 2 2M10 17l2 2 2-2"/></svg><h3>Lifts everywhere</h3><p>Two lifts at every station, so there is always a backup if one is under maintenance.</p></div>
+        <div class="card reveal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20h16M6 16h12M8 12h8M10 8h4"/></svg><h3>Level boarding</h3><p>Platform edges line up with the train floor, with no gap to step over.</p></div>
+        <div class="card reveal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M8 12h.01M12 12h.01M16 12h.01"/></svg><h3>Tactile paths</h3><p>Guidance paving from the entrance to the platform, and Braille on every lift button.</p></div>
+        <div class="card reveal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v11H8l-4 4z"/></svg><h3>Travel assistance</h3><p>Book help up to 24 hours ahead in the app, or press a help point at any station.</p></div>
+      </div>
+      <div class="stats" id="stats"></div>
+    </div>
+  </section>
+</main>
+<footer><div class="wrap"><span class="brand" style="font-size:18px"><svg style="width:24px;height:24px"><use href="#logo"/></svg>Laluan</span><span>Laluan is a fictional metro operator made for Z Lab. Lines, stations, times and fares are invented.</span></div></footer>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

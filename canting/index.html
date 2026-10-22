@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Canting Batik Studio</title>
+<meta name="description" content="Canting is a batik studio in Kuala Terengganu. Draw with wax, dip in natural dyes and boil off the wax to reveal your own batik, then have it made into a sarong, scarf or cushion.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=DM+Sans:wght@400;500;600&display=swap">
+<script type="importmap">{ "imports": { "three": "./lib/three/build/three.module.js", "three/addons/": "./lib/three/examples/jsm/" } }</script>
+<style>
+:root{
+  --cream:#f6efe2; --paper:#fbf7ef; --card:#fffdf8; --ink:#2b1d12; --ink2:#5c4a3a; --ink3:#8a7764; --line:#e6dac6;
+  --indigo:#26468c; --soga:#804c28; --kunyit:#e0a526; --mengkudu:#b63a2c; --leaf:#4f8a52;
+  --disp:"Fraunces",Georgia,"Times New Roman",serif; --body:"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --gut:max(20px, env(safe-area-inset-left, 0px)); --gutr:max(20px, env(safe-area-inset-right, 0px)); color-scheme:light;
+}
+*{box-sizing:border-box} html{scroll-behavior:auto}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.6 var(--body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+[hidden]{display:none!important}
+h1,h2,h3,h4{font-family:var(--disp);font-weight:500;letter-spacing:-.015em;line-height:1.08;margin:0;text-wrap:balance}
+p{margin:0} a{color:inherit} img{max-width:100%;display:block}
+.wrap{max-width:1200px;margin:0 auto;padding-left:var(--gut);padding-right:var(--gutr)}
+.eyebrow{font:600 12px/1 var(--body);letter-spacing:.16em;text-transform:uppercase;color:var(--soga)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:48px;padding:0 22px;border-radius:999px;font:600 15px var(--body);text-decoration:none;border:1px solid transparent;cursor:pointer;transition:transform .2s, background .2s, box-shadow .2s;color:inherit;background:none}
+.btn:hover{transform:translateY(-1px)}
+.btn.pri{background:var(--indigo);color:#fff;box-shadow:0 10px 26px -12px rgba(38,70,140,.8)}
+.btn.warm{background:var(--soga);color:#fff}
+.btn.line{border-color:var(--line);background:var(--card)}
+.btn.sm{height:38px;padding:0 15px;font-size:14px}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+
+/* nav */
+.nav{position:fixed;inset:0 0 auto;z-index:40;padding-top:env(safe-area-inset-top,0px);transition:background .3s, box-shadow .3s, transform .4s}
+.nav.solid{background:rgba(251,247,239,.95);box-shadow:0 1px 0 var(--line)}
+.nav .wrap{display:flex;align-items:center;gap:24px;height:70px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font:600 24px var(--disp);letter-spacing:-.02em}
+.brand svg{width:30px;height:30px}
+.nav ul{display:flex;gap:2px;list-style:none;margin:0 0 0 auto;padding:0}
+.nav ul a{display:block;padding:8px 13px;border-radius:999px;text-decoration:none;font:500 14.5px var(--body);color:var(--ink2)}
+.nav ul a:hover{background:rgba(128,76,40,.08);color:var(--ink)}
+body.studio .nav{transform:translateY(-110%)}
+
+/* stage */
+#stage{position:relative;height:100vh;height:100svh;overflow:hidden;background:#e9dcc6}
+#c{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:pan-y}
+body.studio #c{touch-action:none}
+body.studio.tool-draw #c{cursor:crosshair}
+.hero-copy{position:absolute;left:0;right:0;top:0;bottom:0;display:flex;align-items:center;pointer-events:none;transition:opacity .6s, transform .6s}
+.hero-copy .wrap{width:100%}
+.hero-copy .in{max-width:520px;pointer-events:auto}
+.hero-copy h1{font-size:clamp(44px,6vw,82px);margin:18px 0 20px}
+.hero-copy h1 em{font-style:italic;color:var(--indigo)}
+.hero-copy p{font-size:18px;color:var(--ink2);max-width:440px}
+.hero-copy .acts{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+.hero-copy .meta{margin-top:34px;font-size:13px;color:var(--ink3);display:flex;gap:20px;flex-wrap:wrap}
+.hero-copy .meta b{color:var(--ink);font-weight:600}
+body.studio .hero-copy{opacity:0;transform:translateX(-30px);pointer-events:none}
+body.studio .hero-copy .in{pointer-events:none}
+
+/* studio panel */
+.panel{position:absolute;top:16px;right:16px;bottom:16px;width:min(380px,calc(100% - 32px));background:rgba(255,253,248,.97);border:1px solid var(--line);border-radius:22px;box-shadow:0 30px 60px -30px rgba(60,35,15,.45);display:flex;flex-direction:column;overflow:hidden;transform:translateX(calc(100% + 40px));transition:transform .6s cubic-bezier(.2,.8,.2,1);z-index:5}
+body.studio .panel{transform:none}
+.ph{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 6px}
+.ph .brand{font-size:20px}
+.ph .brand svg{width:24px;height:24px}
+.x{all:unset;cursor:pointer;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);color:var(--ink2)}
+.x:hover{background:var(--cream)}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:10px 14px 4px}
+.steps button{all:unset;cursor:pointer;text-align:center;padding:9px 4px 8px;border-radius:12px;font:600 11.5px var(--body);color:var(--ink3);letter-spacing:.02em;position:relative}
+.steps button b{display:block;font:500 18px var(--disp);color:var(--ink3);margin-bottom:1px}
+.steps button.on{background:var(--cream);color:var(--ink)} .steps button.on b{color:var(--soga)}
+.steps button.done b{color:var(--leaf)}
+.steps button:disabled{opacity:.4;cursor:default}
+.pb{flex:1;overflow:auto;padding:14px 18px 18px;overscroll-behavior:contain}
+.pb h3{font-size:24px;margin-bottom:6px}
+.pb .lead{color:var(--ink2);font-size:14.5px;margin-bottom:16px}
+.lbl{font:600 11.5px var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);margin:16px 0 8px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.seg button,.motifs button{all:unset;box-sizing:border-box;cursor:pointer;border:1px solid var(--line);border-radius:12px;padding:10px 8px;text-align:center;font:500 13px/1.25 var(--body);background:var(--card);transition:border-color .2s, background .2s}
+.seg button svg{display:block;margin:0 auto 6px;width:28px;height:28px}
+.seg button[aria-pressed="true"],.motifs button[aria-pressed="true"]{border-color:var(--soga);background:#f8eddc;box-shadow:inset 0 0 0 1px var(--soga)}
+.motifs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.motifs button{padding:6px 2px 6px;font-size:10.5px}
+.motifs canvas{width:100%;height:auto;display:block;margin-bottom:2px}
+input[type=range]{width:100%;accent-color:var(--soga)}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.tip{margin-top:16px;padding:12px 14px;border-radius:14px;background:var(--cream);font-size:13.5px;color:var(--ink2);display:flex;gap:10px}
+.tip svg{flex:none;width:18px;height:18px;color:var(--soga);margin-top:2px}
+.dyes{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dyes button{all:unset;box-sizing:border-box;cursor:pointer;display:flex;gap:10px;align-items:center;padding:9px 10px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+.dyes button i{width:30px;height:30px;border-radius:50%;flex:none;background:var(--d);box-shadow:inset 0 -6px 10px rgba(0,0,0,.18)}
+.dyes button b{display:block;font:600 13px/1.2 var(--body)} .dyes button small{color:var(--ink3);font-size:11.5px}
+.dyes button[aria-pressed="true"]{border-color:var(--d);box-shadow:inset 0 0 0 1.5px var(--d);background:#fff}
+.baths{display:flex;gap:6px;align-items:center;margin-top:12px;font-size:13px;color:var(--ink2)}
+.baths i{width:16px;height:16px;border-radius:50%;background:var(--d);border:2px solid #fff;box-shadow:0 0 0 1px var(--line);margin-left:-6px}
+.baths i:first-of-type{margin-left:0}
+.pfoot{padding:12px 18px calc(14px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);display:flex;gap:8px;background:var(--card)}
+.pfoot .btn{flex:1;height:46px}
+.busy{position:absolute;left:50%;top:22px;transform:translateX(-50%);z-index:6;background:rgba(43,29,18,.88);color:#fff;font:500 14px var(--body);padding:10px 18px;border-radius:999px;display:flex;gap:10px;align-items:center;transition:opacity .3s;pointer-events:none}
+.busy i{width:14px;height:14px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.prods{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.prods button{all:unset;box-sizing:border-box;cursor:pointer;border:1px solid var(--line);border-radius:14px;padding:12px;background:var(--card)}
+.prods button b{display:block;font:600 14px var(--body)} .prods button span{font-size:12.5px;color:var(--ink3)} .prods button em{display:block;font:500 17px var(--disp);font-style:normal;margin-top:6px;color:var(--soga)}
+.prods button[aria-pressed="true"]{border-color:var(--soga);box-shadow:inset 0 0 0 1px var(--soga);background:#f8eddc}
+.f{display:grid;gap:10px;margin-top:6px}
+.f label{display:grid;gap:5px;font:500 12.5px var(--body);color:var(--ink2)}
+.f input,.f select{font:15px var(--body);padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:#fff;color:var(--ink);width:100%}
+.f input:focus,.f select:focus{outline:2px solid rgba(128,76,40,.35);border-color:var(--soga)}
+.err{color:var(--mengkudu);font-size:13px}
+.okbox{border-radius:16px;background:#eef5ec;border:1px solid #cfe2ca;padding:16px;font-size:14px;color:#24412a;margin-top:12px}
+.okbox b{font-family:var(--disp);font-size:20px;font-weight:500;display:block;margin-bottom:4px}
+.total{display:flex;justify-content:space-between;align-items:baseline;margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.total b{font:500 26px var(--disp)}
+
+/* sections */
+section.blk{padding-block:clamp(80px,10vw,130px)}
+.sh{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:end;margin-bottom:50px}
+.sh h2{font-size:clamp(34px,4.4vw,56px);margin-top:14px}
+.sh p{color:var(--ink2);font-size:17px;max-width:500px}
+.craft{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;counter-reset:c}
+.cs{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:26px 22px;position:relative;overflow:hidden}
+.cs .n{font:500 54px/1 var(--disp);color:var(--line)}
+.cs h3{font-size:24px;margin:16px 0 4px}
+.cs .my{font:italic 500 15px var(--disp);color:var(--soga);margin-bottom:10px}
+.cs p{font-size:14.5px;color:var(--ink2)}
+.band{background:var(--indigo);color:#f3f0ff;border-radius:28px;padding:clamp(28px,5vw,56px);display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:center;overflow:hidden;position:relative}
+.band h2{font-size:clamp(30px,3.6vw,46px);color:#fff}
+.band p{color:#cfd7f2;margin-top:14px}
+.band .tools{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.band .tools div{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:18px}
+.band .tools b{font:500 19px var(--disp);color:#fff;display:block;margin-bottom:6px}
+.band .tools span{font-size:14px;color:#cfd7f2}
+.ws{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.wc{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:26px;display:flex;flex-direction:column}
+.wc .tag{align-self:flex-start;font:600 12px var(--body);padding:5px 10px;border-radius:999px;background:var(--cream);color:var(--soga)}
+.wc h3{font-size:26px;margin:16px 0 8px}
+.wc p{color:var(--ink2);font-size:15px}
+.wc ul{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:6px;font-size:14px;color:var(--ink2)}
+.wc ul li::before{content:"·";color:var(--soga);font-weight:700;margin-right:8px}
+.wc .price{margin-top:auto;padding-top:20px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.wc .price b{font:500 28px var(--disp)}
+.dates{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+.dates button{all:unset;cursor:pointer;padding:7px 11px;border-radius:10px;border:1px solid var(--line);font:500 13px var(--body);background:#fff}
+.dates button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.dates button:disabled{opacity:.4;text-decoration:line-through;cursor:not-allowed}
+.shop{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.pc{background:var(--card);border:1px solid var(--line);border-radius:22px;overflow:hidden;display:flex;flex-direction:column}
+.pc .img{aspect-ratio:1/1;max-width:100%;background:var(--cream);overflow:hidden}
+.pc .img img{width:100%;height:100%;object-fit:cover;transition:transform .8s}
+.pc:hover .img img{transform:scale(1.06)}
+.pc .bd{padding:18px 20px 20px;display:grid;gap:4px}
+.pc h3{font-size:22px}
+.pc .by{font-size:13.5px;color:var(--ink3)}
+.pc .ft{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+.pc .ft b{font:500 21px var(--disp)}
+.visit{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start}
+.visit h2{font-size:clamp(34px,4.4vw,56px);margin:14px 0 18px}
+.hours{display:grid;grid-template-columns:auto 1fr;gap:6px 24px;font-size:15px;margin-top:20px}
+.hours dt{color:var(--ink3)} .hours dd{margin:0}
+.vcard{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:28px;display:grid;gap:18px}
+.vcard div small{display:block;font:600 11.5px var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);margin-bottom:4px}
+footer{border-top:1px solid var(--line);padding-block:40px;color:var(--ink3);font-size:14px}
+footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:center}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .8s cubic-bezier(.2,.7,.2,1), transform .8s cubic-bezier(.2,.7,.2,1)}
+.reveal.in{opacity:1;transform:none}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:12px 18px;border-radius:14px;font-size:14px;opacity:0;transition:.3s;z-index:60;pointer-events:none;max-width:calc(100% - 32px)}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:980px){ .craft{grid-template-columns:1fr 1fr} .ws,.shop{grid-template-columns:1fr 1fr} .nav ul{display:none} }
+@media (max-width:760px){
+  .sh,.band,.visit{grid-template-columns:1fr} .sh{gap:14px} .ws,.shop{grid-template-columns:1fr}
+  .hero-copy{align-items:flex-end} .hero-copy .wrap{padding-bottom:36px}
+  .hero-copy h1{font-size:clamp(38px,11vw,54px);margin:12px 0}
+  .hero-copy p{font-size:16px}
+  .hero-copy .in{background:linear-gradient(transparent,rgba(233,220,198,.92) 22%);margin:0 calc(-1*var(--gut));padding:60px var(--gut) 0}
+  .panel{top:auto;left:0;right:0;bottom:0;width:auto;height:46svh;border-radius:22px 22px 0 0;transform:translateY(105%)}
+  .ph{padding-top:12px}
+  .steps button{padding:6px 2px} .steps button b{font-size:15px}
+  .pb{padding-top:8px}
+  .pb h3{font-size:20px}
+  .pb .lead{font-size:13.5px;margin-bottom:8px}
+  .lbl{margin-top:10px}
+}
+@media (max-width:440px){ .craft{grid-template-columns:1fr} .dyes{grid-template-columns:1fr 1fr} }
+@media (prefers-reduced-motion: reduce){ .reveal{opacity:1;transform:none;transition:none} }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><symbol id="logo" viewBox="0 0 32 32"><path d="M7 27 21 9" stroke="#804c28" stroke-width="3" stroke-linecap="round"/><path d="M19 7c2-3 7-3 7 1 0 3-3 4-5 4z" fill="#c9893f"/><path d="M24 12c.5 3 2 5 4 6" stroke="#26468c" stroke-width="2" stroke-linecap="round" fill="none"/><circle cx="28.4" cy="19.6" r="1.5" fill="#26468c"/></symbol></svg>
+
+<header class="nav" id="nav">
+  <div class="wrap">
+    <a class="brand" href="#top" data-go><svg><use href="#logo"/></svg>Canting</a>
+    <ul><li><a href="#craft" data-go>The craft</a></li><li><a href="#workshops" data-go>Workshops</a></li><li><a href="#shop" data-go>Shop</a></li><li><a href="#visit" data-go>Visit</a></li></ul>
+    <button class="btn pri sm" data-open>Design yours</button>
+  </div>
+</header>
+
+<main id="top">
+  <section id="stage">
+    <canvas id="c" aria-label="A batik cloth hanging on a wooden frame above a dye trough"></canvas>
+    <div class="hero-copy"><div class="wrap"><div class="in">
+      <span class="eyebrow">Batik studio · Kuala Terengganu</span>
+      <h1>Draw it in wax. <em>Dye it</em> by hand.</h1>
+      <p>Make your own batik the way it has always been made: trace wax with a canting, dip the cloth in natural dyes, then boil the wax away to see what you made.</p>
+      <div class="acts"><button class="btn pri" data-open>Start your batik</button><a class="btn line" href="#workshops" data-go>Book a workshop</a></div>
+      <div class="meta"><span><b>4 steps</b> wax, dye, boil, make</span><span><b>6</b> natural dyes</span><span><b>Hand-finished</b> in our studio</span></div>
+    </div></div></div>
+
+    <aside class="panel" id="panel" aria-label="Batik studio">
+      <div class="ph"><span class="brand"><svg><use href="#logo"/></svg>Studio</span><button class="x" id="exit" aria-label="Leave the studio"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m3 3 10 10M13 3 3 13"/></svg></button></div>
+      <nav class="steps" id="steps">
+        <button data-step="wax" class="on"><b>1</b>Wax</button>
+        <button data-step="dye"><b>2</b>Dye</button>
+        <button data-step="boil" disabled><b>3</b>Lorod</button>
+        <button data-step="make" disabled><b>4</b>Make</button>
+      </nav>
+      <div class="pb" id="pb">
+        <!-- WAX -->
+        <div data-pane="wax">
+          <h3>Mencanting</h3>
+          <p class="lead">Draw on the cloth. Wax keeps dye out, so whatever you cover now stays the colour it is now.</p>
+          <div class="lbl">Tool</div>
+          <div class="seg" id="tools">
+            <button data-tool="fine" aria-pressed="true"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M5 23 17 9"/><path d="M16 7c2-2 6-2 6 1s-3 3-4 3"/><path d="M21 11c.4 2 1.4 3 2.6 3.6" stroke-width="1"/></svg>Canting halus</button>
+            <button data-tool="bold" aria-pressed="false"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M5 23 17 9"/><path d="M16 7c2-2 6-2 6 1s-3 3-4 3"/><path d="M21 11c.4 2 1.4 3 2.6 3.6" stroke-width="3"/></svg>Canting tebal</button>
+            <button data-tool="cap" aria-pressed="false"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="6" y="14" width="16" height="7" rx="1.5"/><path d="M14 14V6M10 6h8"/><path d="M9 17.5h10" stroke-dasharray="2 2"/></svg>Cap stamp</button>
+          </div>
+          <div id="capopts" hidden>
+            <div class="lbl">Motif</div>
+            <div class="motifs" id="motifs"></div>
+            <div class="lbl">Stamp size</div>
+            <input type="range" id="capsize" min="60" max="260" value="140" aria-label="Stamp size">
+          </div>
+          <div class="row"><button class="btn line sm" id="undo">Undo</button><button class="btn line sm" id="pattern">Fill with a pattern</button><button class="btn line sm" id="clear">New cloth</button></div>
+          <div class="tip"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="10" r="8"/><path d="M10 9v5M10 6v.5"/></svg><span>Real batik goes light to dark. Wax your white areas first, then dye yellow, wax again, then dye a deeper colour.</span></div>
+        </div>
+        <!-- DYE -->
+        <div data-pane="dye" hidden>
+          <h3>Mencelup</h3>
+          <p class="lead">Pick a dye and dip the cloth. Each bath mixes with the colours already there.</p>
+          <div class="lbl">Natural dyes</div>
+          <div class="dyes" id="dyes"></div>
+          <div class="lbl">Depth</div>
+          <input type="range" id="depth" min="35" max="100" value="85" aria-label="Dye depth">
+          <div class="baths" id="baths"></div>
+          <div class="row"><button class="btn line sm" id="undo2">Undo last bath</button></div>
+          <div class="tip"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="10" r="8"/><path d="M10 9v5M10 6v.5"/></svg><span>Go back to <b>Wax</b> between baths to protect each colour. Fine lines in the wax let a little dye creep in, giving batik its crackle.</span></div>
+        </div>
+        <!-- BOIL -->
+        <div data-pane="boil" hidden>
+          <h3>Melorod</h3>
+          <p class="lead">Boiling water melts the wax away and reveals every layer of colour underneath.</p>
+          <div class="tip"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="10" r="8"/><path d="M10 9v5M10 6v.5"/></svg><span>Once the wax is gone you can't add more resist to this cloth, so make sure you're happy with your colours.</span></div>
+          <div id="boiled" class="okbox" hidden><b>Your batik is ready.</b>Every piece is unique, crackle and all. Choose what we should make from it.</div>
+        </div>
+        <!-- MAKE -->
+        <div data-pane="make" hidden>
+          <h3>Make it yours</h3>
+          <p class="lead">Our tailors finish your cloth by hand in the studio. Drag to turn the preview.</p>
+          <div class="prods" id="prods"></div>
+          <form class="f" id="order" novalidate>
+            <div class="lbl" style="margin:16px 0 0">Your details</div>
+            <label>Name<input name="nm" autocomplete="name" required></label>
+            <label>Phone or email<input name="ct" autocomplete="email" required></label>
+            <label>Collection<select name="col"><option>Collect at the studio</option><option>Courier, Peninsular Malaysia (+RM 15)</option><option>Courier, Sabah &amp; Sarawak (+RM 25)</option></select></label>
+            <div class="total"><span>Total</span><b id="total">RM 0</b></div>
+            <div class="err" id="oerr" role="alert"></div>
+          </form>
+          <div id="placed"></div>
+          <div class="row"><a class="btn line sm" id="dl" download="my-batik.jpg" href="#">Save design image</a><button class="btn line sm" id="again">Start a new batik</button></div>
+        </div>
+      </div>
+      <div class="pfoot" id="pfoot"><button class="btn line" id="back">Back</button><button class="btn pri" id="next">Next: dye</button></div>
+    </aside>
+    <div class="busy" id="busy" hidden><i></i><span id="busytxt">Dipping…</span></div>
+  </section>
+
+  <section class="blk" id="craft">
+    <div class="wrap">
+      <div class="sh reveal"><div><span class="eyebrow">The craft</span><h2>Four steps, unchanged for generations.</h2></div><p>Batik is a resist technique. Hot wax protects the cloth wherever it touches, so the pattern is built up in layers, from the lightest colour to the darkest.</p></div>
+      <div class="craft">
+        <div class="cs reveal"><div class="n">01</div><h3>Drawing</h3><div class="my">mencanting</div><p>Molten wax flows from the small copper spout of the canting. Every line is drawn freehand, so no two pieces match.</p></div>
+        <div class="cs reveal"><div class="n">02</div><h3>Dyeing</h3><div class="my">mencelup</div><p>The cloth goes into the dye trough. Unwaxed cloth takes the colour; waxed areas stay as they were.</p></div>
+        <div class="cs reveal"><div class="n">03</div><h3>Repeating</h3><div class="my">berlapis</div><p>More wax, a darker bath. Three or four rounds build the depth that makes batik glow.</p></div>
+        <div class="cs reveal"><div class="n">04</div><h3>Boiling off</h3><div class="my">melorod</div><p>Boiling water lifts the wax and reveals the whole design, crackle lines and all.</p></div>
+      </div>
+      <div style="height:20px"></div>
+      <div class="band reveal">
+        <div><span class="eyebrow" style="color:#f0c770">Two ways to wax</span><h2>Canting for lines. Cap for repeats.</h2><p>Hand-drawn batik (batik tulis) uses the canting pen for every stroke. Stamped batik (batik cap) presses a copper block dipped in wax, so a motif can repeat across a whole sarong. In the studio you can use both.</p></div>
+        <div class="tools"><div><b>Canting</b><span>A copper reservoir with a fine spout, on a bamboo handle. Different spouts give fine or bold lines.</span></div><div><b>Cap</b><span>A copper block, soldered strip by strip into a motif like bunga raya or pucuk rebung.</span></div><div><b>Pemidang</b><span>The wooden frame that holds the cloth taut while you draw.</span></div><div><b>Malam</b><span>The wax: a blend of paraffin and beeswax, kept molten over a small stove.</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="blk" id="workshops" style="padding-top:0">
+    <div class="wrap">
+      <div class="sh reveal"><div><span class="eyebrow">Workshops</span><h2>Come and make one in person.</h2></div><p>Small groups of up to eight, every week at the studio. Everything is provided, and you take your batik home the same day.</p></div>
+      <div class="ws" id="ws"></div>
+    </div>
+  </section>
+
+  <section class="blk" id="shop" style="padding-top:0">
+    <div class="wrap">
+      <div class="sh reveal"><div><span class="eyebrow">From our makers</span><h2>Finished pieces, ready to wear.</h2></div><p>Each design is drawn and dyed in the studio by one of our makers. Patterns repeat; colours never quite do.</p></div>
+      <div class="shop" id="shopgrid"></div>
+    </div>
+  </section>
+
+  <section class="blk" id="visit" style="padding-top:0">
+    <div class="wrap visit">
+      <div class="reveal"><span class="eyebrow">Visit</span><h2>Smell the wax before you see the studio.</h2><p style="color:var(--ink2);font-size:17px">Watch our makers at the frames, browse the cloth room and have a cup of teh tarik on the verandah.</p>
+        <dl class="hours"><dt>Tue to Fri</dt><dd>9:30 am – 6 pm</dd><dt>Sat &amp; Sun</dt><dd>9 am – 5 pm</dd><dt>Monday</dt><dd>Closed</dd></dl></div>
+      <div class="vcard reveal">
+        <div><small>Studio</small>Canting Batik Studio, 18 Lorong Pantai, 21000 Kuala Terengganu</div>
+        <div><small>Phone</small>+609-622 0184</div>
+        <div><small>Email</small>hello@canting.studio</div>
+        <div style="font-size:13px;color:var(--ink3)">Canting is a fictional studio made for Z Lab. The address, phone and email are not real.</div>
+      </div>
+    </div>
+  </section>
+</main>
+<footer><div class="wrap"><span class="brand" style="font-size:20px"><svg style="width:24px;height:24px"><use href="#logo"/></svg>Canting</span><span>© 2026 Canting Batik Studio · A Z Lab project</span></div></footer>
+<div class="toast" id="toast" role="status"></div>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
