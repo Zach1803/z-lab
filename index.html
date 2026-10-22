@@ -4,10 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Z Lab</title>
-<meta name="description" content="Twelve interactive web worlds: a haunted lighthouse, a Sarawak longhouse, a Malaysian mall, a race track, a night shift, the backrooms and more.">
+<meta name="description" content="Fourteen interactive web worlds in one arcade: a haunted lighthouse, a Malaysian mall, a race track, a night shift, a longhouse, a kopitiam, the backrooms and a run of realistic company sites.">
+<meta name="theme-color" content="#040306">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<link rel="preload" href="arcade/lib/three/build/three.module.js" as="script" crossorigin>
 <style>
+/* ---------- list view (also the no-WebGL fallback) ---------- */
+
 :root{--bg:#0a0b0d;--card:#121418;--ink:#eeeae2;--dim:rgba(238,234,226,.62);--faint:rgba(238,234,226,.38);--line:rgba(255,255,255,.09);--acc:#f2b84b;color-scheme:dark}
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 "Inter",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-text-size-adjust:100%}
@@ -38,12 +42,119 @@ h2::after{content:"";flex:1;height:1px;background:var(--line)}
 .meta b{color:var(--acc);font-weight:500}
 footer{padding-block:48px calc(40px + env(safe-area-inset-bottom,0px));color:var(--faint);font-size:13px}
 footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:22px}
+
+.mark{flex-wrap:wrap}
+.to3d{margin-left:auto;font:600 12px "JetBrains Mono",monospace;letter-spacing:.06em;background:transparent;color:var(--acc);border:1px solid rgba(242,184,75,.45);border-radius:999px;padding:8px 14px;cursor:pointer}
+.to3d:hover{background:rgba(242,184,75,.12)}
+.no3d .to3d{display:none}
+
+/* ---------- arcade hall ---------- */
+#hall,#hud,#loader,#fade{display:none}
+body.hallmode{overflow:hidden;height:100svh;background:#040306}
+body.hallmode #list{display:none}
+body.hallmode #hall{display:block;position:fixed;inset:0;width:100%;height:100%;touch-action:none;cursor:grab;outline:none}
+body.hallmode #hud,body.hallmode #loader,body.hallmode #fade{display:block}
+#fade{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;z-index:30}
+#loader{position:fixed;inset:0;z-index:20;background:#040306;display:grid;place-items:center;transition:opacity .9s .2s,visibility 0s 1.1s}
+body.hallmode #loader{display:grid}
+body.ready #loader{opacity:0;visibility:hidden}
+.ld{width:min(320px,80vw);text-align:center}
+.ld .zz{font:700 54px/1 "Space Grotesk",sans-serif;color:#ffd23b;text-shadow:0 0 18px rgba(255,210,59,.7),0 0 42px rgba(255,140,40,.4);letter-spacing:.02em;animation:flick 3.2s infinite}
+@keyframes flick{0%,92%,96%,100%{opacity:1}93%,95%{opacity:.35}}
+.ld p{font:500 11.5px "JetBrains Mono",monospace;letter-spacing:.18em;text-transform:uppercase;color:rgba(238,234,226,.55);margin:18px 0 10px}
+.ld .bar{height:3px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden}
+#ld-bar{display:block;height:100%;width:0;background:linear-gradient(90deg,#38e1ff,#ff4fd8,#ffd23b);transition:width .3s}
+#ld-pct{font:500 11px "JetBrains Mono",monospace;color:rgba(238,234,226,.4);margin-top:8px;display:block}
+
+#hud{position:fixed;inset:0;z-index:10;pointer-events:none;color:#eeeae2;opacity:0;transition:opacity 1s .5s}
+body.ready #hud{opacity:1}
+body.playing #hud{opacity:0;transition:opacity .35s}
+#hud button,#hud a{pointer-events:auto}
+.h-top{position:absolute;left:0;right:0;top:0;display:flex;align-items:center;gap:12px;padding-top:calc(18px + env(safe-area-inset-top,0px));padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
+.h-mark{display:flex;align-items:center;gap:10px;font:700 14px "Space Grotesk",sans-serif;letter-spacing:.16em;text-transform:uppercase;color:rgba(238,234,226,.8);margin-right:auto}
+.h-mark i{width:28px;height:28px;border-radius:7px;background:#f2b84b;display:grid;place-items:center;color:#1a1204;font-style:normal;letter-spacing:0;box-shadow:0 0 18px rgba(242,184,75,.45)}
+.h-mark small{font:500 11px "JetBrains Mono",monospace;letter-spacing:.08em;color:rgba(238,234,226,.45);text-transform:none}
+.h-btn{display:inline-flex;align-items:center;gap:8px;font:500 12px "JetBrains Mono",monospace;letter-spacing:.04em;color:rgba(238,234,226,.85);background:rgba(10,9,14,.55);border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:9px 14px;cursor:pointer;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);text-decoration:none}
+.h-btn:hover,.h-btn:focus-visible{border-color:rgba(255,255,255,.35);outline:none;color:#fff}
+.h-btn svg{width:15px;height:15px}
+.h-btn[aria-pressed="true"]{color:#ffd23b;border-color:rgba(255,210,59,.5)}
+
+#h-panel{--acc:#f2b84b;position:absolute;left:max(22px,env(safe-area-inset-left,0px));bottom:calc(26px + env(safe-area-inset-bottom,0px));width:min(430px,calc(100% - 44px));padding:22px 24px 20px;border-radius:20px;background:linear-gradient(160deg,rgba(18,16,24,.82),rgba(8,7,12,.86));border:1px solid rgba(255,255,255,.1);box-shadow:0 30px 80px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.06);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);pointer-events:auto}
+#h-panel::before{content:"";position:absolute;left:24px;right:24px;top:0;height:2px;border-radius:2px;background:var(--acc);box-shadow:0 0 16px var(--acc)}
+.h-grp{font:500 11px "JetBrains Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(238,234,226,.5);display:flex;justify-content:space-between;gap:10px}
+.h-badge{display:inline-block;margin-top:14px;font:500 11px "JetBrains Mono",monospace;letter-spacing:.06em;padding:4px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.14);color:#eeeae2}
+.h-badge.hot{background:var(--acc);border-color:var(--acc);color:#140d02}
+#h-title{font:700 clamp(28px,3.2vw,40px)/1.02 "Space Grotesk",sans-serif;letter-spacing:-.02em;margin:12px 0 8px;text-wrap:balance}
+#h-desc{margin:0;color:rgba(238,234,226,.68);font-size:14.5px;line-height:1.55}
+.h-meta{display:flex;justify-content:space-between;gap:10px;margin-top:14px;font:500 11.5px "JetBrains Mono",monospace;color:rgba(238,234,226,.45);letter-spacing:.03em}
+.h-meta b{color:var(--acc);font-weight:500}
+.h-row{display:flex;align-items:center;gap:10px;margin-top:18px}
+#h-play{flex:1;display:flex;align-items:center;justify-content:center;gap:10px;height:50px;border-radius:14px;background:var(--acc);color:#140d02;font:700 15px "Space Grotesk",sans-serif;letter-spacing:.02em;text-decoration:none;box-shadow:0 0 0 1px rgba(255,255,255,.15) inset,0 10px 30px -8px var(--acc);transition:transform .15s,filter .15s}
+#h-play:hover,#h-play:focus-visible{filter:brightness(1.08);transform:translateY(-1px);outline:none}
+.h-coarse #h-play kbd{display:none}#h-play kbd{font:500 10.5px "JetBrains Mono",monospace;background:rgba(0,0,0,.14);padding:3px 6px;border-radius:5px}
+.h-arrow{width:50px;height:50px;border-radius:14px;display:grid;place-items:center;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#eeeae2;cursor:pointer}
+.h-arrow:hover,.h-arrow:focus-visible{background:rgba(255,255,255,.12);outline:none}
+.h-arrow svg{width:18px;height:18px}
+#h-rail{display:flex;gap:5px;margin-top:16px;align-items:center}
+#h-rail button{flex:1;height:4px;border:0;padding:0;border-radius:3px;background:rgba(255,255,255,.14);cursor:pointer;position:relative}
+#h-rail button::after{content:"";position:absolute;inset:-8px 0}
+#h-rail button.gap{margin-left:9px}
+#h-rail button.on{background:var(--c);box-shadow:0 0 10px var(--c)}
+#h-panel.swap .h-anim{animation:swap .5s cubic-bezier(.2,.8,.2,1) both}
+#h-panel.swap .h-anim:nth-child(3){animation-delay:.04s}#h-panel.swap .h-anim:nth-child(4){animation-delay:.08s}
+@keyframes swap{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+#h-hint{position:absolute;right:max(22px,env(safe-area-inset-right,0px));bottom:calc(30px + env(safe-area-inset-bottom,0px));font:500 11.5px "JetBrains Mono",monospace;letter-spacing:.05em;color:rgba(238,234,226,.6);background:rgba(10,9,14,.5);border:1px solid rgba(255,255,255,.1);padding:9px 14px;border-radius:999px;transition:opacity .6s,transform .6s}
+#h-hint.gone{opacity:0;transform:translateY(6px)}
+@media (max-width:760px),(max-aspect-ratio:4/5){
+  #h-panel{left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));width:auto;bottom:calc(12px + env(safe-area-inset-bottom,0px));padding:18px 18px 16px;border-radius:18px}
+  #h-title{font-size:28px;margin:10px 0 6px}
+  #h-desc{font-size:13.5px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .h-badge{margin-top:10px}
+  #h-hint{left:50%;right:auto;transform:translateX(-50%);bottom:auto;top:calc(70px + env(safe-area-inset-top,0px));white-space:nowrap}
+  #h-hint.gone{transform:translateX(-50%) translateY(-6px)}
+  .h-btn span{display:none}
+  .h-mark small{display:none}
+}
+@media (prefers-reduced-motion:reduce){#h-panel.swap .h-anim{animation:none}}
 </style>
+<script type="importmap">{"imports":{"three":"./arcade/lib/three/build/three.module.js","three/addons/":"./arcade/lib/three/examples/jsm/"}}</script>
+<script>
+// choose the view before first paint: the arcade unless asked for the list (or no WebGL / no modules)
+(function(){var b=document.documentElement,list=location.hash==='#list';try{if(localStorage.getItem('zlab.view')==='list')list=true}catch(e){}
+var gl=false;try{var c=document.createElement('canvas');gl=!!(window.WebGL2RenderingContext&&c.getContext('webgl2'))}catch(e){}
+b.dataset.view=(!gl||list)?'list':'hall';if(!gl)b.dataset.no3d='1'})();
+</script>
 </head>
 <body>
+<canvas id="hall" tabindex="0" aria-label="Arcade hall: one cabinet per world. Use the left and right arrow keys to walk the row and Enter to play."></canvas>
+<div id="loader" aria-hidden="true"><div class="ld"><div class="zz">Z LAB</div><p>Powering up the arcade</p><div class="bar"><span id="ld-bar"></span></div><span id="ld-pct">0%</span></div></div>
+<div id="hud">
+  <div class="h-top">
+    <div class="h-mark"><i>Z</i>Z Lab <small>14 worlds · fictional</small></div>
+    <button class="h-btn" id="h-sound" type="button" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg><span>Sound off</span></button>
+    <button class="h-btn" id="h-list" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>List view</span></button>
+  </div>
+  <section id="h-panel" aria-live="polite">
+    <div class="h-grp"><span id="h-grp"></span></div>
+    <span class="h-badge h-anim" id="h-badge"></span>
+    <h1 id="h-title" class="h-anim"></h1>
+    <p id="h-desc" class="h-anim"></p>
+    <div class="h-meta"><span id="h-ctl"></span><b id="h-size"></b></div>
+    <div class="h-row">
+      <button class="h-arrow" id="h-prev" type="button" aria-label="Previous cabinet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+      <a id="h-play" href="#">Insert coin · Play <kbd>Enter</kbd></a>
+      <button class="h-arrow" id="h-next" type="button" aria-label="Next cabinet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
+    </div>
+    <div id="h-rail" role="group" aria-label="Jump to a cabinet"></div>
+  </section>
+  <div id="h-hint">Drag or ← → to walk the row · click the screen to play</div>
+</div>
+<div id="fade"></div>
+
+<div id="list">
 <header><div class="wrap">
-  <div class="mark"><i>Z</i>Z Lab</div>
-  <h1>Twelve worlds you can <em>walk into</em>, straight from the browser.</h1>
+  <div class="mark"><i>Z</i>Z Lab<button type="button" class="to3d" id="to3d">Enter the arcade ▸</button></div>
+  <h1>Fourteen worlds you can <em>walk into</em>, straight from the browser.</h1>
   <p class="lede">A haunted lighthouse, a Malaysian mall, a hill-country race track, a night shift at a family restaurant, a longhouse on the Rajang, an old kopitiam and an office that never ends. No installs. Pick one and go.</p>
   <div class="tips"><span>Best with sound on</span><span>Desktop: WASD + mouse</span><span>Phone: touch controls built in</span><span>First load 5–12 MB</span></div>
 </div></header>
@@ -69,8 +180,8 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
 
   <h2>Websites</h2>
   <div class="grid">
-    <a class="card" href="suria/"><div class="shot"><img src="thumbs/suria.webp" alt="Solar farm and pylons at golden hour with a live power chart" loading="lazy"><span class="badge hot">New · Corporate</span></div>
-      <div class="body"><h3>Suria Grid</h3><p>A renewable power company site: scroll through a day on the grid, watch power flow across a live map of Malaysia, and price solar for your roof.</p><div class="meta"><span>Scroll · Drag · Click</span><b>&lt;1 MB</b></div></div></a>
+    <a class="card" href="suria/"><div class="shot"><img src="thumbs/suria.webp" alt="Realistic solar farm and pylons at golden hour with a live power chart" loading="lazy"><span class="badge hot">New · Corporate</span></div>
+      <div class="body"><h3>Suria Grid</h3><p>A renewable power company site: scroll through a day on the grid, watch power flow across a live map of Malaysia, and price solar for your roof.</p><div class="meta"><span>Scroll · Drag · Click</span><b>~3 MB</b></div></div></a>
     <a class="card" href="wainscot/"><div class="shot"><img src="thumbs/wainscot.webp" alt="Barbershop shopfront with a barber pole" loading="lazy"><span class="badge hot">New · 3D walk-in</span></div>
       <div class="body"><h3>Wainscot Barbershop &amp; Academy</h3><p>Walk in from the street in 3D, take a seat in the chair and book your cut, all built from four photos of the shop.</p><div class="meta"><span>Scroll · Click · Book</span><b>&lt;1 MB</b></div></div></a>
     <a class="card" href="lantera/"><div class="shot"><img src="thumbs/lantera.webp" alt="Digital bank annual review with large figures" loading="lazy"><span class="badge hot">New · Corporate</span></div>
@@ -87,5 +198,21 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
 </main>
 
 <footer><div class="wrap"><span>All places, companies and characters are fictional.</span><span>Materials and skies from Poly Haven (CC0) · Built with Three.js and Blender</span></div></footer>
+</div>
+
+<script>
+(function(){
+  var b=document.body,root=document.documentElement;
+  function setView(v){root.dataset.view=v;b.classList.toggle('hallmode',v==='hall');b.classList.toggle('list',v!=='hall');try{localStorage.setItem('zlab.view',v)}catch(e){}if(v==='hall'){window.scrollTo(0,0);var c=document.getElementById('hall');c&&c.focus({preventScroll:true})}}
+  if(root.dataset.no3d)b.classList.add('no3d');
+  setView(root.dataset.view==='hall'?'hall':'list');
+  document.getElementById('h-list').onclick=function(){setView('list')};
+  document.getElementById('to3d').onclick=function(){setView('hall')};
+  // if the 3D module never starts (blocked, missing file, old browser), fall back to the list
+  setTimeout(function(){if(!window.__hallOK&&root.dataset.view==='hall'){b.classList.add('no3d');setView('list')}},10000);
+  window.addEventListener('hashchange',function(){if(location.hash==='#list')setView('list')});
+})();
+</script>
+<script type="module" src="arcade/hall.js"></script>
 </body>
 </html>
