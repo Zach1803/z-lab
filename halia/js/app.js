@@ -108,13 +108,27 @@ function calc() {
 $('#c-price').value = 1180000; calc();
 
 /* ------------------------------------------------------------ form */
-$('#form').addEventListener('submit', (e) => { e.preventDefault(); const f = e.target; if (!f.name.value.trim()) return f.name.focus(); if (!/^[0-9+\-\s]{9,}$/.test(f.phone.value.trim())) { f.phone.focus(); f.phone.setCustomValidity('Enter a mobile number'); f.phone.reportValidity(); return; } f.phone.setCustomValidity(''); f.hidden = true; $('#thanks').classList.add('on'); });
-{ const d = new Date(); d.setDate(d.getDate() + 2); $('#form').day.min = d.toISOString().slice(0, 10); }
+$('#form').addEventListener('submit', (e) => { e.preventDefault(); const f = e.target.elements; if (!f.name.value.trim()) return f.name.focus(); if (!/^[0-9+\-\s]{9,}$/.test(f.phone.value.trim())) { f.phone.focus(); f.phone.setCustomValidity('Enter a mobile number'); f.phone.reportValidity(); return; } f.phone.setCustomValidity(''); e.target.hidden = true; $('#thanks').classList.add('on'); });
+{ const d = new Date(); d.setDate(d.getDate() + 2); $('#form').elements.day.min = d.toISOString().slice(0, 10); }
 
 /* ------------------------------------------------------------ reveal + gallery */
 const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .15 });
 $$('.reveal').forEach((el) => io.observe(el));
 [['#g1', 'tex/g1.webp'], ['#g2', 'tex/g2.webp'], ['#g3', 'tex/g3.webp']].forEach(([s, u]) => { const im = $(s); im.src = u; im.onerror = () => { im.remove(); }; });
+
+/* ------------------------------------------------------------ in-page links: scroll in JS (the native smooth anchor scroll can stall while WebGL is busy) */
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+function goTo(id) {
+  const el = document.getElementById(id); if (!el) return;
+  const extra = id === 'view' ? innerHeight * .35 : id === 'find' ? innerHeight * .25 : 0;
+  const top = el.getBoundingClientRect().top + scrollY + extra - (['view', 'find', 'top'].includes(id) ? 0 : 74);
+  const start = scrollY, dist = top - start, t0 = performance.now(), dur = REDUCED ? 0 : Math.min(1100, 300 + Math.abs(dist) * .25);
+  document.documentElement.style.scrollBehavior = 'auto';
+  if (!dur) { scrollTo(0, top); onScroll(); return; }
+  (function step() { const k = Math.min(1, (performance.now() - t0) / dur), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; scrollTo(0, start + dist * e); if (k < 1) requestAnimationFrame(step); else onScroll(); })();
+  setTimeout(() => { if (Math.abs(scrollY - top) > 40) { scrollTo(0, top); onScroll(); } }, dur + 400);
+}
+document.addEventListener('click', (e) => { const a = e.target.closest('a[href^="#"]'); if (!a) return; const id = a.getAttribute('href').slice(1); if (!id || !document.getElementById(id)) return; e.preventDefault(); goTo(id); history.replaceState(null, '', '#' + id); });
 
 /* ------------------------------------------------------------ 3D */
 import('./scene.js').then(({ createScene }) => {
