@@ -55,7 +55,7 @@ SECTORS.forEach((s, i) => {
   const items = BIZ.filter((b) => b.sector === s.id);
   const sec = document.createElement('section'); sec.className = 'chapter sec'; sec.dataset.focus = s.id; sec.id = 'sector-' + s.id; sec.style.setProperty('--sc', s.color);
   sec.innerHTML = `<div class="wrap"><div class="sector"><div class="num">0${i + 1} / 05 &nbsp; ${esc(s.name.toUpperCase())}</div><h3>${esc(s.name)}</h3><p>${esc(s.line)}</p><div class="biz">${items.map((b) => `
-    <article class="bcard" id="biz-${b.id}"><h4>${esc(b.name)}${b.url ? `<a href="${b.url}" target="_blank" rel="noopener">Visit site ↗</a>` : ''}</h4><p>${esc(b.p)}</p><div class="tags">${b.tags.map((t) => `<span>${esc(t)}</span>`).join('')}</div></article>`).join('')}</div></div></div>`;
+    <article class="bcard" id="biz-${b.id}" data-id="${b.id}"><h4>${esc(b.name)}${b.url ? `<a href="${b.url}" target="_blank" rel="noopener">Visit site ↗</a>` : ''}</h4><p>${esc(b.p)}</p><div class="tags">${b.tags.map((t) => `<span>${esc(t)}</span>`).join('')}</div></article>`).join('')}</div></div></div>`;
   chapters.appendChild(sec);
 });
 const rail = $('#rail');
@@ -94,13 +94,31 @@ $('.burger').addEventListener('click', () => { const o = nav.classList.toggle('o
 // ---------- globe
 let globe = null;
 try {
-  globe = initGlobe($('#globe'), $('#labels'), { items: BIZ, onPick: (id) => goTo('#biz-' + id) });
+  globe = initGlobe($('#globe'), $('#labels'), { items: BIZ, onPick: (id) => goTo('#biz-' + id), onReady: start });
 } catch (err) { console.warn('3D unavailable', err); $('#stage-wrap').style.background = 'radial-gradient(80% 60% at 75% 30%,#24307a,#050b1c 70%)'; }
 window.__mlabs = { globe, goTo };
+function start() { if (document.body.classList.contains('ready')) return; $('#loader').classList.add('done'); document.body.classList.add('ready'); requestAnimationFrame(onScroll); }
+setTimeout(start, globe ? 7000 : 0);
+
+// live clock for headquarters
+function liveTick() { const now = new Date(), tm = now.toLocaleTimeString('en-MY', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Asia/Kuala_Lumpur' }); const day = globe ? globe.isDayAtHQ() : true;
+  $('#livetxt').innerHTML = `Live Earth · <b>${tm}</b> in Petaling Jaya · ${day ? 'daytime' : 'night-time'}`; }
+liveTick(); setInterval(liveTick, 20000);
+
+// cards and tiles light up their company on the globe
+document.addEventListener('pointerover', (e) => { const c = e.target.closest('.bcard,.tile'); if (c && globe) globe.highlight(c.dataset.id); });
+document.addEventListener('pointerout', (e) => { const c = e.target.closest('.bcard,.tile'); if (c && globe && !c.contains(e.relatedTarget)) globe.highlight(null); });
+
+// at-a-glance directory
+const chips = $('#chips'), grid = $('#grid9');
+grid.innerHTML = BIZ.map((b) => `<button class="tile reveal" data-id="${b.id}" data-s="${b.sector}" style="--sc:${b.color}"><span class="s">${esc(secOf(b.sector).name)}</span><h3>${esc(b.name)}</h3><p>${esc(b.p.split('. ')[0].replace(/\.$/, ''))}.</p><span class="go">See details →</span></button>`).join('');
+chips.innerHTML = `<button type="button" aria-pressed="true" data-s="">All nine</button>` + SECTORS.map((s) => `<button type="button" aria-pressed="false" data-s="${s.id}" style="--sc:${s.color}"><i></i>${esc(s.name)}</button>`).join('');
+chips.addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; $$('button', chips).forEach((x) => x.setAttribute('aria-pressed', String(x === b))); $$('.tile', grid).forEach((t) => t.classList.toggle('out', !!b.dataset.s && t.dataset.s !== b.dataset.s)); });
+grid.addEventListener('click', (e) => { const t = e.target.closest('.tile'); if (t) goTo('#biz-' + t.dataset.id); });
 
 // ---------- scroll-driven state
 const secEls = $$('.chapter'), cue = $('#cue'), navLinks = $$('.nav ul a');
-const blocks = ['about', 'businesses', 'journey', 'investors', 'community', 'contact'].map((id) => $('#' + id));
+const blocks = ['glance', 'about', 'businesses', 'journey', 'investors', 'community', 'contact'].map((id) => $('#' + id));
 let curFocus = '__';
 function onScroll() {
   const vh = innerHeight, mid = vh * .5;
@@ -108,6 +126,8 @@ function onScroll() {
   cue.style.opacity = scrollY > 60 ? 0 : 1;
   // active chapter = the one containing the viewport middle
   let act = null; for (const s of secEls) { const r = s.getBoundingClientRect(); if (r.top <= mid && r.bottom > mid) { act = s; break; } }
+  $('#progress').style.transform = `scaleX(${scrollY / Math.max(1, document.documentElement.scrollHeight - vh)})`;
+  $('#live').classList.toggle('off', !(act && act.classList.contains('hero')) || !document.body.classList.contains('ready'));
   const f = act ? act.dataset.focus || '' : '';
   if (f !== curFocus) { curFocus = f; globe && globe.setFocus(f || null); }
   secEls.forEach((s) => { const card = $('.sector', s); if (card) card.classList.toggle('in', s === act); });
@@ -116,7 +136,7 @@ function onScroll() {
   if (globe) globe.setLayout(act && act.classList.contains('hero') ? 'hero' : (sr.bottom > 0 ? 'eco' : 'hero'));
   // nav highlight
   let cur = null; blocks.forEach((b) => { if (b && b.getBoundingClientRect().top < vh * .4) cur = b.id; });
-  if (act && (act.classList.contains('sec') || act.classList.contains('eco'))) cur = 'businesses'; if (act && act.classList.contains('hero')) cur = null;
+  if ((act && (act.classList.contains('sec') || act.classList.contains('eco'))) || cur === 'glance') cur = 'businesses'; if (act && act.classList.contains('hero')) cur = null;
   navLinks.forEach((a) => a.classList.toggle('cur', a.getAttribute('href') === '#' + cur));
   // timeline progress
   const tr = tl.getBoundingClientRect(), p = Math.max(0, Math.min(1, (vh * .6 - tr.top) / tr.height)); $('.bar', tl).style.height = (p * (tr.height - 16)) + 'px';

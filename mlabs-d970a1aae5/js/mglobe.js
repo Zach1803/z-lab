@@ -10,15 +10,23 @@ const D2R = Math.PI / 180;
 const ll = (lat, lon, r = 1) => { const ph = (lon + 180) * D2R, th = (90 - lat) * D2R; return new THREE.Vector3(-Math.cos(ph) * Math.sin(th) * r, Math.cos(th) * r, Math.sin(ph) * Math.sin(th) * r); };
 const HQ = { lat: 3.131, lon: 101.597 }; // Menara Lien Hoe, Tropicana, Petaling Jaya
 
-export function initGlobe(canvas, labelsEl, { items = [], onPick, onHover } = {}) {
+export function initGlobe(canvas, labelsEl, { items = [], onPick, onHover, onReady } = {}) {
   const COARSE = matchMedia('(pointer:coarse)').matches || innerWidth < 760, REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true, powerPreference: 'high-performance' });
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, COARSE ? 1.5 : 1.75)); renderer.setClearColor(0x000000, 0);
   renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.outputColorSpace = THREE.SRGBColorSpace;
   const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(30, 1, .01, 200); camera.position.set(0, 0, 4.8);
-  const tl = new THREE.TextureLoader(), T = (u, srgb) => { const t = tl.load(u); if (srgb) t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t; };
+  const mgr = new THREE.LoadingManager(); let ready = false, readyAt = 0; mgr.onLoad = () => { if (!ready) { ready = true; readyAt = performance.now(); onReady && onReady(); } };
+  const tl = new THREE.TextureLoader(mgr), T = (u, srgb) => { const t = tl.load(u); if (srgb) t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t; };
   const day = T('tex/earth_day.jpg', true), night = T('tex/earth_night.jpg', true), spec = T('tex/earth_spec.jpg'), nor = T('tex/earth_nor.jpg'), clouds = T('tex/earth_clouds.jpg'); clouds.wrapS = THREE.RepeatWrapping;
-  const sunDir = new THREE.Vector3(.85, .35, .45).normalize();
+  const sunDir = new THREE.Vector3(.85, .35, .45).normalize(), sunLocal = new THREE.Vector3();
+  // real subsolar point, so the day/night line on the globe is what it is right now
+  function subsolar(d = new Date()) { const doy = (Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) - Date.UTC(d.getUTCFullYear(), 0, 0)) / 864e5; const g = 2 * Math.PI / 365 * (doy - 1 + (d.getUTCHours() - 12) / 24);
+    const decl = .006918 - .399912 * Math.cos(g) + .070257 * Math.sin(g) - .006758 * Math.cos(2 * g) + .000907 * Math.sin(2 * g) - .002697 * Math.cos(3 * g) + .00148 * Math.sin(3 * g);
+    const eqt = 229.18 * (.000075 + .001868 * Math.cos(g) - .032077 * Math.sin(g) - .014615 * Math.cos(2 * g) - .040849 * Math.sin(2 * g)); const mins = d.getUTCHours() * 60 + d.getUTCMinutes() + d.getUTCSeconds() / 60;
+    return { lat: decl / D2R, lon: -(mins + eqt - 720) / 4 }; }
+  let sunT = 0; const updSun = () => { const s = subsolar(); sunLocal.copy(ll(s.lat, s.lon)).normalize(); };
+  updSun();
 
   // stars
   { const n = 2600, p = [], s = []; for (let i = 0; i < n; i++) { const v = new THREE.Vector3().randomDirection().multiplyScalar(60); p.push(v.x, v.y, v.z); s.push(Math.random() < .04 ? 2.4 : .5 + Math.random() * 1.2); }
@@ -41,7 +49,7 @@ export function initGlobe(canvas, labelsEl, { items = [], onPick, onHover } = {}
         float ndl = dot(N, sun), lit = max(dot(n, sun), 0.), dayK = smoothstep(-.12, .18, ndl);
         vec3 dc = texture2D(day, vUv).rgb; float cl = texture2D(clouds, vUv + vec2(uCloudOff - .003, .002)).r; dc *= 1. - .45*cl*dayK;
         vec3 col = dc*(lit*1.3 + .02);
-        vec3 nl = texture2D(night, vUv).rgb; col += nl*nl*vec3(2.,1.7,1.3)*(1. - dayK)*(1. - .7*cl);
+        vec3 nl = texture2D(night, vUv).rgb; col += nl*nl*vec3(2.3,1.85,1.35)*(1. - dayK)*(1. - .7*cl) + dc*.035*(1. - dayK);
         float ocean = texture2D(spec, vUv).r; vec3 H = normalize(sun + V); col += vec3(.9,.92,1.)*pow(max(dot(N, H), 0.), 160.)*ocean*.14*dayK;
         float fr = pow(1. - max(dot(N, V), 0.), 3.); col += vec3(.35,.45,1.)*fr*(.14 + .9*smoothstep(-.35, .6, ndl));
         gl_FragColor = vec4(col, 1.);
@@ -66,6 +74,7 @@ export function initGlobe(canvas, labelsEl, { items = [], onPick, onHover } = {}
   const dotTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d'); const g = x.createRadialGradient(32, 32, 0, 32, 32, 32); g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(.22, 'rgba(255,255,255,.9)'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect(0, 0, 64, 64); return new THREE.CanvasTexture(c); })();
   const hqLocal = ll(HQ.lat, HQ.lon, 1.008);
   const hq = new THREE.Sprite(new THREE.SpriteMaterial({ map: dotTex, color: new THREE.Color(2.2, 2.2, 2.4), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending })); hq.position.copy(hqLocal); hq.scale.setScalar(.06); globe.add(hq);
+  const hqLab = document.createElement('div'); hqLab.className = 'hq-lab'; hqLab.innerHTML = '<b>HQ</b> Petaling Jaya'; labelsEl.appendChild(hqLab);
   const ring = new THREE.Mesh(new THREE.RingGeometry(.018, .022, 48), new THREE.MeshBasicMaterial({ color: new THREE.Color(1.8, 1.9, 2.4), transparent: true, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending }));
   ring.position.copy(ll(HQ.lat, HQ.lon, 1.01)); ring.lookAt(ll(HQ.lat, HQ.lon, 2)); globe.add(ring);
 
@@ -74,6 +83,7 @@ export function initGlobe(canvas, labelsEl, { items = [], onPick, onHover } = {}
   const R = 1.62;
   { const pts = []; for (let i = 0; i <= 256; i++) { const a = i / 256 * Math.PI * 2; pts.push(new THREE.Vector3(Math.cos(a) * R, 0, Math.sin(a) * R)); }
     const g = new THREE.BufferGeometry().setFromPoints(pts); orbit.add(new THREE.Line(g, new THREE.LineDashedMaterial({ color: 0x8ea2ff, transparent: true, opacity: .32, dashSize: .03, gapSize: .025 }))).children.at(-1).computeLineDistances(); }
+  let hl = null;
   const sats = items.map((it, i) => {
     const col = new THREE.Color(it.color), a0 = i / items.length * Math.PI * 2;
     const core = new THREE.Sprite(new THREE.SpriteMaterial({ map: dotTex, color: col.clone().multiplyScalar(2.2), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending })); core.scale.setScalar(.12);
@@ -87,12 +97,13 @@ export function initGlobe(canvas, labelsEl, { items = [], onPick, onHover } = {}
       fragmentShader: 'uniform vec3 uC; uniform float uT, uOn, uS; varying float vU; void main(){ float h = fract(uT*.35 + uS); float p = exp(-pow((vU - h)/.06, 2.)); gl_FragColor = vec4(uC*(uOn*.9 + p*uOn*2.4), 1.); }' });
     const beam = new THREE.Line(bg, bm); beam.frustumCulled = false; scene.add(beam);
     const lab = document.createElement('button'); lab.type = 'button'; lab.className = 'sat-lab'; lab.style.setProperty('--c', it.color); lab.innerHTML = `<i></i>${it.short || it.name}`; lab.addEventListener('click', () => onPick && onPick(it.id)); labelsEl.appendChild(lab);
+    lab.addEventListener('pointerenter', () => { hl = it.id; }); lab.addEventListener('pointerleave', () => { hl = null; });
     return { it, g, core, halo, beam, bm, a0, lab, on: .15, vis: 1 };
   });
 
   // layout + focus
   const view = { lon: 104, lat: 5, tlon: 104, tlat: 5 };
-  let orbitA = 0, orbitT = 0, focus = null, layout = 'hero', wide = true;
+  let zBase = 6.4, orbitA = 0, orbitT = 0, focus = null, layout = 'hero', wide = true;
   function setFocus(sector) {
     focus = sector || null;
     const firstIdx = sats.findIndex((s) => s.it.sector === focus);
@@ -103,7 +114,7 @@ export function initGlobe(canvas, labelsEl, { items = [], onPick, onHover } = {}
   function applyOffset(k) { if (wide) camera.setViewOffset(W, H, W * (-.23 + .45 * k), 0, W, H); else camera.setViewOffset(W, H, 0, H * (.29 - .02 * k), W, H); camera.updateProjectionMatrix(); }
   function resize() {
     const r = canvas.getBoundingClientRect(), w = Math.max(1, r.width), h = Math.max(1, r.height); renderer.setSize(w, h, false); composer.setSize(w, h); bloom.resolution.set(w / 2, h / 2);
-    camera.aspect = w / h; wide = w / h > 1.05; camera.fov = wide ? 30 : 40; camera.position.z = wide ? 6.4 : 9.6;
+    camera.aspect = w / h; wide = w / h > 1.05; camera.fov = wide ? 30 : 40; zBase = wide ? 6.4 : 9.6; camera.position.z = zBase;
     W = w; H = h; applyOffset(offK);
   }
   const composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(4, 4, { type: THREE.HalfFloatType, samples: COARSE ? 0 : 4 }));
@@ -121,20 +132,24 @@ export function initGlobe(canvas, labelsEl, { items = [], onPick, onHover } = {}
   const clock = new THREE.Clock(), tmp = new THREE.Vector3(), hqW = new THREE.Vector3(), satW = new THREE.Vector3(), mid = new THREE.Vector3();
   function frame() {
     requestAnimationFrame(frame); const raw = clock.getDelta(), dt = Math.min(raw, .05), rdt = Math.min(raw, .3), t = clock.elapsedTime; if (!visible || document.hidden) return;
+    const ip = ready ? Math.min(1, (performance.now() - readyAt) / 2600) : 0, ie = REDUCED ? 1 : 1 - Math.pow(1 - ip, 4);
+    camera.position.z = zBase * (1 + (1 - ie) * .9); orbit.scale.setScalar(.55 + .45 * ie); labelsEl.style.opacity = Math.max(0, (ip - .55) / .45);
+    if ((sunT += raw) > 30) { sunT = 0; updSun(); }
     { const tk = layout === 'hero' ? 0 : 1; if (Math.abs(tk - offK) > .001) { offK += (tk - offK) * (1 - Math.exp(-rdt * 3)); applyOffset(offK); } }
     mx += (tmx - mx) * (1 - Math.exp(-rdt * 3)); my += (tmy - my) * (1 - Math.exp(-rdt * 3));
     if (!drag) view.tlon += (104 + (REDUCED ? 0 : Math.sin(t * .12) * 14) - view.tlon) * (1 - Math.exp(-rdt * .5));
     view.lon += (view.tlon - view.lon) * (1 - Math.exp(-rdt * 2)); view.lat += (view.tlat - view.lat) * (1 - Math.exp(-rdt * 2));
     globe.rotation.set(view.lat * D2R + my * .08, Math.PI / 2 - (view.lon + 180) * D2R + mx * .15, 0, 'XYZ');
-    if (!focus && !REDUCED) orbitT += dt * .06;
+    if (!focus && !hl && !REDUCED) orbitT += dt * .06;
     orbitA += (orbitT - orbitA) * (1 - Math.exp(-rdt * 2.2));
     cloudMat.uniforms.uOff.value = t * .0015; earthMat.uniforms.uCloudOff.value = t * .0015;
     ring.scale.setScalar(1 + (t * .7 % 1) * 1.4); ring.material.opacity = 1 - (t * .7 % 1);
-    globe.updateMatrixWorld(); orbit.updateMatrixWorld(); hqW.copy(hqLocal).applyMatrix4(globe.matrixWorld);
+    globe.updateMatrixWorld(); orbit.updateMatrixWorld(); hqW.copy(hqLocal).applyMatrix4(globe.matrixWorld); sunDir.copy(sunLocal).applyQuaternion(globe.quaternion);
     const r = canvas.getBoundingClientRect();
+    { tmp.copy(hqW).project(camera); const hx = (tmp.x + 1) / 2 * r.width, hy = (1 - tmp.y) / 2 * r.height; hqLab.style.transform = `translate(${hx}px,${hy}px)`; hqLab.classList.toggle('hid', occluded(tmp.copy(hqW).multiplyScalar(1.03)) || (!!focus && !wide)); }
     sats.forEach((s, i) => {
       const a = s.a0 + orbitA; s.g.position.set(Math.cos(a) * R, 0, Math.sin(a) * R); s.g.updateMatrixWorld(); satW.setFromMatrixPosition(s.g.matrixWorld);
-      s.halo.lookAt(camera.position); const active = focus ? s.it.sector === focus : false, target = focus ? (active ? 1 : .05) : .22;
+      s.halo.lookAt(camera.position); const isHl = hl === s.it.id, active = isHl || (focus ? s.it.sector === focus : false), target = isHl ? 1.35 : focus ? (active ? 1 : .05) : (hl ? .08 : .22);
       s.on += (target - s.on) * (1 - Math.exp(-rdt * 4)); const occ = occluded(satW); s.vis += ((occ ? 0 : 1) - s.vis) * (1 - Math.exp(-rdt * 10));
       const sc = (.06 + s.on * .05 + (active ? Math.sin(t * 3 + i) * .006 : 0)) * (.3 + .7 * s.vis); s.core.scale.setScalar(sc); s.halo.scale.setScalar(.55 + s.on * .55); s.halo.material.opacity = (.2 + s.on * .6) * s.vis; s.core.material.opacity = s.vis;
       // beam: curve from HQ out and over to the satellite
@@ -148,5 +163,5 @@ export function initGlobe(canvas, labelsEl, { items = [], onPick, onHover } = {}
     composer.render();
   }
   frame();
-  return { setFocus, setLayout, resize };
+  return { setFocus, setLayout, resize, highlight: (id) => { hl = id || null; }, isDayAtHQ: () => sunLocal.dot(ll(HQ.lat, HQ.lon)) > 0 };
 }
