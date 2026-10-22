@@ -1,10 +1,6 @@
 // mlabs — the group globe: a real Earth centred on Malaysia, with the nine subsidiaries orbiting it,
 // each linked to headquarters in Petaling Jaya by a beam. three.js r170.
 import * as THREE from 'three';
-import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
 const D2R = Math.PI / 180;
 const ll = (lat, lon, r = 1) => { const ph = (lon + 180) * D2R, th = (90 - lat) * D2R; return new THREE.Vector3(-Math.cos(ph) * Math.sin(th) * r, Math.cos(th) * r, Math.sin(ph) * Math.sin(th) * r); };
@@ -12,9 +8,9 @@ const HQ = { lat: 3.131, lon: 101.597 }; // Menara Lien Hoe, Tropicana, Petaling
 
 export function initGlobe(canvas, labelsEl, { items = [], onPick, onHover, onReady } = {}) {
   const COARSE = matchMedia('(pointer:coarse)').matches || innerWidth < 760, REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, COARSE ? 1.5 : 1.75)); renderer.setClearColor(0x000000, 0);
-  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.outputColorSpace = THREE.SRGBColorSpace;
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, COARSE ? 1.5 : 1.5)); renderer.setClearColor(0x000000, 0);
+  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMappingExposure = 1.3;
   const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(30, 1, .01, 200); camera.position.set(0, 0, 4.8);
   const mgr = new THREE.LoadingManager(); let ready = false, readyAt = 0; mgr.onLoad = () => { if (!ready) { ready = true; readyAt = performance.now(); onReady && onReady(); } };
   const tl = new THREE.TextureLoader(mgr), T = (u, srgb) => { const t = tl.load(u); if (srgb) t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t; };
@@ -28,12 +24,6 @@ export function initGlobe(canvas, labelsEl, { items = [], onPick, onHover, onRea
   let sunT = 0; const updSun = () => { const s = subsolar(); sunLocal.copy(ll(s.lat, s.lon)).normalize(); };
   updSun();
 
-  // stars
-  { const n = 2600, p = [], s = []; for (let i = 0; i < n; i++) { const v = new THREE.Vector3().randomDirection().multiplyScalar(60); p.push(v.x, v.y, v.z); s.push(Math.random() < .04 ? 2.4 : .5 + Math.random() * 1.2); }
-    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(p, 3)); g.setAttribute('size', new THREE.Float32BufferAttribute(s, 1));
-    scene.add(new THREE.Points(g, new THREE.ShaderMaterial({ uniforms: { uPR: { value: renderer.getPixelRatio() } }, transparent: true, depthWrite: false,
-      vertexShader: 'attribute float size; uniform float uPR; varying float vA; void main(){ vec4 mv = modelViewMatrix*vec4(position,1.); gl_Position = projectionMatrix*mv; gl_PointSize = size*uPR; vA = .3 + .6*fract(sin(dot(position.xy, vec2(12.9,78.2)))*43758.5); }',
-      fragmentShader: 'varying float vA; void main(){ float d = length(gl_PointCoord - .5); gl_FragColor = vec4(vec3(.82,.88,1.), vA*smoothstep(.5,.1,d)); }' }))); }
 
   // earth (day / night / ocean glint / clouds / atmosphere)
   const globe = new THREE.Group(); scene.add(globe);
@@ -48,15 +38,15 @@ export function initGlobe(canvas, labelsEl, { items = [], onPick, onHover, onRea
         vec3 nm = texture2D(nor, vUv).xyz*2. - 1.; vec3 n = normalize(-vT*nm.x*.6 + vB*nm.y*.6 + N*nm.z);
         float ndl = dot(N, sun), lit = max(dot(n, sun), 0.), dayK = smoothstep(-.12, .18, ndl);
         vec3 dc = texture2D(day, vUv).rgb; float cl = texture2D(clouds, vUv + vec2(uCloudOff - .003, .002)).r; dc *= 1. - .45*cl*dayK;
-        vec3 col = dc*(lit*1.3 + .02);
-        vec3 nl = texture2D(night, vUv).rgb; col += nl*nl*vec3(2.3,1.85,1.35)*(1. - dayK)*(1. - .7*cl) + dc*.035*(1. - dayK);
+        vec3 col = dc*(lit*1.45 + .16);
+        vec3 nl = texture2D(night, vUv).rgb; col += nl*nl*vec3(2.3,1.85,1.35)*(1. - dayK)*(1. - .7*cl) + dc*.11*(1. - dayK);
         float ocean = texture2D(spec, vUv).r; vec3 H = normalize(sun + V); col += vec3(.9,.92,1.)*pow(max(dot(N, H), 0.), 160.)*ocean*.14*dayK;
         float fr = pow(1. - max(dot(N, V), 0.), 3.); col += vec3(.35,.45,1.)*fr*(.14 + .9*smoothstep(-.35, .6, ndl));
         gl_FragColor = vec4(col, 1.);
         #include <tonemapping_fragment>
         #include <colorspace_fragment>
       }` });
-  globe.add(new THREE.Mesh(new THREE.SphereGeometry(1, 128, 96), earthMat));
+  globe.add(new THREE.Mesh(new THREE.SphereGeometry(1, 96, 64), earthMat));
   const cloudMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, uniforms: { clouds: { value: clouds }, sun: { value: sunDir }, uOff: { value: 0 } },
     vertexShader: 'varying vec2 vUv; varying vec3 vN, vW; void main(){ vUv = uv; vN = normalize(mat3(modelMatrix)*normal); vec4 w = modelMatrix*vec4(position,1.); vW = w.xyz; gl_Position = projectionMatrix*viewMatrix*w; }',
     fragmentShader: `uniform sampler2D clouds; uniform vec3 sun; uniform float uOff; varying vec2 vUv; varying vec3 vN, vW;
@@ -65,36 +55,37 @@ export function initGlobe(canvas, labelsEl, { items = [], onPick, onHover, onRea
         #include <tonemapping_fragment>
         #include <colorspace_fragment>
       }` });
-  globe.add(new THREE.Mesh(new THREE.SphereGeometry(1.007, 96, 64), cloudMat));
-  scene.add(new THREE.Mesh(new THREE.SphereGeometry(1.03, 96, 64), new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, uniforms: { sun: { value: sunDir } },
+  globe.add(new THREE.Mesh(new THREE.SphereGeometry(1.007, 72, 48), cloudMat));
+  scene.add(new THREE.Mesh(new THREE.SphereGeometry(1.03, 72, 48), new THREE.ShaderMaterial({ transparent: true, depthWrite: false, uniforms: { sun: { value: sunDir } },
     vertexShader: 'varying vec3 vN, vW; void main(){ vN = normalize(mat3(modelMatrix)*normal); vec4 w = modelMatrix*vec4(position,1.); vW = w.xyz; gl_Position = projectionMatrix*viewMatrix*w; }',
-    fragmentShader: 'uniform vec3 sun; varying vec3 vN, vW; void main(){ vec3 N = normalize(vN), V = normalize(cameraPosition - vW); float f = pow(1. - max(dot(N, V), 0.), 4.); float s = smoothstep(-.4, .5, dot(N, sun)); gl_FragColor = vec4(vec3(.38,.5,1.)*f*(.12 + 1.25*s), 1.); }' })));
+    fragmentShader: 'uniform vec3 sun; varying vec3 vN, vW; void main(){ vec3 N = normalize(vN), V = normalize(cameraPosition - vW); float f = pow(1. - max(dot(N, V), 0.), 4.); float s = smoothstep(-.4, .5, dot(N, sun)); gl_FragColor = vec4(vec3(.32,.55,1.), clamp(f*(.45 + .55*s)*1.1, 0., 1.)); }' })));
 
   // headquarters marker
   const dotTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d'); const g = x.createRadialGradient(32, 32, 0, 32, 32, 32); g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(.22, 'rgba(255,255,255,.9)'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect(0, 0, 64, 64); return new THREE.CanvasTexture(c); })();
+  const discTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d'); x.fillStyle = 'rgba(255,255,255,.35)'; x.beginPath(); x.arc(32, 32, 30, 0, 7); x.fill(); x.fillStyle = '#fff'; x.beginPath(); x.arc(32, 32, 17, 0, 7); x.fill(); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; })();
   const hqLocal = ll(HQ.lat, HQ.lon, 1.008);
-  const hq = new THREE.Sprite(new THREE.SpriteMaterial({ map: dotTex, color: new THREE.Color(2.2, 2.2, 2.4), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending })); hq.position.copy(hqLocal); hq.scale.setScalar(.06); globe.add(hq);
+  const hq = new THREE.Sprite(new THREE.SpriteMaterial({ map: dotTex, color: 0x1d5fb4, transparent: true, depthWrite: false })); hq.position.copy(hqLocal); hq.scale.setScalar(.06); globe.add(hq);
   const hqLab = document.createElement('div'); hqLab.className = 'hq-lab'; hqLab.innerHTML = '<b>HQ</b> Petaling Jaya'; labelsEl.appendChild(hqLab);
-  const ring = new THREE.Mesh(new THREE.RingGeometry(.018, .022, 48), new THREE.MeshBasicMaterial({ color: new THREE.Color(1.8, 1.9, 2.4), transparent: true, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending }));
+  const ring = new THREE.Mesh(new THREE.RingGeometry(.018, .022, 48), new THREE.MeshBasicMaterial({ color: 0x1d5fb4, transparent: true, depthWrite: false, side: THREE.DoubleSide }));
   ring.position.copy(ll(HQ.lat, HQ.lon, 1.01)); ring.lookAt(ll(HQ.lat, HQ.lon, 2)); globe.add(ring);
 
   // the orbit
   const orbit = new THREE.Group(); orbit.rotation.set(.34, 0, -.2); scene.add(orbit);
   const R = 1.62;
   { const pts = []; for (let i = 0; i <= 256; i++) { const a = i / 256 * Math.PI * 2; pts.push(new THREE.Vector3(Math.cos(a) * R, 0, Math.sin(a) * R)); }
-    const g = new THREE.BufferGeometry().setFromPoints(pts); orbit.add(new THREE.Line(g, new THREE.LineDashedMaterial({ color: 0x8ea2ff, transparent: true, opacity: .32, dashSize: .03, gapSize: .025 }))).children.at(-1).computeLineDistances(); }
+    const g = new THREE.BufferGeometry().setFromPoints(pts); orbit.add(new THREE.Line(g, new THREE.LineDashedMaterial({ color: 0x3550b8, transparent: true, opacity: .32, dashSize: .03, gapSize: .025 }))).children.at(-1).computeLineDistances(); }
   let hl = null;
   const sats = items.map((it, i) => {
     const col = new THREE.Color(it.color), a0 = i / items.length * Math.PI * 2;
-    const core = new THREE.Sprite(new THREE.SpriteMaterial({ map: dotTex, color: col.clone().multiplyScalar(2.2), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending })); core.scale.setScalar(.12);
-    const halo = new THREE.Mesh(new THREE.RingGeometry(.05, .058, 40), new THREE.MeshBasicMaterial({ color: col.clone().multiplyScalar(1.6), transparent: true, opacity: .8, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending }));
+    const core = new THREE.Sprite(new THREE.SpriteMaterial({ map: discTex, color: col, transparent: true, depthWrite: false })); core.scale.setScalar(.12);
+    const halo = new THREE.Mesh(new THREE.RingGeometry(.05, .058, 40), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: .8, depthWrite: false, side: THREE.DoubleSide }));
     const g = new THREE.Group(); g.add(core, halo); orbit.add(g);
     // beam to HQ
     const N = 48, pos = new Float32Array((N + 1) * 3), uvs = new Float32Array(N + 1); for (let k = 0; k <= N; k++) uvs[k] = k / N;
     const bg = new THREE.BufferGeometry(); bg.setAttribute('position', new THREE.BufferAttribute(pos, 3)); bg.setAttribute('u', new THREE.BufferAttribute(uvs, 1));
-    const bm = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, uniforms: { uC: { value: col }, uT: { value: 0 }, uOn: { value: .15 }, uS: { value: Math.random() } },
+    const bm = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, uniforms: { uC: { value: col }, uT: { value: 0 }, uOn: { value: .15 }, uS: { value: Math.random() } },
       vertexShader: 'attribute float u; varying float vU; void main(){ vU = u; gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.); }',
-      fragmentShader: 'uniform vec3 uC; uniform float uT, uOn, uS; varying float vU; void main(){ float h = fract(uT*.35 + uS); float p = exp(-pow((vU - h)/.06, 2.)); gl_FragColor = vec4(uC*(uOn*.9 + p*uOn*2.4), 1.); }' });
+      fragmentShader: 'uniform vec3 uC; uniform float uT, uOn, uS; varying float vU; void main(){ float h = fract(uT*.35 + uS); float p = exp(-pow((vU - h)/.06, 2.)); gl_FragColor = vec4(mix(uC, vec3(1.), p*.3), clamp(uOn*.75 + p*uOn*.9, 0., 1.)); }' });
     const beam = new THREE.Line(bg, bm); beam.frustumCulled = false; scene.add(beam);
     const lab = document.createElement('button'); lab.type = 'button'; lab.className = 'sat-lab'; lab.style.setProperty('--c', it.color); lab.innerHTML = `<i></i>${it.short || it.name}`; lab.addEventListener('click', () => onPick && onPick(it.id)); labelsEl.appendChild(lab);
     lab.addEventListener('pointerenter', () => { hl = it.id; }); lab.addEventListener('pointerleave', () => { hl = null; });
@@ -110,15 +101,13 @@ export function initGlobe(canvas, labelsEl, { items = [], onPick, onHover, onRea
     if (firstIdx >= 0) { const members = sats.map((s, i) => [s, i]).filter(([s]) => s.it.sector === focus); const mean = members.reduce((acc, [, i]) => acc + i, 0) / members.length; const a = mean / sats.length * Math.PI * 2; let target = Math.PI / 2 - a; while (target - orbitA > Math.PI) target -= Math.PI * 2; while (orbitA - target > Math.PI) target += Math.PI * 2; orbitT = target; }
   }
   function setLayout(l) { if (l !== layout) { layout = l; } }
-  let offK = 0, W = 1, H = 1;
+  let offK = 0, W = 1, H = 1, rect = { width: 1, height: 1 };
   function applyOffset(k) { if (wide) camera.setViewOffset(W, H, W * (-.23 + .45 * k), 0, W, H); else camera.setViewOffset(W, H, 0, H * (.29 - .02 * k), W, H); camera.updateProjectionMatrix(); }
   function resize() {
-    const r = canvas.getBoundingClientRect(), w = Math.max(1, r.width), h = Math.max(1, r.height); renderer.setSize(w, h, false); composer.setSize(w, h); bloom.resolution.set(w / 2, h / 2);
+    const r = canvas.getBoundingClientRect(), w = Math.max(1, r.width), h = Math.max(1, r.height); renderer.setSize(w, h, false); rect = r;
     camera.aspect = w / h; wide = w / h > 1.05; camera.fov = wide ? 30 : 40; zBase = wide ? 6.4 : 9.6; camera.position.z = zBase;
     W = w; H = h; applyOffset(offK);
   }
-  const composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(4, 4, { type: THREE.HalfFloatType, samples: COARSE ? 0 : 4 }));
-  composer.addPass(new RenderPass(scene, camera)); const bloom = new UnrealBloomPass(new THREE.Vector2(256, 256), .45, .45, .85); composer.addPass(bloom); composer.addPass(new OutputPass());
   addEventListener('resize', resize); resize();
 
   // pointer: drag to spin, hover satellites
@@ -144,8 +133,8 @@ export function initGlobe(canvas, labelsEl, { items = [], onPick, onHover, onRea
     orbitA += (orbitT - orbitA) * (1 - Math.exp(-rdt * 2.2));
     cloudMat.uniforms.uOff.value = t * .0015; earthMat.uniforms.uCloudOff.value = t * .0015;
     ring.scale.setScalar(1 + (t * .7 % 1) * 1.4); ring.material.opacity = 1 - (t * .7 % 1);
-    globe.updateMatrixWorld(); orbit.updateMatrixWorld(); hqW.copy(hqLocal).applyMatrix4(globe.matrixWorld); sunDir.copy(sunLocal).applyQuaternion(globe.quaternion);
-    const r = canvas.getBoundingClientRect();
+    globe.updateMatrixWorld(); orbit.updateMatrixWorld(); hqW.copy(hqLocal).applyMatrix4(globe.matrixWorld); sunDir.set(-.35, .38, 1).normalize();
+    const r = rect;
     { tmp.copy(hqW).project(camera); const hx = (tmp.x + 1) / 2 * r.width, hy = (1 - tmp.y) / 2 * r.height; hqLab.style.transform = `translate(${hx}px,${hy}px)`; hqLab.classList.toggle('hid', occluded(tmp.copy(hqW).multiplyScalar(1.03)) || (!!focus && !wide)); }
     sats.forEach((s, i) => {
       const a = s.a0 + orbitA; s.g.position.set(Math.cos(a) * R, 0, Math.sin(a) * R); s.g.updateMatrixWorld(); satW.setFromMatrixPosition(s.g.matrixWorld);
@@ -160,7 +149,7 @@ export function initGlobe(canvas, labelsEl, { items = [], onPick, onHover, onRea
       tmp.copy(satW).project(camera); const x = (tmp.x + 1) / 2 * r.width, y = (1 - tmp.y) / 2 * r.height; const behind = occ;
       s.lab.style.transform = `translate(${x}px,${y}px)`; s.lab.classList.toggle('hid', behind); s.lab.classList.toggle('dim', !behind && !!focus && !active); s.lab.classList.toggle('on', !!active);
     });
-    composer.render();
+    renderer.render(scene, camera);
   }
   frame();
   return { setFocus, setLayout, resize, highlight: (id) => { hl = id || null; }, isDayAtHQ: () => sunLocal.dot(ll(HQ.lat, HQ.lon)) > 0 };

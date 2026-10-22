@@ -102,7 +102,7 @@ setTimeout(start, globe ? 7000 : 0);
 
 // live clock for headquarters
 function liveTick() { const now = new Date(), tm = now.toLocaleTimeString('en-MY', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Asia/Kuala_Lumpur' }); const day = globe ? globe.isDayAtHQ() : true;
-  $('#livetxt').innerHTML = `Live Earth · <b>${tm}</b> in Petaling Jaya · ${day ? 'daytime' : 'night-time'}`; }
+  $('#livetxt').innerHTML = `Headquarters · <b>${tm}</b> in Petaling Jaya`; }
 liveTick(); setInterval(liveTick, 20000);
 
 // cards and tiles light up their company on the globe
@@ -119,30 +119,31 @@ grid.addEventListener('click', (e) => { const t = e.target.closest('.tile'); if 
 // ---------- scroll-driven state
 const secEls = $$('.chapter'), cue = $('#cue'), navLinks = $$('.nav ul a');
 const blocks = ['glance', 'about', 'businesses', 'journey', 'investors', 'community', 'contact'].map((id) => $('#' + id));
-let curFocus = '__';
+let curFocus = '__'; const stageWrap = $('#stage-wrap'), progEl = $('#progress'), liveEl = $('#live'), tlBar = $('.bar', tl), tlItems = $$('.tli', tl), secCards = secEls.map((x) => $('.sector', x)), railBtns = $$('button', rail);
 function onScroll() {
   const vh = innerHeight, mid = vh * .5;
   nav.classList.toggle('solid', scrollY > 40);
   cue.style.opacity = scrollY > 60 ? 0 : 1;
   // active chapter = the one containing the viewport middle
   let act = null; for (const s of secEls) { const r = s.getBoundingClientRect(); if (r.top <= mid && r.bottom > mid) { act = s; break; } }
-  $('#progress').style.transform = `scaleX(${scrollY / Math.max(1, document.documentElement.scrollHeight - vh)})`;
-  $('#live').classList.toggle('off', !(act && act.classList.contains('hero')) || !document.body.classList.contains('ready'));
+  progEl.style.transform = `scaleX(${scrollY / Math.max(1, document.documentElement.scrollHeight - vh)})`;
+  liveEl.classList.toggle('off', !(act && act.classList.contains('hero')) || !document.body.classList.contains('ready'));
   const f = act ? act.dataset.focus || '' : '';
   if (f !== curFocus) { curFocus = f; globe && globe.setFocus(f || null); }
-  secEls.forEach((s) => { const card = $('.sector', s); if (card) card.classList.toggle('in', s === act); });
-  const sr = $('#stage-wrap').getBoundingClientRect(), inEco = act && act.classList.contains('sec');
-  rail.classList.toggle('show', !!inEco); $$('button', rail).forEach((b) => b.classList.toggle('on', b.dataset.s === f));
+  secEls.forEach((s, i) => { const card = secCards[i]; if (card) card.classList.toggle('in', s === act); });
+  const sr = stageWrap.getBoundingClientRect(), inEco = act && act.classList.contains('sec');
+  rail.classList.toggle('show', !!inEco); railBtns.forEach((b) => b.classList.toggle('on', b.dataset.s === f));
   if (globe) globe.setLayout(act && act.classList.contains('hero') ? 'hero' : (sr.bottom > 0 ? 'eco' : 'hero'));
   // nav highlight
   let cur = null; blocks.forEach((b) => { if (b && b.getBoundingClientRect().top < vh * .4) cur = b.id; });
   if ((act && (act.classList.contains('sec') || act.classList.contains('eco'))) || cur === 'glance') cur = 'businesses'; if (act && act.classList.contains('hero')) cur = null;
   navLinks.forEach((a) => a.classList.toggle('cur', a.getAttribute('href') === '#' + cur));
   // timeline progress
-  const tr = tl.getBoundingClientRect(), p = Math.max(0, Math.min(1, (vh * .6 - tr.top) / tr.height)); $('.bar', tl).style.height = (p * (tr.height - 16)) + 'px';
-  $$('.tli', tl).forEach((li) => li.classList.toggle('in', li.getBoundingClientRect().top < vh * .6));
+  const tr = tl.getBoundingClientRect(), p = Math.max(0, Math.min(1, (vh * .6 - tr.top) / tr.height)); tlBar.style.height = (p * (tr.height - 16)) + 'px';
+  tlItems.forEach((li) => li.classList.toggle('in', li.getBoundingClientRect().top < vh * .6));
 }
-addEventListener('scroll', onScroll, { passive: true }); addEventListener('resize', onScroll); onScroll();
+let sTick = false; const schedule = () => { if (!sTick) { sTick = true; requestAnimationFrame(() => { sTick = false; onScroll(); }); } };
+addEventListener('scroll', schedule, { passive: true }); addEventListener('resize', schedule); onScroll();
 
 // ---------- reveals + counters
 const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px' });
