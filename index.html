@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Z Lab</title>
-<meta name="description" content="Fourteen interactive web worlds in one arcade: a haunted lighthouse, a Malaysian mall, a race track, a night shift, a longhouse, a kopitiam, the backrooms and a run of realistic company sites.">
+<meta name="description" content="Seventeen interactive web worlds in one arcade: a haunted lighthouse, a Malaysian mall, a race track, a night shift, a longhouse, a kopitiam, the backrooms and a run of realistic company sites.">
 <meta name="theme-color" content="#040306">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
@@ -130,7 +130,7 @@ b.dataset.view=(!gl||list)?'list':'hall';if(!gl)b.dataset.no3d='1'})();
 <div id="loader" aria-hidden="true"><div class="ld"><div class="zz">Z LAB</div><p>Powering up the arcade</p><div class="bar"><span id="ld-bar"></span></div><span id="ld-pct">0%</span></div></div>
 <div id="hud">
   <div class="h-top">
-    <div class="h-mark"><i>Z</i>Z Lab <small>14 worlds · fictional</small></div>
+    <div class="h-mark"><i>Z</i>Z Lab <small>17 worlds · fictional</small></div>
     <button class="h-btn" id="h-sound" type="button" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg><span>Sound off</span></button>
     <button class="h-btn" id="h-list" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>List view</span></button>
   </div>
@@ -154,7 +154,7 @@ b.dataset.view=(!gl||list)?'list':'hall';if(!gl)b.dataset.no3d='1'})();
 <div id="list">
 <header><div class="wrap">
   <div class="mark"><i>Z</i>Z Lab<button type="button" class="to3d" id="to3d">Enter the arcade ▸</button></div>
-  <h1>Fourteen worlds you can <em>walk into</em>, straight from the browser.</h1>
+  <h1>Seventeen worlds you can <em>walk into</em>, straight from the browser.</h1>
   <p class="lede">A haunted lighthouse, a Malaysian mall, a hill-country race track, a night shift at a family restaurant, a longhouse on the Rajang, an old kopitiam and an office that never ends. No installs. Pick one and go.</p>
   <div class="tips"><span>Best with sound on</span><span>Desktop: WASD + mouse</span><span>Phone: touch controls built in</span><span>First load 5–12 MB</span></div>
 </div></header>
@@ -162,6 +162,8 @@ b.dataset.view=(!gl||list)?'list':'hall';if(!gl)b.dataset.no3d='1'})();
 <main class="wrap">
   <h2>Realistic 3D</h2>
   <div class="grid">
+    <a class="card" href="congkak/"><div class="shot"><img src="thumbs/congkak.webp" alt="Carved wooden congkak board with cowrie shells on a woven mat" loading="lazy"><span class="badge hot">New · Board game</span></div>
+      <div class="body"><h3>Congkak Online</h3><p>The kampung classic on a carved hardwood board with 98 cowrie shells. Play the computer, pass and play, or challenge a friend online with a room code.</p><div class="meta"><span>Tap · Sow · Tembak</span><b>~4 MB</b></div></div></a>
     <a class="card" href="hollowreef/"><div class="shot"><img src="thumbs/hollowreef.webp" alt="A lighthouse on a rocky islet at night" loading="lazy"><span class="badge hot">Horror · Story</span></div>
       <div class="body"><h3>Hollow Reef Light</h3><p>Keep the 1 AM night watch from a lighthouse gallery. Use the telescope, log what you see on the water, and restore the keeper's lost log.</p><div class="meta"><span>Drag · Pinch · Log</span><b>~12 MB</b></div></div></a>
     <a class="card" href="mall/"><div class="shot"><img src="thumbs/mall.webp" alt="Atrium of a three-storey mall with escalators" loading="lazy"><span class="badge">Explore · Shop</span></div>
@@ -180,6 +182,10 @@ b.dataset.view=(!gl||list)?'list':'hall';if(!gl)b.dataset.no3d='1'})();
 
   <h2>Websites</h2>
   <div class="grid">
+    <a class="card" href="layang/"><div class="shot"><img src="thumbs/layang.webp" alt="Airline website with a 3D globe and glowing routes from Kuala Lumpur" loading="lazy"><span class="badge hot">New · Airline</span></div>
+      <div class="body"><h3>Layang Air</h3><p>A Malaysian airline built around a live 3D globe. Tap a city, pick a fare, choose your seat on the A330neo, walk round the jet and get your boarding pass.</p><div class="meta"><span>Drag · Book · Board</span><b>~5 MB</b></div></div></a>
+    <a class="card" href="my24/"><div class="shot"><img src="thumbs/my24.webp" alt="3D satellite map of Peninsular Malaysia with export routes and a data card" loading="lazy"><span class="badge hot">New · Data story</span></div>
+      <div class="body"><h3>Malaysia in 24 Hours</h3><p>One day across the country on a 3D map lit by the real sun: the commute, the estates, the ports and the babies, with 2025 figures from DOSM, MPOB and more.</p><div class="meta"><span>Just scroll</span><b>~3 MB</b></div></div></a>
     <a class="card" href="suria/"><div class="shot"><img src="thumbs/suria.webp" alt="Realistic solar farm and pylons at golden hour with a live power chart" loading="lazy"><span class="badge hot">New · Corporate</span></div>
       <div class="body"><h3>Suria Grid</h3><p>A renewable power company site: scroll through a day on the grid, watch power flow across a live map of Malaysia, and price solar for your roof.</p><div class="meta"><span>Scroll · Drag · Click</span><b>~3 MB</b></div></div></a>
     <a class="card" href="wainscot/"><div class="shot"><img src="thumbs/wainscot.webp" alt="Barbershop shopfront with a barber pole" loading="lazy"><span class="badge hot">New · 3D walk-in</span></div>

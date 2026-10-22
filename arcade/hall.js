@@ -18,7 +18,7 @@ const body = document.body;
 
 /* ------------------------------------------------------------ sites, read from the list view */
 const ACC = { hollowreef: '#5fb8ff', mall: '#ff7a59', litar: '#ff3b3b', riaceria: '#ff4fa3', rumah: '#f2b84b', kopi: '#d29254', vacancy: '#e8d36a',
-  suria: '#ffb23f', wainscot: '#e0483a', lantera: '#9a8cff', kubu: '#2ee6a6', teduh: '#a5d67c', outbreak: '#ff2a2a', norvane: '#7fc4e0' };
+  suria: '#ffb23f', wainscot: '#e0483a', lantera: '#9a8cff', kubu: '#2ee6a6', teduh: '#a5d67c', outbreak: '#ff2a2a', norvane: '#7fc4e0', layang: '#3fb0e6', congkak: '#d08a4a', my24: '#ffb547' };
 const groups = $$('#list .grid').map((g) => ({ name: g.previousElementSibling ? g.previousElementSibling.textContent.trim() : '', cards: $$('.card', g) }));
 const SITES = [];
 groups.forEach((g, gi) => g.cards.forEach((c, ci) => {
@@ -203,7 +203,7 @@ const shadowMat = new THREE.MeshBasicMaterial({ map: canvasTex(128, 128, (x, w, 
 
 /* ------------------------------------------------------------ hall: floor, walls, ceiling, neon */
 const floorD = tex('arcade/tex/floor_diff.jpg', true, 1), floorN = tex('arcade/tex/floor_nor.jpg', false, 1), floorR = tex('arcade/tex/floor_rough.jpg', false, 1);
-const NG = 16; // glow pools: one per cabinet (max 16)
+const NG = 24; // glow pools: one per cabinet (max 24)
 const glowP = Array.from({ length: NG }, () => new THREE.Vector3(0, 0, 0)), glowC = Array.from({ length: NG }, () => new THREE.Vector3());
 const FloorShader = {
   name: 'FloorShader',

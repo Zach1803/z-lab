@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Congkak Online</title>
+<meta name="description" content="Play congkak on a carved hardwood board with 98 cowrie shells: against the computer, pass and play, or with a friend online.">
+<meta name="theme-color" content="#1a120c">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600&display=swap">
+<style>
+:root{--bg:#1a120c;--panel:rgba(28,19,12,.78);--line:rgba(255,236,210,.14);--ink:#fbf3e6;--dim:rgba(251,243,230,.66);--faint:rgba(251,243,230,.42);--gold:#f0b85a;--gold-2:#ffd68e;--red:#d9573f;--teal:#5fc7b4;color-scheme:dark}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:15px/1.5 "Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+#board{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:manipulation}
+.glass{background:var(--panel);border:1px solid var(--line);backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2);box-shadow:0 20px 50px -20px rgba(0,0,0,.7)}
+.top{position:fixed;left:0;right:0;top:0;z-index:10;display:flex;align-items:center;gap:10px;padding-top:calc(14px + env(safe-area-inset-top,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));pointer-events:none}
+.top>*{pointer-events:auto}
+.brand{display:flex;align-items:center;gap:10px;margin-right:auto;font:700 22px/1 "Fraunces",Georgia,serif;letter-spacing:.005em;text-shadow:0 2px 12px rgba(0,0,0,.5)}
+.brand small{font:600 11px "Plus Jakarta Sans",sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);display:block;margin-top:4px}
+.ibtn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 14px;border-radius:999px;cursor:pointer;font-weight:600;font-size:13.5px;text-decoration:none;color:var(--ink)}
+.ibtn svg{width:17px;height:17px}
+.ibtn:hover{border-color:rgba(255,236,210,.35)}
+.ibtn[aria-pressed="true"]{color:var(--gold-2)}
+
+/* score cards */
+.scores{position:fixed;z-index:9;left:50%;transform:translateX(-50%);top:calc(70px + env(safe-area-inset-top,0px));display:flex;gap:10px;pointer-events:none;width:min(560px,calc(100% - 24px))}
+.pc{flex:1;border-radius:16px;padding:10px 14px;display:flex;align-items:center;gap:12px;transition:box-shadow .3s,border-color .3s,opacity .3s;opacity:.75;min-width:0}
+.pc.on{opacity:1;border-color:rgba(240,184,90,.6);box-shadow:0 0 0 1px rgba(240,184,90,.4),0 16px 40px -18px rgba(240,184,90,.6)}
+.pc .av{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font:700 15px "Fraunces",serif;flex:none}
+.pc .nm{min-width:0;flex:1}
+.pc .nm b{display:block;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pc .nm span{font-size:12px;color:var(--faint)}
+.pc .st{font:700 30px/1 "Fraunces",serif;color:var(--gold-2);min-width:2ch;text-align:right}
+.pc.p0 .av{background:#f0b85a;color:#2a1a07}.pc.p1 .av{background:#5fc7b4;color:#06221d}
+.pc .turn{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);display:none}
+.pc.on .turn{display:block}
+
+/* hole count badges */
+#badges{position:fixed;inset:0;pointer-events:none;z-index:5}
+.bd{position:absolute;left:0;top:0;transform:translate(-50%,-50%);min-width:24px;height:22px;padding:0 6px;border-radius:999px;background:rgba(20,13,8,.72);border:1px solid rgba(255,236,210,.18);font:600 12px/20px "JetBrains Mono",monospace;text-align:center;color:var(--ink);transition:background .2s,color .2s,transform .15s}
+.bd.store{min-width:34px;height:28px;font-size:15px;line-height:26px;background:rgba(240,184,90,.92);color:#2a1a07;border-color:transparent}
+.bd.store.p1{background:rgba(95,199,180,.92);color:#06221d}
+.bd.mine{border-color:rgba(240,184,90,.7)}
+.bd.bump{transform:translate(-50%,-50%) scale(1.25)}
+.bd.zero{opacity:.45}
+
+/* status + controls */
+.status{position:fixed;z-index:9;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:10px;border-radius:999px;padding:8px 8px 8px 18px;max-width:calc(100% - 24px)}
+.status p{margin:0;font-weight:600;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.status .ibtn{height:36px;background:rgba(255,236,210,.08);border:1px solid var(--line)}
+.status .skip{display:none}.busy .status .skip{display:inline-flex}
+.toast{position:fixed;z-index:12;left:50%;top:44%;transform:translate(-50%,-50%) scale(.9);font:700 clamp(26px,4.4vw,44px)/1.1 "Fraunces",serif;color:var(--gold-2);text-shadow:0 4px 24px rgba(0,0,0,.7);opacity:0;transition:opacity .25s,transform .35s cubic-bezier(.2,.8,.2,1);pointer-events:none;text-align:center;max-width:90%}
+.toast small{display:block;font:600 14px "Plus Jakarta Sans",sans-serif;color:var(--ink);margin-top:6px}
+.toast.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
+
+/* overlays */
+.ov{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:radial-gradient(ellipse at center,rgba(26,18,12,.35),rgba(10,6,3,.82));overflow-y:auto}
+.ov[hidden]{display:none}
+.card{width:min(520px,100%);border-radius:24px;padding:28px 26px 24px;margin:auto}
+.card h1{font:700 clamp(44px,8vw,64px)/.95 "Fraunces",Georgia,serif;margin:6px 0 10px;letter-spacing:-.01em}
+.card h2{font:700 30px/1.05 "Fraunces",Georgia,serif;margin:4px 0 10px}
+.eyebrow{font-size:11.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+.card p.lede{color:var(--dim);margin:0 0 22px}
+.choice{display:flex;flex-direction:column;gap:10px}
+.opt{display:flex;align-items:center;gap:14px;width:100%;text-align:left;border-radius:16px;border:1px solid var(--line);background:rgba(255,236,210,.05);padding:14px 16px;cursor:pointer;transition:background .15s,border-color .15s}
+.opt:hover,.opt:focus-visible{background:rgba(255,236,210,.1);border-color:rgba(240,184,90,.5);outline:none}
+.opt .ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:rgba(240,184,90,.14);color:var(--gold-2);flex:none}
+.opt .ic svg{width:22px;height:22px}
+.opt b{display:block;font-size:15.5px}.opt span{font-size:13px;color:var(--faint)}
+.seg{display:flex;gap:6px;margin:4px 0 2px 54px}
+.seg button{flex:1;border:1px solid var(--line);background:transparent;border-radius:10px;padding:7px 8px;cursor:pointer;font-weight:600;font-size:13px;color:var(--dim)}
+.seg button[aria-pressed="true"]{background:var(--gold);color:#2a1a07;border-color:var(--gold)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.field{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);flex:1;min-width:140px}
+.field input{border:1px solid var(--line);background:rgba(0,0,0,.25);border-radius:12px;padding:12px 14px;font-size:16px;font-weight:600;letter-spacing:normal;text-transform:none;color:var(--ink);min-width:0}
+.field input:focus{outline:2px solid var(--gold);outline-offset:0}
+.btn{border:0;border-radius:14px;background:var(--gold);color:#2a1a07;font-weight:800;padding:13px 20px;cursor:pointer;font-size:15px}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.code{font:600 40px/1 "JetBrains Mono",monospace;letter-spacing:.24em;color:var(--gold-2);text-align:center;padding:14px;border:1px dashed rgba(240,184,90,.45);border-radius:16px;margin:10px 0 12px;user-select:all}
+.link{font:600 12.5px "JetBrains Mono",monospace;color:var(--dim);word-break:break-all;background:rgba(0,0,0,.25);border-radius:10px;padding:10px 12px;user-select:all}
+.net{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--faint);margin-top:12px}
+.net i{width:8px;height:8px;border-radius:50%;background:#7a6a5a}.net.ok i{background:#5fc7b4;box-shadow:0 0 0 4px rgba(95,199,180,.18)}
+.back{background:none;border:0;color:var(--faint);cursor:pointer;padding:0;margin-bottom:10px;font-weight:600}
+.rules ol{padding-left:20px;margin:8px 0 0;color:var(--dim)}
+.rules li{margin:7px 0}
+.rules b{color:var(--ink)}
+.big{font:700 72px/1 "Fraunces",serif;color:var(--gold-2);margin:6px 0}
+.vs{display:flex;justify-content:center;gap:26px;margin:12px 0 22px}
+.vs div{text-align:center}.vs b{display:block;font:700 40px/1 "Fraunces",serif}.vs span{font-size:13px;color:var(--faint)}
+@media (max-width:640px){
+  .scores{top:calc(64px + env(safe-area-inset-top,0px))}
+  .pc{padding:8px 10px;gap:8px}.pc .av{width:30px;height:30px;font-size:13px}.pc .st{font-size:24px}.pc .nm span{display:none}
+  .brand{font-size:19px}.brand small{display:none}
+  .ibtn span{display:none}.ibtn{padding:0 11px}
+  .status p{font-size:13.5px}
+}
+@media (prefers-reduced-motion:reduce){.toast{transition:opacity .2s}}
+</style>
+<script type="importmap">{"imports":{"three":"./lib/three/build/three.module.js","three/addons/":"./lib/three/examples/jsm/"}}</script>
+</head>
+<body>
+<canvas id="board" aria-label="Congkak board. Your holes are the row nearest you; tap one to sow its shells."></canvas>
+<div id="badges" aria-hidden="true"></div>
+
+<header class="top">
+  <div class="brand"><div>Congkak<small id="mode-label">Choose a game</small></div></div>
+  <button class="ibtn glass" id="snd" type="button" aria-pressed="true" aria-label="Sound"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg><span>Sound</span></button>
+  <button class="ibtn glass" id="rules-btn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/></svg><span>Rules</span></button>
+  <button class="ibtn glass" id="menu-btn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span>Menu</span></button>
+  <a class="ibtn glass" href="../" aria-label="Back to Z Lab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><span>Z Lab</span></a>
+</header>
+
+<div class="scores" id="scores" hidden>
+  <div class="pc p0 glass" id="pc0"><div class="av" id="av0">K</div><div class="nm"><div class="turn">Your turn</div><b id="nm0">Kamu</b><span id="side0">49 on your side</span></div><div class="st" id="st0">0</div></div>
+  <div class="pc p1 glass" id="pc1"><div class="av" id="av1">T</div><div class="nm"><div class="turn">Their turn</div><b id="nm1">Tok Wan</b><span id="side1">49 on their side</span></div><div class="st" id="st1">0</div></div>
+</div>
+
+<div class="status glass" id="status" hidden><p id="status-text">Your turn</p><button class="ibtn skip" id="skip" type="button" aria-label="Skip animation"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 5v14l8-7zM12 5v14l8-7z"/></svg><span>Skip</span></button></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- start menu -->
+<div class="ov" id="ov-menu">
+  <div class="card glass">
+    <div class="eyebrow">Permainan tradisional</div>
+    <h1>Congkak</h1>
+    <p class="lede">Sixteen holes, ninety-eight cowrie shells and a carved board, just like the one at Opah's house. Sow, keep sowing, and fill your rumah.</p>
+    <div class="choice">
+      <button class="opt" type="button" id="m-ai"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="7" width="16" height="12" rx="3"/><path d="M12 7V4M9 12h.01M15 12h.01M9 16h6"/></svg></span><span><b>Play the computer</b><span>Pick who sits across the board</span></span></button>
+      <div class="seg" id="lvl"><button type="button" data-l="easy" aria-pressed="false">Adik · easy</button><button type="button" data-l="normal" aria-pressed="true">Kak Long</button><button type="button" data-l="hard" aria-pressed="false">Tok Wan · hard</button></div>
+      <button class="opt" type="button" id="m-pass"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="8" r="3"/><circle cx="16" cy="16" r="3"/><path d="M14 6h4v4M10 18H6v-4"/></svg></span><span><b>Pass &amp; play</b><span>Two players, one screen, sit across from each other</span></span></button>
+      <button class="opt" type="button" id="m-net"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg></span><span><b>Play a friend online</b><span>Share a room code, play on two devices</span></span></button>
+      <button class="opt" type="button" id="m-rules"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2z"/><path d="M8 7h6"/></svg></span><span><b>How to play</b><span>Two minutes, then you're ready</span></span></button>
+    </div>
+  </div>
+</div>
+
+<!-- online -->
+<div class="ov" id="ov-net" hidden>
+  <div class="card glass">
+    <button class="back" type="button" data-back>← Back</button>
+    <div class="eyebrow">Main dengan kawan</div>
+    <h2>Play a friend online</h2>
+    <div class="row" style="margin:14px 0 16px"><label class="field">Your name<input id="my-name" maxlength="16" autocomplete="nickname" placeholder="e.g. Aina"></label></div>
+    <div id="net-start">
+      <div class="row"><button class="btn" type="button" id="create">Create a room</button><span style="color:var(--faint);font-size:13px">or</span>
+        <label class="field" style="min-width:120px;max-width:170px"><span class="sr" style="position:absolute;left:-9999px">Room code</span><input id="join-code" maxlength="4" placeholder="CODE" style="text-transform:uppercase;letter-spacing:.2em;font-family:'JetBrains Mono',monospace" autocomplete="off"></label><button class="btn ghost" type="button" id="join">Join</button></div>
+    </div>
+    <div id="net-wait" hidden>
+      <p style="color:var(--dim);margin:0">Send this code to your friend. The game starts as soon as they join.</p>
+      <div class="code" id="room-code">----</div>
+      <div class="link" id="room-link"></div>
+      <div class="row" style="margin-top:12px"><button class="btn" type="button" id="copy-link">Copy invite link</button><button class="btn ghost" type="button" id="cancel-room">Cancel</button></div>
+    </div>
+    <div class="net" id="net-state"><i></i><span>Not connected</span></div>
+  </div>
+</div>
+
+<!-- rules -->
+<div class="ov" id="ov-rules" hidden>
+  <div class="card glass rules">
+    <button class="back" type="button" data-back>← Back</button>
+    <div class="eyebrow">Cara bermain</div>
+    <h2>How to play congkak</h2>
+    <ol>
+      <li>Each player owns the <b>seven kampung</b> (holes) on their side and the <b>rumah</b> (big store) on their left. Every kampung starts with seven buah.</li>
+      <li>On your turn, scoop up every buah from one of your kampung and drop them one by one, going clockwise. You drop into your own rumah as you pass it, but <b>skip your opponent's</b>.</li>
+      <li>Last buah lands in <b>your rumah</b>? Go again.</li>
+      <li>Lands in a kampung that <b>already has buah</b> (either side)? Scoop them all up and keep sowing from there.</li>
+      <li>Lands in an <b>empty kampung on your side</b>? <b>Tembak!</b> You capture it plus everything in the kampung directly opposite.</li>
+      <li>Lands in an <b>empty kampung on their side</b>? <b>Mati</b>: your turn ends.</li>
+      <li>When a player has nothing left to sow, the other keeps whatever is still on their side. Most buah in the rumah wins.</li>
+    </ol>
+    <div class="row" style="margin-top:18px"><button class="btn" type="button" data-back>Got it</button></div>
+  </div>
+</div>
+
+<!-- end -->
+<div class="ov" id="ov-end" hidden>
+  <div class="card glass" style="text-align:center">
+    <div class="eyebrow" id="end-eyebrow">Game over</div>
+    <h2 id="end-title" style="font-size:44px">Menang!</h2>
+    <div class="vs"><div><b id="end-s0">0</b><span id="end-n0">Kamu</span></div><div><b id="end-s1">0</b><span id="end-n1">Tok Wan</span></div></div>
+    <div class="row" style="justify-content:center"><button class="btn" type="button" id="again">Main lagi</button><button class="btn ghost" type="button" id="to-menu">Menu</button></div>
+  </div>
+</div>
+
+<noscript><p style="position:fixed;inset:auto 0 0;padding:16px;background:#000">Congkak needs JavaScript and WebGL.</p></noscript>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
