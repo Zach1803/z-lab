@@ -400,3 +400,41 @@ html.lenis,html.lenis body{height:auto}
 
 /* invisible bridge across the gap between a menu button and its dropdown */
 .mega::before{content:"";position:absolute;left:0;right:0;top:-14px;height:14px}
+
+/* ---------- page transitions ---------- */
+@view-transition{navigation:auto}
+.hdr{view-transition-name:site-header}
+::view-transition-group(site-header){animation-duration:.45s}
+::view-transition-old(root){animation:vt-out .3s cubic-bezier(.4,0,1,1) both}
+::view-transition-new(root){animation:vt-in .55s cubic-bezier(.2,.8,.2,1) .05s both}
+::view-transition-group(*){animation-duration:.6s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+@keyframes vt-out{to{opacity:0;transform:translateY(-12px);filter:blur(2px)}}
+@keyframes vt-in{from{opacity:0;transform:translateY(16px)}}
+/* fallback for browsers without cross-page view transitions */
+html.pg-fade main{animation:pg-in .5s cubic-bezier(.2,.8,.2,1) both}
+html.pg-fade.leaving main{animation:none;opacity:0;transform:translateY(-10px);transition:opacity .22s ease,transform .22s ease}
+@keyframes pg-in{from{opacity:0;transform:translateY(14px)}}
+
+/* ---------- gentle reveals ---------- */
+html.rv-on .rv{opacity:0;transform:translateY(18px);transition:opacity .8s cubic-bezier(.2,.8,.2,1),transform .8s cubic-bezier(.2,.8,.2,1);transition-delay:calc(var(--i,0)*70ms)}
+html.rv-on .rv.in{opacity:1;transform:none}
+
+/* ---------- softer buttons ---------- */
+.btn{transition:background .2s,border-color .2s,color .2s,transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .2s}
+.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:translateY(0) scale(.98)}
+.btn-p:hover{box-shadow:0 12px 26px -10px rgba(31,99,232,.7)}
+.sol-rows .go svg,.mega .all svg{transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+.sol-rows a:hover .go svg,.mega .all:hover svg{transform:translateX(3px)}
+.mega.open{animation:mega-in .22s cubic-bezier(.2,.8,.2,1)}
+@keyframes mega-in{from{opacity:0;transform:translateY(-6px)}}
+.drawer.open{animation:mega-in .25s cubic-bezier(.2,.8,.2,1)}
+a,button{-webkit-tap-highlight-color:transparent}
+
+@media (prefers-reduced-motion:reduce){
+  ::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}
+  html.rv-on .rv{opacity:1;transform:none}
+}
+/* keep rounded corners while an illustration glides between pages */
+.story-frame img{border-radius:28px}
+.phero .art img.render{border-radius:24px}
