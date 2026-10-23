@@ -25,7 +25,7 @@ export const SITES = [
   { id: 'bkk', name: 'Bangkok', lat: 13.69, lon: 100.75, kind: 'airport', key: 1 },
   { id: 'hatyai', name: 'Hat Yai', lat: 6.93, lon: 100.39, kind: 'airport' },
 ];
-const ROADS = [ // road feeder corridors (lat, lon)
+export const ROADS = [ // road feeder corridors (lat, lon)
   { kind: 'road', pts: [[2.75, 101.70], [2.95, 101.62], [3.07, 101.52], [3.32, 101.57], [3.75, 101.45], [4.3, 101.18], [4.6, 101.1], [4.86, 100.73], [5.15, 100.5], [5.35, 100.46], [5.42, 100.39], [5.36, 100.32], [5.29, 100.27]] },
   { kind: 'road', pts: [[5.42, 100.39], [5.75, 100.42], [6.12, 100.37], [6.51, 100.42], [7.0, 100.47], [7.6, 100.1], [8.4, 99.6], [9.13, 99.33], [10.49, 99.18], [11.8, 99.8], [12.57, 99.95], [13.3, 100.0], [13.69, 100.75]] },
   { kind: 'road', pts: [[2.75, 101.70], [2.72, 101.94], [2.45, 102.15], [2.27, 102.29], [2.01, 103.07], [1.64, 103.67], [1.49, 103.68], [1.46, 103.77], [1.36, 103.99]] },
@@ -36,7 +36,7 @@ const AIR = [['klia', 'kuching'], ['klia', 'kk'], ['kk', 'labuan'], ['klia', 'ho
 const COLORS = { road: 0x6cc02e, haul: 0x1a6fc7, air: 0x1a6fc7 };
 const ease = (t) => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 
-export async function initNetMap(canvas, labelsEl, { base = '', interactive = false, view = 'peninsula', panel = () => 0, onSite } = {}) {
+export async function initNetMap(canvas, labelsEl, { base = '', interactive = false, view = 'peninsula', panel = () => 0, onSite, narrowShift = 0 } = {}) {
   const COARSE = matchMedia('(pointer:coarse)').matches || innerWidth < 760, REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.5)); renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.NoToneMapping;
@@ -65,10 +65,10 @@ export async function initNetMap(canvas, labelsEl, { base = '', interactive = fa
   const TOP = H * 1.6 + .01;
 
   // routes
-  const movers = [];
+  const movers = []; const groups = { road: [], haul: [], air: [] };
   const truckG = new THREE.BoxGeometry(.11, .05, .045); truckG.translate(0, .025, 0);
   ROADS.forEach((r) => { const curve = new THREE.CatmullRomCurve3(r.pts.map(([la, lo]) => P(la, lo, TOP)), false, 'centripetal');
-    const tube = new THREE.Mesh(new THREE.TubeGeometry(curve, r.pts.length * 20, r.kind === 'road' ? .022 : .018, 6, false), new THREE.MeshStandardMaterial({ color: COLORS[r.kind], roughness: .5, emissive: COLORS[r.kind], emissiveIntensity: .15 })); scene.add(tube);
+    const tube = new THREE.Mesh(new THREE.TubeGeometry(curve, r.pts.length * 20, r.kind === 'road' ? .022 : .018, 6, false), new THREE.MeshStandardMaterial({ color: COLORS[r.kind], roughness: .5, emissive: COLORS[r.kind], emissiveIntensity: .15, transparent: true })); scene.add(tube); groups[r.kind].push(tube.material);
     const len = curve.getLength(), n = Math.max(2, Math.round(len / 1.4)); const tm = new THREE.MeshStandardMaterial({ color: r.kind === 'road' ? 0xffffff : 0xffffff, roughness: .4 });
     for (let i = 0; i < n; i++) { const m = new THREE.Mesh(truckG, tm); m.castShadow = true; scene.add(m); movers.push({ m, curve, len, u0: i / n, dir: i % 2 ? 1 : -1, speed: .35 / len, kind: 'truck' }); } });
   const siteById = Object.fromEntries(SITES.map((s) => [s.id, s]));
@@ -76,7 +76,7 @@ export async function initNetMap(canvas, labelsEl, { base = '', interactive = fa
   const planeM = new THREE.MeshStandardMaterial({ color: 0x1a6fc7, roughness: .4, emissive: 0x1a6fc7, emissiveIntensity: .3 });
   AIR.forEach(([a, b], k) => { const A = siteById[a], B = siteById[b], pa = P(A.lat, A.lon, TOP), pb = P(B.lat, B.lon, TOP), d = pa.distanceTo(pb), mid = pa.clone().lerp(pb, .5); mid.y += Math.max(.6, d * .18);
     const curve = new THREE.QuadraticBezierCurve3(pa, mid, pb); const pts = curve.getPoints(80);
-    const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineDashedMaterial({ color: COLORS.air, dashSize: .12, gapSize: .09, transparent: true, opacity: .5 })); line.computeLineDistances(); scene.add(line);
+    const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineDashedMaterial({ color: COLORS.air, dashSize: .12, gapSize: .09, transparent: true, opacity: .5 })); line.computeLineDistances(); scene.add(line); groups.air.push(line.material);
     const m = new THREE.Mesh(planeG, planeM); scene.add(m); movers.push({ m, curve, len: d, u0: k * .17, dir: 1, speed: .08 / Math.max(2, d) * 6, kind: 'plane' }); });
 
   // pins + labels
@@ -94,6 +94,9 @@ export async function initNetMap(canvas, labelsEl, { base = '', interactive = fa
     peninsula: { t: P(4.6, 101.4), d: 14, az: .16, pol: .74 },
     region: { t: P(14, 109), d: 50, az: .05, pol: .6 },
     malaysia: { t: P(4, 108), d: 26, az: .05, pol: .7 },
+    port: { t: P(2.9, 101.5), d: 3.4, az: .25, pol: .72 },
+    corridor: { t: P(6.6, 100.9), d: 16, az: .12, pol: .66 },
+    north: { t: P(5.3, 100.4), d: 3.2, az: .2, pol: .74 },
   };
   let wide = true, rect = canvas.getBoundingClientRect();
   const camT = new THREE.Vector3(), sph = { d: 12, az: 0, pol: .8 }; let fly = null;
@@ -103,7 +106,7 @@ export async function initNetMap(canvas, labelsEl, { base = '', interactive = fa
   function focusSite(id) { const s = siteById[id]; goView({ t: P(s.lat, s.lon), d: 6.5, az: .12, pol: .8 }); Object.values(labels).forEach((l) => l.el.classList.toggle('pick', l.el.dataset.id === id)); }
   let controls = null;
   if (interactive) { controls = new OrbitControls(camera, canvas); controls.enableDamping = true; controls.maxPolarAngle = 1.2; controls.minDistance = 2.5; controls.maxDistance = 75; controls.screenSpacePanning = false; controls.addEventListener('start', () => { fly = null; }); }
-  function resize() { rect = canvas.getBoundingClientRect(); const w = Math.max(1, rect.width), h = Math.max(1, rect.height); renderer.setSize(w, h, false); camera.aspect = w / h; wide = w > 760; const off = wide ? panel() : 0; camera.setViewOffset(w, h, -off / 2, 0, w, h); camera.updateProjectionMatrix(); }
+  function resize() { rect = canvas.getBoundingClientRect(); const w = Math.max(1, rect.width), h = Math.max(1, rect.height); renderer.setSize(w, h, false); camera.aspect = w / h; wide = w > 760; const off = wide ? panel() : 0; camera.setViewOffset(w, h, -off / 2, wide ? 0 : -h * (narrowShift || 0), w, h); camera.updateProjectionMatrix(); }
   addEventListener('resize', resize); resize();
   { const v = VIEWS[view]; camT.copy(v.t); Object.assign(sph, { d: v.d * (wide ? 1 : 1.45), az: v.az, pol: v.pol }); placeFrom(camT, sph.d, sph.az, sph.pol); if (controls) { controls.target.copy(camT); controls.update(); } }
 
@@ -124,5 +127,29 @@ export async function initNetMap(canvas, labelsEl, { base = '', interactive = fa
     renderer.render(scene, camera);
   }
   requestAnimationFrame(frame);
-  return { goView, focusSite, resize };
+  function setFocus(kind) { for (const [k, mats] of Object.entries(groups)) mats.forEach((m) => { m.opacity = !kind || kind === k ? (k === 'air' ? .5 : 1) : .12; }); }
+  let pathObj = null, pathMover = null;
+  function showPath(latlon) { clearPath(); const curve = new THREE.CatmullRomCurve3(latlon.map(([la, lo]) => P(la, lo, TOP + .015)), false, 'centripetal');
+    pathObj = new THREE.Mesh(new THREE.TubeGeometry(curve, latlon.length * 24, .045, 8, false), new THREE.MeshStandardMaterial({ color: 0xff8a1f, emissive: 0xff8a1f, emissiveIntensity: .35, roughness: .4 })); scene.add(pathObj);
+    const m = new THREE.Mesh(new THREE.BoxGeometry(.2, .09, .08).translate(0, .045, 0), new THREE.MeshStandardMaterial({ color: 0xffffff })); m.castShadow = true; scene.add(m); pathMover = { m, curve, u0: 0, dir: 1, speed: .09, kind: 'truck' }; movers.push(pathMover);
+    setFocus('none'); const box = new THREE.Box3(); latlon.forEach(([la, lo]) => box.expandByPoint(P(la, lo))); const c = box.getCenter(new THREE.Vector3()), sz = box.getSize(new THREE.Vector3());
+    goView({ t: c, d: Math.max(3.2, Math.max(sz.x * 1.6, sz.z * 1.25)) * 1.25, az: .12, pol: .7 }); }
+  function clearPath() { if (pathObj) { scene.remove(pathObj); pathObj.geometry.dispose(); pathObj = null; } if (pathMover) { scene.remove(pathMover.m); movers.splice(movers.indexOf(pathMover), 1); pathMover = null; } setFocus(null); }
+  return { goView, focusSite, resize, setFocus, showPath, clearPath };
+}
+
+// ---- road routing over the feeder corridors (indicative distances)
+const NODES = { klia: [2.75, 101.70], shahalam: [3.07, 101.52], portklang: [2.93, 101.33], penang: [5.29, 100.27], butterworth: [5.42, 100.39], bm: [5.35, 100.46], johor: [1.49, 103.68], changi: [1.36, 103.99], hatyai: [7.0, 100.47], bangkok: [13.69, 100.75] };
+export const ROUTE_POINTS = [['klia', 'KLIA Sepang'], ['shahalam', 'Shah Alam HQ'], ['portklang', 'Port Klang'], ['penang', 'Penang International Airport'], ['butterworth', 'Butterworth'], ['bm', 'Bukit Mertajam'], ['johor', 'Johor Bahru'], ['changi', 'Singapore Changi Airport'], ['hatyai', 'Hat Yai, Thailand'], ['bangkok', 'Bangkok, Thailand']];
+const key = (p) => p[0].toFixed(2) + ',' + p[1].toFixed(2);
+const hav = (a, b) => { const R = 6371, dl = (b[0] - a[0]) * D2R, dn = (b[1] - a[1]) * D2R, x = Math.sin(dl / 2) ** 2 + Math.cos(a[0] * D2R) * Math.cos(b[0] * D2R) * Math.sin(dn / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(x)); };
+export function roadRoute(from, to) {
+  const adj = new Map(), pt = new Map(); const add = (a, b) => { const ka = key(a), kb = key(b), d = hav(a, b) * 1.1; pt.set(ka, a); pt.set(kb, b); (adj.get(ka) || adj.set(ka, []).get(ka)).push([kb, d]); (adj.get(kb) || adj.set(kb, []).get(kb)).push([ka, d]); };
+  ROADS.forEach((r) => { for (let i = 1; i < r.pts.length; i++) add(r.pts[i - 1], r.pts[i]); });
+  const s = key(NODES[from]), t = key(NODES[to]), dist = new Map([[s, 0]]), prev = new Map(), Q = [[0, s]];
+  while (Q.length) { Q.sort((a, b) => a[0] - b[0]); const [d, u] = Q.shift(); if (u === t) break; if (d > dist.get(u)) continue; for (const [v, w] of adj.get(u) || []) { const nd = d + w; if (nd < (dist.get(v) ?? Infinity)) { dist.set(v, nd); prev.set(v, u); Q.push([nd, v]); } } }
+  if (!dist.has(t)) return null; const path = []; let k = t; while (k) { path.unshift(pt.get(k)); k = prev.get(k); }
+  const country = (p) => p[0] > 6.55 ? 'TH' : (p[1] > 103.9 && p[0] < 1.45) ? 'SG' : 'MY';
+  let borders = 0; for (let i = 1; i < path.length; i++) if (country(path[i]) !== country(path[i - 1])) borders++;
+  return { pts: path, km: Math.round(dist.get(t)), borders };
 }
