@@ -11,8 +11,8 @@
     var n=Object.keys(a).length, out=document.getElementById('fd-out');
     if(!n){return;}
     var top=Object.keys(sc).sort(function(x,y){return sc[y]-sc[x];}).slice(0,3);
-    out.innerHTML=top.map(function(k,i){return '<a href="'+S[k][1]+'index.html" style="display:block;color:#fff;text-decoration:none;padding:16px 0;border-top:'+(i?'1px solid rgba(255,255,255,.14)':'0')+'"><b style="font-size:'+(i?19:24)+'px;letter-spacing:-.02em">'+S[k][0]+'</b><span style="display:block;color:rgba(255,255,255,.7);font-size:15px;margin-top:4px">'+why[k]+'</span></a>';}).join('')+
-      (n<4?'<p style="color:rgba(255,255,255,.55);font-size:14px;margin:12px 0 0">'+(4-n)+' more to answer for a sharper result.</p>':'<a class="btn btn-p" style="margin-top:16px;background:#fff;color:var(--cobalt)" href="../contact/index.html?s='+top[0]+'">Talk to us about this</a>');
+    out.innerHTML=top.map(function(k,i){return '<a href="'+S[k][1]+'" style="display:block;color:#fff;text-decoration:none;padding:16px 0;border-top:'+(i?'1px solid rgba(255,255,255,.14)':'0')+'"><b style="font-size:'+(i?19:24)+'px;letter-spacing:-.02em">'+S[k][0]+'</b><span style="display:block;color:rgba(255,255,255,.7);font-size:15px;margin-top:4px">'+why[k]+'</span></a>';}).join('')+
+      (n<4?'<p style="color:rgba(255,255,255,.55);font-size:14px;margin:12px 0 0">'+(4-n)+' more to answer for a sharper result.</p>':'<a class="btn btn-p" style="margin-top:16px;background:#fff;color:var(--cobalt)" href="../contact/?s='+top[0]+'">Talk to us about this</a>');
   }
   f.forEach(function(q){q.addEventListener('change',function(e){a[q.dataset.q]=e.detail;draw();});});
 })();

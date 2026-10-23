@@ -2,15 +2,26 @@
 (function(){
   var d=document, hdr=d.querySelector('.hdr');
   // header state on scroll
-  function onScroll(){ if(hdr) hdr.classList.toggle('scrolled', window.scrollY>8); }
+  var heroEl=d.querySelector('.hero'), darkHero=hdr&&hdr.classList.contains('dark');
+  function onScroll(){
+    if(!hdr) return; hdr.classList.toggle('scrolled', window.scrollY>8);
+    // over the dark hero the header is dark; past it, switch to the light header
+    if(darkHero&&heroEl) hdr.classList.toggle('dark', heroEl.getBoundingClientRect().bottom>76);
+  }
   onScroll(); window.addEventListener('scroll', onScroll, {passive:true});
 
   // mega menu
   d.querySelectorAll('.nav>li>button').forEach(function(b){
     var m=b.nextElementSibling;
     function set(o){ b.setAttribute('aria-expanded', o?'true':'false'); m.classList.toggle('open', o); }
-    b.addEventListener('click', function(e){ e.stopPropagation(); set(b.getAttribute('aria-expanded')!=='true'); });
-    b.parentElement.addEventListener('mouseenter', function(){ if(matchMedia('(hover:hover)').matches) set(true); });
+    var hoverAt=0;
+    b.addEventListener('click', function(e){
+      e.stopPropagation();
+      // with a mouse, hover has just opened it: a click should keep it open, not toggle it shut
+      if(Date.now()-hoverAt<600){ set(true); return; }
+      set(b.getAttribute('aria-expanded')!=='true');
+    });
+    b.parentElement.addEventListener('mouseenter', function(){ if(matchMedia('(hover:hover)').matches){ if(b.getAttribute('aria-expanded')!=='true') hoverAt=Date.now(); set(true); } });
     b.parentElement.addEventListener('mouseleave', function(){ if(matchMedia('(hover:hover)').matches) set(false); });
     d.addEventListener('click', function(e){ if(!b.parentElement.contains(e.target)) set(false); });
     d.addEventListener('keydown', function(e){ if(e.key==='Escape'){ set(false); } });

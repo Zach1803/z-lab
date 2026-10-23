@@ -46,13 +46,15 @@ function init(W){
   [['u0',u0],['ang',ang],['rad',rad],['spd',spd],['sz',sz],['seed',seed]].forEach(([n,a]) => g.setAttribute(n, new THREE.BufferAttribute(a,1)));
   g.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 10);
   const U = { uTime:{value:0}, uPR:{value:renderer.getPixelRatio()}, uFocus:{value:0}, uAmt:{value:0},
+              uMouse:{value:new THREE.Vector3(99,99,0)}, uRepel:{value:0}, uPulse:{value:[-99,-99,-99,-99]},
               uP:{value:P}, uT:{value:T} };
   const mat = new THREE.ShaderMaterial({
     uniforms:U, transparent:true, depthWrite:false, blending:THREE.AdditiveBlending,
     vertexShader:`
       #define N ${N}
       attribute float u0, ang, rad, spd, sz, seed;
-      uniform float uTime, uPR, uFocus, uAmt; uniform vec3 uP[N]; uniform float uT[N];
+      uniform float uTime, uPR, uFocus, uAmt, uRepel; uniform vec3 uP[N]; uniform float uT[N];
+      uniform vec3 uMouse; uniform float uPulse[4];
       varying vec3 vC; varying float vA;
       void main(){
         float u = fract(u0 + uTime*spd);
@@ -62,8 +64,14 @@ function init(W){
         vec3 n = normalize(cross(tg, vec3(0.,0.,1.))); vec3 b = cross(tg, n);
         float w = rad * r * (.92 + .1*sin(uTime*1.6 + seed*40.));
         p += n*cos(ang)*w + b*sin(ang)*w*.55;
+        // part around the cursor
+        vec2 dm = p.xy - uMouse.xy; float dd = length(dm);
+        p.xy += (dd > .0001 ? dm/dd : vec2(0.)) * uRepel * smoothstep(1.3, 0., dd) * .75;
+        // pulses travelling along the wave
+        float pulse = 0.;
+        for (int j=0;j<4;j++){ float c = (uTime - uPulse[j]) * .42; pulse += smoothstep(.05, 0., abs(u - c)) * step(0., c) * step(c, 1.05); }
         vec4 mv = modelViewMatrix*vec4(p,1.); gl_Position = projectionMatrix*mv;
-        float hot = uAmt * smoothstep(.07, 0., abs(u-uFocus));
+        float hot = uAmt * smoothstep(.07, 0., abs(u-uFocus)) + min(pulse, 1.);
         gl_PointSize = sz*(1.+hot*1.3)*uPR*(26./-mv.z);
         vec3 blue = vec3(.12,.36,1.), cyan = vec3(.10,.72,.95), white = vec3(.8,.92,1.);
         vC = mix(blue, cyan, u);
@@ -123,8 +131,18 @@ function init(W){
   }
   resize(); addEventListener('resize', resize);
 
-  const mouse = { x:0, y:0, tx:0, ty:0 };
-  host.addEventListener('pointermove', e => { const r = host.getBoundingClientRect(); mouse.tx = (e.clientX-r.left)/r.width*2-1; mouse.ty = (e.clientY-r.top)/r.height*2-1; });
+  const mouse = { x:0, y:0, tx:0, ty:0, in:false };
+  const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), plane = new THREE.Plane(), hit = new THREE.Vector3();
+  host.addEventListener('pointermove', e => {
+    const r = canvas.getBoundingClientRect(); mouse.tx = (e.clientX-r.left)/r.width*2-1; mouse.ty = (e.clientY-r.top)/r.height*2-1;
+    ndc.set(mouse.tx, -mouse.ty); mouse.in = e.clientY < r.bottom;
+  });
+  host.addEventListener('pointerleave', () => { mouse.in = false; });
+  let pi = 0;
+  const pulse = () => { U.uPulse.value[pi] = U.uTime.value; pi = (pi+1) % 4; };
+  host.addEventListener('click', e => { if (!e.target.closest('a,button')) pulse(); });
+  host.addEventListener('keydown', e => { if (e.key===' ' && e.target===host) { e.preventDefault(); pulse(); } });
+  let nextAuto = 2.5;
   let focus = -1;
   const legend = [].slice.call(host.querySelectorAll('.legend button'));
   function setFocus(i){ focus = i; legend.forEach((b,j) => b.classList.toggle('on', j===i)); if (i>=0) U.uFocus.value = nodeU[i]; }
@@ -145,12 +163,22 @@ function init(W){
     mouse.x += (mouse.tx-mouse.x)*.04; mouse.y += (mouse.ty-mouse.y)*.04;
     mark.rotation.y = -.1 + Math.sin(t*.15)*.12 + mouse.x*.22;
     mark.rotation.x = .12 + mouse.y*.14;
+    mark.updateMatrixWorld();
+    if (mouse.in) {
+      ray.setFromCamera(ndc, camera);
+      plane.setFromNormalAndCoplanarPoint(new THREE.Vector3(0,0,1).transformDirection(mark.matrixWorld), new THREE.Vector3().setFromMatrixPosition(mark.matrixWorld));
+      if (ray.ray.intersectPlane(plane, hit)) U.uMouse.value.copy(mark.worldToLocal(hit));
+    }
+    U.uRepel.value += ((mouse.in && !reduce ? 1 : 0) - U.uRepel.value) * .08;
+    if (t > nextAuto) { pulse(); nextAuto = t + 4.5 + Math.random()*2; }
     dust.rotation.y = t*.01;
     for (let i=0;i<DC;i++){ const s = dSeed[i], a = s[0] + t*s[3]; dpos[i*3]=Math.cos(a)*Math.sin(s[1])*s[2]; dpos[i*3+1]=Math.cos(s[1])*s[2]; dpos[i*3+2]=Math.sin(a)*Math.sin(s[1])*s[2]; }
     dg.attributes.position.needsUpdate = true;
     dotCore.scale.setScalar(1 + Math.sin(t*2)*.04);
     nodes.forEach((n,i) => {
-      n.k += ((focus===i?1:0) - n.k)*.1;
+      let f = focus===i ? 1 : 0;
+      for (const st of U.uPulse.value) { const c = (t - st)*.42; if (Math.abs(c - nodeU[i]) < .035) f = 1; }
+      n.k += (f - n.k)*(f > n.k ? .35 : .06);
       n.ring.lookAt(camera.position); n.pulse.lookAt(camera.position);
       const ph = (t*.9 + i*.5) % 1; n.pulse.scale.setScalar(1+ph*1.6); n.pulse.material.opacity = (1-ph)*(.25+n.k*.6);
       n.core.scale.setScalar(1 + n.k*.9); n.ring.scale.setScalar(1 + n.k*.7);
