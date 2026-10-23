@@ -9,6 +9,12 @@ const host = document.querySelector('.hero');
 const canvas = host && host.querySelector('canvas.gl');
 if (canvas) fetch(new URL('wave.json', import.meta.url)).then(r => r.json()).then(init).catch(() => host.classList.add('nogl'));
 
+function roundDot(){
+  const c = document.createElement('canvas'); c.width = c.height = 32; const x = c.getContext('2d');
+  const g = x.createRadialGradient(16,16,0,16,16,16); g.addColorStop(0,'rgba(255,255,255,1)'); g.addColorStop(.5,'rgba(255,255,255,.6)'); g.addColorStop(1,'rgba(255,255,255,0)');
+  x.fillStyle = g; x.fillRect(0,0,32,32); return new THREE.CanvasTexture(c);
+}
+
 function init(W){
   let renderer;
   try { renderer = new THREE.WebGLRenderer({ canvas, antialias:true, powerPreference:'high-performance' }); }
@@ -46,7 +52,7 @@ function init(W){
   [['u0',u0],['ang',ang],['rad',rad],['spd',spd],['sz',sz],['seed',seed]].forEach(([n,a]) => g.setAttribute(n, new THREE.BufferAttribute(a,1)));
   g.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 10);
   const U = { uTime:{value:0}, uPR:{value:renderer.getPixelRatio()}, uFocus:{value:0}, uAmt:{value:0},
-              uMouse:{value:new THREE.Vector3(99,99,0)}, uRepel:{value:0}, uPulse:{value:[-99,-99,-99,-99]},
+              uMouse:{value:new THREE.Vector3(99,99,0)}, uIntro:{value:reduce?1:0}, uRepel:{value:0}, uPulse:{value:[-99,-99,-99,-99]},
               uP:{value:P}, uT:{value:T} };
   const mat = new THREE.ShaderMaterial({
     uniforms:U, transparent:true, depthWrite:false, blending:THREE.AdditiveBlending,
@@ -54,7 +60,7 @@ function init(W){
       #define N ${N}
       attribute float u0, ang, rad, spd, sz, seed;
       uniform float uTime, uPR, uFocus, uAmt, uRepel; uniform vec3 uP[N]; uniform float uT[N];
-      uniform vec3 uMouse; uniform float uPulse[4];
+      uniform vec3 uMouse; uniform float uPulse[4]; uniform float uIntro;
       varying vec3 vC; varying float vA;
       void main(){
         float u = fract(u0 + uTime*spd);
@@ -64,6 +70,10 @@ function init(W){
         vec3 n = normalize(cross(tg, vec3(0.,0.,1.))); vec3 b = cross(tg, n);
         float w = rad * r * (.92 + .1*sin(uTime*1.6 + seed*40.));
         p += n*cos(ang)*w + b*sin(ang)*w*.55;
+        // intro: start scattered, fly into the wave
+        float rr = 5.5 + fract(seed*53.17)*9.; float aa = ang + (1.-uIntro)*2.2; vec3 scat = vec3(cos(aa)*rr*1.35, sin(aa)*rr*.8, (fract(seed*17.71)-.5)*12.);
+        float ki = clamp(uIntro*1.5 - seed*.5, 0., 1.); ki = 1. - pow(1.-ki, 3.);
+        p = mix(scat, p, ki);
         // part around the cursor
         vec2 dm = p.xy - uMouse.xy; float dd = length(dm);
         p.xy += (dd > .0001 ? dm/dd : vec2(0.)) * uRepel * smoothstep(1.3, 0., dd) * .75;
@@ -85,8 +95,9 @@ function init(W){
   mark.add(new THREE.Points(g, mat));
 
   // ---- core line ----
-  mark.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(new THREE.CatmullRomCurve3(P).getPoints(400)),
-    new THREE.LineBasicMaterial({ color:0x5b9bff, transparent:true, opacity:.3, blending:THREE.AdditiveBlending, depthWrite:false })));
+  const guide = new THREE.Line(new THREE.BufferGeometry().setFromPoints(new THREE.CatmullRomCurve3(P).getPoints(400)),
+    new THREE.LineBasicMaterial({ color:0x5b9bff, transparent:true, opacity:0, blending:THREE.AdditiveBlending, depthWrite:false }));
+  mark.add(guide);
 
   // ---- the dot ----
   const dp = new THREE.Vector3(W.dot[0]*S, W.dot[1]*S, Math.sin(W.dot[0]*2.4)*.55), dr = W.dot[2]*S;
@@ -94,7 +105,7 @@ function init(W){
   dotCore.position.copy(dp); mark.add(dotCore);
   const DC = 700, dpos = new Float32Array(DC*3);
   const dg = new THREE.BufferGeometry(); dg.setAttribute('position', new THREE.BufferAttribute(dpos,3));
-  const dPts = new THREE.Points(dg, new THREE.PointsMaterial({ color:0x8fe3ff, size:.035, transparent:true, opacity:.55, blending:THREE.AdditiveBlending, depthWrite:false }));
+  const dPts = new THREE.Points(dg, new THREE.PointsMaterial({ color:0x8fe3ff, size:.05, map:roundDot(), alphaTest:.01, transparent:true, opacity:.6, blending:THREE.AdditiveBlending, depthWrite:false }));
   dPts.position.copy(dp); mark.add(dPts);
   const dSeed = Array.from({length:DC}, () => [Math.random()*Math.PI*2, Math.acos(2*Math.random()-1), dr*(.6+Math.random()*.4), .2+Math.random()*.6]);
 
@@ -111,7 +122,7 @@ function init(W){
   // ---- dust ----
   const dust = new THREE.Points((() => { const a = new Float32Array(600*3); for (let i=0;i<a.length;i+=3){ a[i]=(Math.random()-.5)*32; a[i+1]=(Math.random()-.5)*18; a[i+2]=(Math.random()-.5)*14-3; }
     const gg = new THREE.BufferGeometry(); gg.setAttribute('position', new THREE.BufferAttribute(a,3)); return gg; })(),
-    new THREE.PointsMaterial({ color:0x8ab4ff, size:.03, transparent:true, opacity:.4, depthWrite:false }));
+    new THREE.PointsMaterial({ color:0x8ab4ff, size:.06, map:roundDot(), transparent:true, opacity:.45, depthWrite:false }));
   world.add(dust);
 
   const composer = new EffectComposer(renderer);
@@ -142,7 +153,7 @@ function init(W){
   const pulse = () => { U.uPulse.value[pi] = U.uTime.value; pi = (pi+1) % 4; };
   host.addEventListener('click', e => { if (!e.target.closest('a,button')) pulse(); });
   host.addEventListener('keydown', e => { if (e.key===' ' && e.target===host) { e.preventDefault(); pulse(); } });
-  let nextAuto = 2.5;
+  let nextAuto = 3.6;
   let focus = -1;
   const legend = [].slice.call(host.querySelectorAll('.legend button'));
   function setFocus(i){ focus = i; legend.forEach((b,j) => b.classList.toggle('on', j===i)); if (i>=0) U.uFocus.value = nodeU[i]; }
@@ -159,6 +170,9 @@ function init(W){
     requestAnimationFrame(frame);
     if (!visible || document.hidden) { clock.getDelta(); return; }
     t += Math.min(clock.getDelta(), .05) * (reduce ? .15 : 1);
+    U.uIntro.value = reduce ? 1 : Math.min(1, t/2.4);
+    const appear = Math.max(0, Math.min(1, (U.uIntro.value-.65)/.35));
+    guide.material.opacity = .3*appear;
     U.uTime.value = t; U.uAmt.value += ((focus>=0?1:0) - U.uAmt.value)*.08;
     mouse.x += (mouse.tx-mouse.x)*.04; mouse.y += (mouse.ty-mouse.y)*.04;
     mark.rotation.y = -.1 + Math.sin(t*.15)*.12 + mouse.x*.22;
@@ -174,14 +188,14 @@ function init(W){
     dust.rotation.y = t*.01;
     for (let i=0;i<DC;i++){ const s = dSeed[i], a = s[0] + t*s[3]; dpos[i*3]=Math.cos(a)*Math.sin(s[1])*s[2]; dpos[i*3+1]=Math.cos(s[1])*s[2]; dpos[i*3+2]=Math.sin(a)*Math.sin(s[1])*s[2]; }
     dg.attributes.position.needsUpdate = true;
-    dotCore.scale.setScalar(1 + Math.sin(t*2)*.04);
+    dotCore.scale.setScalar((1 + Math.sin(t*2)*.04)*appear+.0001); dPts.scale.setScalar(appear+.0001); dPts.visible = appear>.02;
     nodes.forEach((n,i) => {
       let f = focus===i ? 1 : 0;
       for (const st of U.uPulse.value) { const c = (t - st)*.42; if (Math.abs(c - nodeU[i]) < .035) f = 1; }
       n.k += (f - n.k)*(f > n.k ? .35 : .06);
       n.ring.lookAt(camera.position); n.pulse.lookAt(camera.position);
       const ph = (t*.9 + i*.5) % 1; n.pulse.scale.setScalar(1+ph*1.6); n.pulse.material.opacity = (1-ph)*(.25+n.k*.6);
-      n.core.scale.setScalar(1 + n.k*.9); n.ring.scale.setScalar(1 + n.k*.7);
+      n.core.scale.setScalar((1 + n.k*.9)*appear); n.ring.scale.setScalar((1 + n.k*.7)*appear+.0001); n.pulse.visible = appear>.99;
     });
     composer.render();
   })();

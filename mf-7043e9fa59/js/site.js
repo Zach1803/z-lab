@@ -34,6 +34,7 @@
       var o=!drawer.classList.contains('open');
       drawer.classList.toggle('open', o); burger.setAttribute('aria-expanded', o?'true':'false');
       d.body.style.overflow=o?'hidden':'';
+      if(window.mfLenis){ o?window.mfLenis.stop():window.mfLenis.start(); }
       if(hdr) hdr.classList.toggle('dark-lock', o);
     });
   }
@@ -99,4 +100,34 @@
 
   // year
   d.querySelectorAll('[data-year]').forEach(function(el){ el.textContent=new Date().getFullYear(); });
+})();
+
+// ---------- polish shared by all pages ----------
+(function(){
+  var d=document, reduce=matchMedia('(prefers-reduced-motion: reduce)').matches, fine=matchMedia('(hover:hover) and (pointer:fine)').matches;
+
+  // smooth scrolling on desktop
+  if(window.Lenis && fine && !reduce){
+    var lenis=new Lenis({lerp:.11, anchors:{offset:-90}});
+    (function raf(t){ lenis.raf(t); requestAnimationFrame(raf); })(performance.now());
+    window.mfLenis=lenis;
+  }
+
+  // numbers count up the first time they are seen
+  var nums=[].slice.call(d.querySelectorAll('[data-n]'));
+  if(nums.length && 'IntersectionObserver' in window && !reduce){
+    var io=new IntersectionObserver(function(es){ es.forEach(function(e){ if(!e.isIntersecting) return; io.unobserve(e.target);
+      var el=e.target, end=+el.dataset.n, start=end>1000?end-60:0, t0=performance.now(), dur=1400;
+      (function tick(now){ var k=Math.min(1,(now-t0)/dur), v=Math.round(start+(end-start)*(1-Math.pow(1-k,3))); el.textContent=v; if(k<1) requestAnimationFrame(tick); })(t0);
+    }); },{threshold:.6});
+    nums.forEach(function(n){ n.textContent=+n.dataset.n>1000?+n.dataset.n-60:0; io.observe(n); });
+  }
+
+  // solution illustrations lean toward the cursor
+  if(fine && !reduce) d.querySelectorAll('.phero .art').forEach(function(a){
+    a.addEventListener('mousemove',function(e){ var r=a.getBoundingClientRect(), x=(e.clientX-r.left)/r.width, y=(e.clientY-r.top)/r.height;
+      a.classList.add('tilting'); a.style.transform='perspective(1100px) rotateY('+((x-.5)*12)+'deg) rotateX('+((.5-y)*12)+'deg) scale(1.02)';
+      a.style.setProperty('--gx',x*100+'%'); a.style.setProperty('--gy',y*100+'%'); });
+    a.addEventListener('mouseleave',function(){ a.classList.remove('tilting'); a.style.transform=''; });
+  });
 })();

@@ -349,3 +349,51 @@ input[type=range]{width:100%;accent-color:var(--cobalt);height:28px}
 .cp-ai{background:linear-gradient(135deg,rgba(59,128,255,.28),rgba(59,200,239,.18));border:1px solid rgba(59,200,239,.3)}
 .cp-a.typing::after{content:"";display:inline-block;width:8px;height:1.1em;margin-left:2px;vertical-align:-3px;background:#8FDCF5;animation:blink .9s steps(2) infinite}
 @keyframes blink{50%{opacity:0}}
+.mega .all svg{width:20px;height:20px;flex:none}
+/* safety net: an inline icon never grows past its text */
+a>svg:only-child,a>span+svg{max-width:28px;max-height:28px}
+
+/* ---------- home: pinned solutions story ---------- */
+.story{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(32px,6vw,96px);align-items:start}
+.story-vis{position:sticky;top:110px}
+.story-frame{position:relative;aspect-ratio:1;border-radius:28px;overflow:hidden;background:var(--deep);box-shadow:0 40px 80px -30px rgba(8,18,51,.45);transform-style:preserve-3d;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.story-frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.06);transition:opacity .7s ease,transform 1.2s cubic-bezier(.2,.8,.2,1)}
+.story-frame img.on{opacity:1;transform:none}
+.story-glare{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at var(--gx,30%) var(--gy,20%),rgba(255,255,255,.18),transparent 45%);mix-blend-mode:screen}
+.story-prog{height:4px;border-radius:4px;background:var(--line);margin-top:22px;overflow:hidden}
+.story-prog i{display:block;height:100%;width:16.66%;border-radius:4px;background:linear-gradient(90deg,var(--b1),var(--b2));transition:width .6s cubic-bezier(.2,.8,.2,1)}
+.story-list{list-style:none;margin:0;padding:0}
+.story-item{min-height:72vh;display:flex;flex-direction:column;justify-content:center;padding:40px 0;opacity:.28;transition:opacity .5s}
+.story-item.on{opacity:1}
+.story-item .ic{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(135deg,var(--b1),var(--b2));color:#fff;margin-bottom:22px}
+.story-item .ic svg{width:28px;height:28px}
+.story-item h3{font-size:clamp(30px,3.4vw,46px);letter-spacing:-.03em;line-height:1.05}
+.story-item p{font-size:clamp(17px,1.5vw,20px);color:var(--ink2);margin:16px 0 0;max-width:40ch}
+.story-tags{list-style:none;padding:0;margin:22px 0 28px;display:flex;flex-wrap:wrap;gap:8px}
+.story-tags li{padding:7px 13px;border-radius:999px;background:var(--paper);border:1px solid var(--line);font-weight:600;font-size:14.5px;color:var(--ink2)}
+.story-item .btn{align-self:flex-start}
+.story-mob{display:none}
+@media (max-width:900px){
+  .story{grid-template-columns:1fr}
+  .story-vis{display:none}
+  .story-item{min-height:0;opacity:1;padding:0 0 56px}
+  .story-mob{display:block;width:100%;aspect-ratio:1;object-fit:cover;border-radius:22px;margin-bottom:24px}
+}
+
+/* ---------- hero intro ---------- */
+.rise .w{display:inline-block;opacity:0;transform:translateY(.45em);filter:blur(6px);animation:rise .9s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:calc(.25s + var(--d)*.09s)}
+@keyframes rise{to{opacity:1;transform:none;filter:none}}
+.hero .lede,.hero .btns,.hero .pill,.hero .legend,.hero-note{opacity:0;animation:fadein .9s ease forwards}
+.hero .pill{animation-delay:.1s}.hero .lede{animation-delay:.8s}.hero .btns{animation-delay:1s}.hero .legend{animation-delay:1.8s}.hero-note{animation-delay:2.2s}
+@keyframes fadein{to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.rise .w,.hero .lede,.hero .btns,.hero .pill,.hero .legend,.hero-note{opacity:1!important;transform:none!important;filter:none!important}}
+
+/* ---------- tilt on solution illustrations ---------- */
+.phero .art{transform-style:preserve-3d;transition:transform .5s cubic-bezier(.2,.8,.2,1);will-change:transform}
+.phero .art::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at var(--gx,30%) var(--gy,20%),rgba(255,255,255,.2),transparent 45%);mix-blend-mode:screen;opacity:0;transition:opacity .3s}
+.phero .art.tilting::after{opacity:1}
+
+/* lenis */
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+.lenis.lenis-stopped{overflow:hidden}
