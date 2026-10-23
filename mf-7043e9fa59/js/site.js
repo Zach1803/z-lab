@@ -21,8 +21,20 @@
       if(Date.now()-hoverAt<600){ set(true); return; }
       set(b.getAttribute('aria-expanded')!=='true');
     });
-    b.parentElement.addEventListener('mouseenter', function(){ if(matchMedia('(hover:hover)').matches){ if(b.getAttribute('aria-expanded')!=='true') hoverAt=Date.now(); set(true); } });
-    b.parentElement.addEventListener('mouseleave', function(){ if(matchMedia('(hover:hover)').matches) set(false); });
+    var closeT=0;
+    b.parentElement.addEventListener('mouseenter', function(){
+      if(!matchMedia('(hover:hover)').matches) return;
+      clearTimeout(closeT);
+      // close any other open menu straight away
+      d.querySelectorAll('.nav>li>button[aria-expanded="true"]').forEach(function(o){ if(o!==b){ o.setAttribute('aria-expanded','false'); o.nextElementSibling.classList.remove('open'); } });
+      if(b.getAttribute('aria-expanded')!=='true') hoverAt=Date.now();
+      set(true);
+    });
+    // wait a moment before closing, so a slow or slightly off-line move into the menu does not close it
+    b.parentElement.addEventListener('mouseleave', function(){
+      if(!matchMedia('(hover:hover)').matches) return;
+      clearTimeout(closeT); closeT=setTimeout(function(){ set(false); }, 350);
+    });
     d.addEventListener('click', function(e){ if(!b.parentElement.contains(e.target)) set(false); });
     d.addEventListener('keydown', function(e){ if(e.key==='Escape'){ set(false); } });
   });
